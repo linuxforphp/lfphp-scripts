@@ -1,0 +1,327 @@
+#!/usr/bin/env bash
+cd
+if [[ -z "$1" ]]; then
+    read -r -p "Which version of MongoDB do you wish to install? (3.6.8 / 3.6.17 / 4.0.19 / 4.1.3) " response
+else
+    response=$1
+fi
+if [[ "$response" == "4.0.16" ]]; then
+    response="4.0.19" 
+fi
+if [[ "$response" != "3.6.8" && "$response" != "3.6.17" && "$response" != "4.0.19" && "$response" != "4.1.3" ]]; then
+    echo -e "ERROR! You must choose from one of these versions: 3.6.8, 3.6.17, 4.0.19 or 4.1.3. ABORTING..."
+    exit 2
+fi
+if [[ ! -z "$2" && "$2" == "--compile" ]]; then
+    COMPILE=1
+fi
+if [[ -z "$3" || "$3" != "-y" ]]; then
+    read -r -p "This installation will destroy any MongoDB databases currently running inside the container. Continue? (y/N) " response2
+    if [[ -z "$response2" || "$response2" =~ ^([nN][oO]|[nN])+$ ]]; then
+        echo -e "ABORTING... User declined installation."
+        exit 9
+    fi
+fi
+if [[ ! -z "$COMPILE" ]]; then
+###############################################################################################
+### Clang compilation ###
+#
+#git clone https://github.com/llvm/llvm-project.git
+#cd llvm-project
+#mkdir build
+#cd build
+#cmake -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS=clang -G "Unix Makefiles" ../llvm
+#make
+#cd
+#
+### End Clang compilation ###
+#
+#wget -O clang-linux-x86_64-11.0.0-lfphp.tar.gz https://websiteurl/clang-linux-x86_64-11.0.0-lfphp.tar.gz
+#tar -xzvf clang-linux-x86_64-11.0.0-lfphp.tar.gz
+#export PATH=$PATH:$HOME/clang-linux-x86_64-11.0.0-lfphp/build/bin
+##git clone https://github.com/mongodb/mongo &&
+##cd mongo &&
+##git checkout r4.2.3
+##pip install --upgrade pip
+##pip install --user regex
+##pip install --user -r etc/pip/core-requirements.txt
+##buildscripts/scons.py install --prefix=/usr --ssl -j 2 CC=/root/clang-linux-x86_64-11.0.0-lfphp/build/bin/clang CXX=/root/clang-linux-x86_64-11.0.0-lfphp/build/bin/clang++
+###buildscripts/scons.py core --ssl CC=/root/clang-linux-x86_64-11.0.0-lfphp/build/bin/clang CXX=/root/clang-linux-x86_64-11.0.0-lfphp/build/bin/clang++
+#if [[ $? -gt 0 ]]; then
+#echo -e "\nMongoDB Compilation ERROR!  Aborting!\n"
+#exit 1
+#fi
+###############################################################################################
+    if [[ "$response" == "3.6.8" ]]; then
+        wget -O mongodb-src-r3.6.8.tar.gz https://fastdl.mongodb.org/src/mongodb-src-r3.6.8.tar.gz
+        tar -xzvf mongodb-src-r3.6.8.tar.gz
+        cd mongodb-src-r3.6.8
+    elif [[ "$response" == "3.6.17" ]]; then
+        wget -O mongodb-src-r3.6.17.tar.gz https://fastdl.mongodb.org/src/mongodb-src-r3.6.17.tar.gz
+        tar -xzvf mongodb-src-r3.6.17.tar.gz
+        cd mongodb-src-r3.6.17
+    elif [[ "$response" == "4.0.19" ]]; then
+        wget -O mongodb-src-r4.0.19.tar.gz https://fastdl.mongodb.org/src/mongodb-src-r4.0.19.tar.gz
+        tar -xzvf mongodb-src-r4.0.19.tar.gz
+        cd mongodb-src-r4.0.19
+    elif [[ "$response" == "4.1.3" ]]; then
+        echo -e "ERROR! It is currently not possible to compile version 4.1.3 of MongoDB from source. ABORTING..."
+        exit 2
+    fi
+    pip install --upgrade pip &&
+    pip2 install --upgrade pip &&
+    pip2 install --user regex &&
+    pip install --user -r buildscripts/requirements.txt &&
+    #buildscripts/scons.py core --ssl -j 2
+    buildscripts/scons.py install --prefix=/usr --ssl -j 2
+    if [[ $? -gt 0 ]]; then
+        echo -e "\nMongoDB Compilation ERROR!  Aborting!\n"
+        exit 1
+    fi
+    cd
+    if [[ "$response" == "3.6.8" ]]; then
+        rm -rf mongodb-src-r3.6.8
+    elif [[ "$response" == "3.6.17" ]]; then
+        rm -rf mongodb-src-r3.6.17
+    elif [[ "$response" == "4.0.19" ]]; then
+        rm -rf mongodb-src-r4.0.19
+    fi
+    echo -e "\nMongoDB Compilation and Installation DONE!\n"
+else
+    if [[ "$response" == "3.6.8" ]]; then
+        wget -O mongodb-linux-x86_64-3.6.8-lfphp.tar.gz https://websiteurl/mongodb-linux-x86_64-3.6.8-lfphp.tar.gz
+        tar -xzvf mongodb-linux-x86_64-3.6.8-lfphp.tar.gz
+        cd mongodb-linux-x86_64-3.6.8-lfphp
+        cp bin/* /usr/bin
+        cd
+        rm -rf mongodb-linux-x86_64-3.6.8-lfphp
+    elif [[ "$response" == "3.6.17" ]]; then
+        wget -O mongodb-linux-x86_64-3.6.17-lfphp.tar.gz https://websiteurl/mongodb-linux-x86_64-3.6.17-lfphp.tar.gz
+        tar -xzvf mongodb-linux-x86_64-3.6.17-lfphp.tar.gz
+        cd mongodb-linux-x86_64-3.6.17-lfphp
+        cp bin/* /usr/bin
+        cd
+        rm -rf mongodb-linux-x86_64-3.6.17-lfphp
+    elif [[ "$response" == "4.0.19" ]]; then
+        wget -O mongodb-linux-x86_64-4.0.19-lfphp.tar.gz https://websiteurl/mongodb-linux-x86_64-4.0.19-lfphp.tar.gz
+        tar -xzvf mongodb-linux-x86_64-4.0.19-lfphp.tar.gz
+        cd mongodb-linux-x86_64-4.0.19
+        cp bin/* /usr/bin
+        cd
+        rm -rf mongodb-linux-x86_64-4.0.19
+    elif [[ "$response" == "4.1.3" ]]; then
+        wget -O mongodb-linux-x86_64-4.1.3-lfphp.tar.gz https://websiteurl/mongodb-linux-x86_64-4.1.3-lfphp.tar.gz
+        tar -xzvf mongodb-linux-x86_64-4.1.3-lfphp.tar.gz
+        cd mongodb-linux-x86_64-4.1.3-lfphp
+        cp bin/* /usr/bin
+        cd
+        rm -rf mongodb-linux-x86_64-4.1.3-lfphp
+    fi
+    echo -e "\nMongoDB Installation DONE!\n"
+fi
+groupadd -g 101 mongodb
+useradd -u 101 -g mongodb mongodb
+#mkdir -p /data/db
+#chown -R mongodb:mongodb /data
+#chmod -R 775 /data
+mkdir -p /var/lib/mongodb
+chown -R mongodb:mongodb /var/lib/mongodb
+chmod -R 775 /var/lib/mongodb
+touch /var/log/mongodb.log
+chown mongodb:root /var/log/mongodb.log
+cat >/etc/init.d/mongod << 'EOF'
+#! /bin/sh
+#######################################################################
+# Begin /etc/init.d/mongodb
+#
+# Description : Start the MongoDB Server
+#
+# Author      : A Caya - andrewscaya@yahoo.ca
+#
+# Version     : LfPHP 8.1.3
+#
+########################################################################
+
+### BEGIN INIT INFO
+# Provides:          mongod
+# Required-Start:    $syslog $local_fs $network
+# Should-Start:      $remote_fs
+# Required-Stop:     $network
+# Should-Stop:       $remote_fs
+# Default-Start:     3 4 5
+# Default-Stop:      0 1 2 6
+# Short-Description: starts mongod
+# Description:       starts the MongoDB daemon
+# X-LFS-Provided-By: LfPHP 8.1.3
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+#$LastChangedBy: andrew $
+#$Date: 2018-06-19 22:18:53 -0500 (Tue, 19 Jun 2018) $
+
+prefix=/usr
+exec_prefix=${prefix}
+
+mongod_BIN=${exec_prefix}/bin/mongod
+mongod_CONF=/etc/mongodb.conf
+mongod_PID=/var/lib/mongodb/mongod.lock
+
+
+wait_for_pid () {
+	try=0
+
+	while test $try -lt 35 ; do
+
+		case "$1" in
+			'created')
+			if [ -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+
+			'removed')
+			if [ ! -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+		esac
+
+		echo -n .
+		try=`expr $try + 1`
+		sleep 1
+
+	done
+
+}
+
+case "$1" in
+	start)
+		log_info_msg "Starting MongoDB server..."
+
+		su mongodb -c "$mongod_BIN --config $mongod_CONF --fork"
+
+		if [ "$?" != 0 ] ; then
+			log_failure_msg2
+			exit
+		fi
+
+		wait_for_pid created $mongod_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	stop)
+		log_info_msg "Stopping MongoDB Server..."
+
+		if [ ! -r $mongod_PID ] ; then
+			log_warning_msg "mongod not running?"
+			exit
+		fi
+
+		su mongodb -c "$mongod_BIN --config $mongod_CONF --shutdown" && rm -f $mongod_PID
+
+		wait_for_pid removed $mongod_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	status)
+		statusproc $mongod_BIN
+	;;
+
+	restart)
+		$0 stop
+		$0 start
+	;;
+
+	reload)
+
+		log_info_msg "Reload service MongoDB..."
+		$0 stop
+		log_success_msg2
+	;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart|reload|status}"
+		exit 1
+	;;
+
+esac
+EOF
+cat >/etc/mongodb.conf << 'EOF'
+# mongodb.conf
+
+storage:
+  dbPath: /var/lib/mongodb
+  journal:
+    enabled: true
+
+systemLog:
+  destination: file
+  logAppend: true
+  path: /var/log/mongodb.log
+
+net:
+  port: 27017
+  bindIp: 0.0.0.0
+  #ssl:
+    #mode: requireSSL
+    #PEMKeyFile: /etc/ssl/mongod.pem
+    #PEMKeyPassword: password
+    #CAFile: /etc/ssl/ca.crt
+    #allowConnectionsWithoutCertificates: true # <-- Add this line if you want ssl WITHOUT authentication
+
+#security:
+  #authorization: enabled
+
+#setParameter:
+  #authenticationMechanisms: PLAIN,SCRAM-SHA-256,MONGODB-X509
+
+#sharding:
+  #clusterRole: "shardsvr"
+
+
+# how the process runs
+processManagement:
+  timeZoneInfo: /usr/share/zoneinfo
+
+#security:
+
+#operationProfiling:
+
+#replication:
+
+## Enterprise-Only Options:
+
+#auditLog:
+
+#snmp:
+EOF
+chmod +x /etc/init.d/mongod
+ln -sf  ../init.d/mongod /etc/rc.d/rc0.d/K28mongod
+ln -sf  ../init.d/mongod /etc/rc.d/rc1.d/K28mongod
+ln -sf  ../init.d/mongod /etc/rc.d/rc2.d/K28mongod
+ln -sf  ../init.d/mongod /etc/rc.d/rc3.d/S32mongod
+ln -sf  ../init.d/mongod /etc/rc.d/rc4.d/S32mongod
+ln -sf  ../init.d/mongod /etc/rc.d/rc5.d/S32mongod
+ln -sf  ../init.d/mongod /etc/rc.d/rc6.d/K28mongod
+rm -rf /var/lib/mongodb/*
+mkdir -p /etc/sv/mongod/supervise &&
+chmod -R 700 /etc/sv/mongod/supervise &&
+touch /etc/sv/mongod/run &&
+echo -e "#!/usr/bin/env bash\n" > /etc/sv/mongod/run &&
+echo "exec su mongodb -c '/usr/bin/mongod --config /etc/mongodb.conf --fork'" >> /etc/sv/mongod/run &&
+chmod +x /etc/sv/mongod/run &&
+ln -s /etc/sv/mongod /services
+cd

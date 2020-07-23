@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+java -version
+if [[ $? -gt 0 ]]; then
+echo -e "\n\n###############################################################"
+echo -e "\nYou must have a login shell to install this package...\n\nPlease enter the command 'login root' before installing Exakat!\n"
+echo -e "###############################################################\n"
+exit 1
+fi
+sed -i 's/memory_limit = 128M/memory_limit = 2048M/' /etc/php.ini
+cd /home && mkdir exakat && cd exakat
+curl --silent http://dist.exakat.io/index.php?file=latest -o exakat.phar
+curl --silent -o apache-tinkerpop-gremlin-server-3.4.4-bin.zip http://dist.exakat.io/apache-tinkerpop-gremlin-server-3.4.4-bin.zip
+unzip apache-tinkerpop-gremlin-server-3.4.4-bin.zip
+mv apache-tinkerpop-gremlin-server-3.4.4 tinkergraph
+rm -f http://apache-tinkerpop-gremlin-server-3.4.4-bin.zip
+cd tinkergraph
+bin/gremlin-server.sh install org.apache.tinkerpop neo4j-gremlin 3.4.4
+cd ..
+php exakat.phar doctor
+echo -e "\n\n##########################################################"
+echo -e "\nExakat has been installed successfully in /home/exakat!\n"
+echo -e "\nPlease enter the command 'login root' before using Exakat!\n"
+echo -e "##########################################################\n"

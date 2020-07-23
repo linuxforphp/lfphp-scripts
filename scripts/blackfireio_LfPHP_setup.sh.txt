@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+#ln -s /etc/ssl/ca-bundle.crt /etc/ssl/certs/
+cd /srv/www
+wget -O blackfire-agent https://packages.blackfire.io/binaries/blackfire-agent/1.22.1/blackfire-agent-linux_static_amd64
+mv blackfire-agent /usr/local/bin/
+chmod +x /usr/local/bin/blackfire-agent
+mkdir -p /etc/blackfire
+cat >/etc/blackfire/agent << 'EOF'
+[blackfire]
+;
+; setting: ca-cert
+; desc   : Sets the PEM encoded certificates
+; default:
+ca-cert=
+
+;
+; setting: collector
+; desc   : Sets the URL of Blackfire's data collector
+; default: https://blackfire.io
+collector=https://blackfire.io/
+
+;
+; setting: log-file
+; desc   : Sets the path of the log file. Use stderr to log to stderr
+; default: stderr
+log-file=stderr
+
+;
+; setting: log-level
+; desc   : log verbosity level (4: debug, 3: info, 2: warning, 1: error)
+; default: 1
+log-level=1
+
+;
+; setting: server-id
+; desc   : Sets the server id used to authenticate with Blackfire API
+; default:
+server-id=
+
+;
+; setting: server-token
+; desc   : Sets the server token used to authenticate with Blackfire
+API. It is unsafe to set this from the command line
+; default:
+server-token=
+
+;
+; setting: socket
+; desc   : Sets the socket the agent should read traces from. Possible
+value can be a unix socket or a TCP address
+; default: unix:///var/run/blackfire/agent.sock on Linux,
+unix:///usr/local/var/run/blackfire-agent.sock on MacOSX, and
+tcp://127.0.0.1:8307 on Windows.
+socket=unix:///var/run/blackfire/agent.sock
+
+;
+; setting: spec
+; desc   : Sets the path to the json specifications file
+; default:
+spec=
+EOF
+mkdir -p /var/run/blackfire
+touch /var/run/blackfire/agent.sock
+blackfire-agent -register
+blackfire-agent start &
+wget -O blackfire https://packages.blackfire.io/binaries/blackfire-agent/1.22.1/blackfire-cli-linux_static_amd64
+mv blackfire /usr/local/bin/
+chmod +x /usr/local/bin/blackfire
+blackfire config
+phpversion=$( php --version)
+if [[ "$phpversion" =~ 5.6 ]]; then
+wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-56.so
+elif [[ "$phpversion" =~ 7.0 ]]; then
+wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-70.so
+elif [[ "$phpversion" =~ 7.1 ]]; then
+wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-71.so
+elif [[ "$phpversion" =~ 7.2 ]]; then
+wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-72.so
+elif [[ "$phpversion" =~ 7.3 ]]; then
+wget -O blackfire.so.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-73.so
+fi
+chmod +x blackfire.so
+mv blackfire.so $( php -i | grep extensions | awk '{print $3}' | head -n1 )
+cat >>/etc/php.ini << 'EOF'
+[blackfire]
+extension = blackfire.so
+; On Windows use the following configuration:
+; extension=php_blackfire.dll
+
+; Sets the socket where the agent is listening.
+; Possible value can be a unix socket or a TCP address.
+; Defaults to unix:///var/run/blackfire/agent.sock on Linux,
+; unix:///usr/local/var/run/blackfire-agent.sock on MacOSX,
+; and to tcp://127.0.0.1:8307 on Windows.
+;blackfire.agent_socket = unix:///var/run/blackfire/agent.sock
+
+blackfire.agent_timeout = 0.25
+
+; Log verbosity level (4: debug, 3: info, 2: warning, 1: error)
+;blackfire.log_level = 1
+
+; Log file (STDERR by default)
+;blackfire.log_file = /tmp/blackfire.log
+
+;blackfire.server_id =
+
+;blackfire.server_token =
+EOF
+/etc/init.d/php-fpm restart
+/etc/init.d/httpd restart

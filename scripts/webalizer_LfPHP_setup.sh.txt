@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+wget -O webalizer-2.23-08-src.tgz ftp://ftp.mrunix.net/pub/webalizer/webalizer-2.23-08-src.tgz
+tar -xvf webalizer-2.23-08-src.tgz
+cd webalizer-2.23-08
+./configure --prefix=/usr &&
+make &&
+make install &&
+cp sample.conf /etc/webalizer.conf &&
+echo 'LogFile /var/log/httpd/access.log' >> /etc/webalizer.conf &&
+echo 'OutputDir /srv/usage' >> /etc/webalizer.conf &&
+echo 'HistoryName /srv/usage/webalizer.hist' >> /etc/webalizer.conf &&
+echo '1 0 * * * /usr/bin/webalizer -c /etc/webalizer.conf' >> /etc/fcrontab
+if [[ $? -gt 0 ]]; then
+echo -e "\nWebalizer Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nWebalizer Compilation and Installation DONE!\n"
+else
+cd &&
+wget -O webalizer-2.23-08-src-lfphp.tar.gz https://websiteurl/webalizer-2.23-08-src-lfphp.tar.gz &&
+tar -xvf webalizer-2.23-08-src-lfphp.tar.gz &&
+cd webalizer-2.23-08 &&
+make install &&
+cp sample.conf /etc/webalizer.conf &&
+echo 'LogFile /var/log/httpd/access.log' >> /etc/webalizer.conf &&
+echo 'OutputDir /srv/usage' >> /etc/webalizer.conf &&
+echo 'HistoryName /srv/usage/webalizer.hist' >> /etc/webalizer.conf &&
+echo '1 0 * * * /usr/bin/webalizer -c /etc/webalizer.conf' >> /etc/fcrontab &&
+cd &&
+rm -rf webalizer-2.23-08 webalizer-2.23-08-src-lfphp.tar.gz
+if [[ $? -gt 0 ]]; then
+echo -e "\nWebalizer Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nWebalizer Installation DONE!\n"
+fi
+mkdir -p /srv/usage
+chown -R apache:apache /srv/usage
+cat >/etc/httpd/extra/httpd-usage.conf << 'EOF'
+Alias /usage /srv/usage
+
+<Directory "/srv/usage">
+    #
+    # Possible values for the Options directive are "None", "All",
+    # or any combination of:
+    #   Indexes Includes FollowSymLinks SymLinksifOwnerMatch ExecCGI
+    #   MultiViews
+    #
+    # Note that "MultiViews" must be named *explicitly* --- "Options
+    # All"
+    # doesn't give it to you.
+    #
+    # The Options directive is both complicated and important.  Please
+    # see
+    # http://httpd.apache.org/docs/2.4/mod/core.html#options
+    # for more information.
+    #
+    Options None
+
+    #
+    # AllowOverride controls what directives may be placed in .htaccess
+    # files.
+    # It can be "All", "None", or any combination of the keywords:
+    #   AllowOverride FileInfo AuthConfig Limit
+    #
+    AllowOverride All
+
+    #
+    # Controls who can get stuff from this server.
+    #
+    Require all granted
+</Directory>
+EOF
+echo 'Include /etc/httpd/extra/httpd-usage.conf' >> /etc/httpd/httpd.conf
+/etc/init.d/httpd restart
+curl http://localhost
+fcrontab /etc/fcrontab >/dev/null 2>&1
+webalizer -c /etc/webalizer.conf
+cd

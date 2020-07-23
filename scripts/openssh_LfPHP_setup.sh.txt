@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+wget -O openssh-8.0p1.tar.gz http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.0p1.tar.gz
+tar -xzvf openssh-8.0p1.tar.gz
+cd openssh-8.0p1
+install -v -m700 -d /var/lib/sshd &&
+chown -v root:sys /var/lib/sshd &&
+groupadd -g 50 sshd &&
+useradd  -c 'sshd PrivSep' \
+-d /var/lib/sshd \
+-g sshd \
+-s /bin/false \
+-u 50 sshd &&
+./configure --prefix=/usr \
+--sysconfdir=/etc/ssh \
+--with-md5-passwords \
+--with-privsep-path=/var/lib/sshd &&
+make &&
+make install &&
+install -v -m755 contrib/ssh-copy-id /usr/bin &&
+install -v -m644 contrib/ssh-copy-id.1 \
+/usr/share/man/man1 &&
+install -v -m755 -d /usr/share/doc/openssh-8.0p1 &&
+install -v -m644 INSTALL LICENCE OVERVIEW README* \
+/usr/share/doc/openssh-8.0p1 &&
+cd &&
+rm -rf openssh-8.0p1
+if [[ $? -gt 0 ]]; then
+echo -e "\nOpenSSH Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nOpenSSH Compilation and Installation DONE!\n"
+else
+cd &&
+wget -O openssh-8.0p1-lfphp.tar.gz https://websiteurl/openssh-8.0p1-lfphp.tar.gz &&
+tar -xzvf openssh-8.0p1-lfphp.tar.gz &&
+cd openssh-8.0p1 &&
+install -v -m700 -d /var/lib/sshd &&
+chown -v root:sys /var/lib/sshd &&
+groupadd -g 50 sshd &&
+useradd  -c 'sshd PrivSep' \
+-d /var/lib/sshd \
+-g sshd \
+-s /bin/false \
+-u 50 sshd &&
+make install &&
+install -v -m755 contrib/ssh-copy-id /usr/bin &&
+install -v -m644 contrib/ssh-copy-id.1 \
+/usr/share/man/man1 &&
+install -v -m755 -d /usr/share/doc/openssh-8.0p1 &&
+install -v -m644 INSTALL LICENCE OVERVIEW README* \
+/usr/share/doc/openssh-8.0p1 &&
+cd &&
+rm -rf openssh-8.0p1
+if [[ $? -gt 0 ]]; then
+echo -e "\nOpenSSH Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nOpenSSH Installation DONE!\n"
+fi
+cat >/etc/init.d/sshd << 'EOF'
+#!/bin/sh
+########################################################################
+# Begin sshd
+#
+# Description : Start sshd daemon
+#
+# Author      : Bruce Dubbs - bdubbs@linuxfromscratch.org
+#
+# Version     : LFS 7.0
+#
+########################################################################
+
+### BEGIN INIT INFO
+# Provides:            sshd
+# Required-Start:      $network
+# Should-Start:
+# Required-Stop:       sendsignals
+# Should-Stop:
+# Default-Start:       3 4 5
+# Default-Stop:        0 1 2 6
+# Short-Description:   Starts sshd daemon.
+# Description:         Starts sshd daemon.
+# X-LFS-Provided-By:   LFS
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+#$LastChangedBy: dj $
+#$Date: 2012-06-18 18:42:28 -0500 (Mon, 18 Jun 2012) $
+
+case "$1" in
+    start)
+        log_info_msg "Starting SSH Server..."
+        start_daemon -f /usr/sbin/sshd
+        evaluate_retval
+        # Also prevent ssh from being killed by out of memory conditions
+        sleep 1
+        pid=`cat /run/sshd.pid 2>/dev/null`
+        #echo "-16" >/proc/${pid}/oom_score_adj
+        ;;
+
+    stop)
+        log_info_msg "Stopping SSH Server..."
+        killproc -p "/run/sshd.pid" /usr/sbin/sshd
+        evaluate_retval
+        ;;
+
+    reload)
+        log_info_msg "Reloading SSH Server..."
+        pid=`cat /run/sshd.pid 2>/dev/null`
+
+        if [ -n "${pid}" ]; then
+           kill -HUP "${pid}"
+        else
+           (exit 1)
+        fi
+
+        evaluate_retval
+        ;;
+
+    restart)
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+
+    status)
+        statusproc /usr/sbin/sshd
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|reload|restart|status}"
+        exit 1
+        ;;
+esac
+
+# End sshd bootscript
+EOF
+chmod +x /etc/init.d/sshd
+ln -sf  ../init.d/sshd /etc/rc.d/rc0.d/K30sshd
+ln -sf  ../init.d/sshd /etc/rc.d/rc1.d/K30sshd
+ln -sf  ../init.d/sshd /etc/rc.d/rc2.d/K30sshd
+ln -sf  ../init.d/sshd /etc/rc.d/rc3.d/S30sshd
+ln -sf  ../init.d/sshd /etc/rc.d/rc4.d/S30sshd
+ln -sf  ../init.d/sshd /etc/rc.d/rc5.d/S30sshd
+ln -sf  ../init.d/sshd /etc/rc.d/rc6.d/K30sshd
+cd

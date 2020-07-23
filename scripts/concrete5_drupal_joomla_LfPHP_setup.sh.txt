@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+if [[ ! -d /srv/tempo ]]; then
+mkdir /srv/tempo
+fi
+cd /srv/tempo
+sed -i 's/mysqli.default_socket =/mysqli.default_socket = \/run\/mysqld\/mysqld.sock/' /etc/php.ini
+cat >>/etc/php.ini << EOF
+[OpCache]
+zend_extension = $( php -i | grep extensions | awk '{print $3}' )/opcache.so
+EOF
+sed -i 's/memory_limit = 128M/memory_limit = 512M/' /etc/php.ini
+if [[ -z "$1" ]]; then
+echo -e "\n"
+echo -e "1 - Concrete5 8.5.2\n"
+echo -e "2 - Drupal 8.9.1\n"
+echo -e "3 - Joomla 3.9.18\n"
+echo -e "4 - WordPress (latest version)\n"
+echo -e "5 - Magento CE 2.3.4 E-Commerce Solution\n"
+echo -e "6 - Prestashop 1.7.6.3 E-Commerce Solution\n"
+echo -e "\n"
+read -r -p "Which CMS do you wish to install? (1 / 2 / 3 / 4 / 5 / 6)" cms
+else
+cms=$1
+fi
+/etc/init.d/mysql restart
+sleep 10
+mysql -uroot -e "CREATE DATABASE cms;"
+mysql -uroot -e "CREATE USER 'cmsuser'@'localhost' IDENTIFIED BY 'testpass';"
+mysql -uroot -e "GRANT ALL PRIVILEGES ON cms.* TO 'cmsuser'@'localhost';"
+mysql -uroot -e "FLUSH PRIVILEGES;"
+mv /srv/www /srv/www.OLD
+if [[ "$cms" != "1" && "$cms" != "2" && "$cms" != "3" && "$cms" != "4" && "$cms" != "5" && "$cms" != "6" && "$cms" != "concrete5" && "$cms" != "drupal" && "$cms" != "joomla" && "$cms" != "wordpress" && "$cms" != "magento" && "$cms" != "prestashop" ]]; then
+	echo -e "ERROR! You did not choose one of the above. ABORTING..."
+	exit 1
+elif [[ "$cms" == "1" || "$cms" == "concrete5" ]]; then
+	wget -O concrete5.zip https://www.concrete5.org/download_file/-/view/111592/
+	unzip concrete5.zip
+	rm concrete5.zip
+	mv concrete5-8.5.2 concrete5
+	cd ..
+	chmod -R 777 tempo/concrete5-8.5.2/application/config tempo/concrete5-8.5.2/application/files tempo/concrete5-8.5.2/packages
+	ln -s tempo/concrete5 www
+elif [[ "$cms" == "2" || "$cms" == "drupal" ]]; then
+	wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-8.9.1.tar.gz
+	tar -xvf drupal.tar.gz
+	rm drupal.tar.gz
+	mv drupal-8.9.1 drupal
+	cd ..
+	ln -s tempo/drupal www
+	cp /srv/www/sites/default/default.settings.php /srv/www/sites/default/settings.php
+	chmod -R 777 /srv/www/sites
+	wget -O /srv/www/.htaccess https://raw.githubusercontent.com/drupal/drupal/8.9.x/.htaccess
+elif [[ "$cms" == "3" || "$cms" == "joomla" ]]; then
+	wget -O joomla.tar.gz "https://downloads.joomla.org/cms/joomla3/3-9-18/Joomla_3-9-18-Stable-Full_Package.tar.gz?format=gz"
+	mkdir joomla
+	tar -xvf joomla.tar.gz -C joomla
+	rm joomla.tar.gz
+	cd ..
+	ln -s tempo/joomla www
+elif [[ "$cms" == "4" || "$cms" == "wordpress" ]]; then
+	wget -O wordpress.tar.gz https://wordpress.org/latest.tar.gz
+	tar -xvf wordpress.tar.gz
+	rm wordpress.tar.gz
+	cd ..
+	ln -s tempo/wordpress www
+	chmod -R 777 /srv/www
+elif [[ "$cms" == "5" || "$cms" == "magento" ]]; then
+	wget -O magento.tar.gz https://github.com/magento/magento2/archive/2.3.2.tar.gz
+	#mkdir magento && cd magento
+	tar -xvf magento.tar.gz
+	mv magento2-2.3.2 magento
+	rm magento.tar.gz
+	cd ..
+	ln -s tempo/magento www
+	cd tempo/magento
+	composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
+	composer require mageplaza/magento-2-french-language-pack
+	php bin/magento setup:static-content:deploy fr_FR -f
+	php bin/magento setup:static-content:deploy fr_CA -f
+	php bin/magento indexer:reindex
+	php bin/magento cache:clean
+	php bin/magento cache:flush
+	#find . -type d -exec chmod 755 {} \; && find . -type f -exec chmod 644 {} \; && chmod u+x bin/magento
+	rm -rf var/cache/* var/view_preprocessed/* generated/* pub/static/*
+	chmod -R 0777 var/ pub/ generated/ app/etc/
+	cd ../..
+	touch tempo/magento/safe.php
+	cat >tempo/magento/safe.php << 'EOF'
+<?php
+
+delete_files(__DIR__ . DIRECTORY_SEPARATOR . 'install/');
+
+/* 
+ * php delete function that deals with directories recursively
+ */
+function delete_files($target) {
+    if(is_dir($target)){
+        $files = glob($target . '{,.}[!.,!..]*', GLOB_MARK|GLOB_BRACE); //GLOB_MARK adds a slash to directories returned and GLOB_BRACE will find hidden files
+    
+        foreach($files as $file){
+            delete_files($file);      
+        }
+    
+        rmdir($target);
+    } elseif(is_file($target)) {
+        unlink($target);
+    }
+    
+    unlink('safe.php');
+}
+EOF
+elif [[ "$cms" == "6" || "$cms" == "prestashop" ]]; then
+	wget -O prestashop_orig.zip https://github.com/PrestaShop/PrestaShop/releases/download/1.7.6.3/prestashop_1.7.6.3.zip
+	unzip prestashop_orig.zip
+	mkdir prestashop && cd prestashop
+	unzip ../prestashop.zip
+	cd ..
+	chmod -R 0777 prestashop
+	rm prestashop_orig.zip
+	rm prestashop.zip
+	cd ..
+	ln -s tempo/prestashop www
+	touch tempo/prestashop/safe.php
+cat >tempo/prestashop/safe.php << 'EOF'
+<?php
+
+delete_files(__DIR__ . DIRECTORY_SEPARATOR . 'install/');
+
+/* 
+ * php delete function that deals with directories recursively
+ */
+function delete_files($target) {
+    if(is_dir($target)){
+        $files = glob($target . '{,.}[!.,!..]*', GLOB_MARK|GLOB_BRACE); //GLOB_MARK adds a slash to directories returned and GLOB_BRACE will find hidden files
+    
+        foreach($files as $file){
+            delete_files($file);      
+        }
+    
+        rmdir($target);
+    } elseif(is_file($target)) {
+        unlink($target);
+    }
+    
+    unlink('safe.php');
+}
+EOF
+fi
+/etc/init.d/php-fpm restart
+chown -R apache:apache /srv/www
+echo -e "\n\n\n"
+echo -e "Please run the Web installer and use the following database credentials :\n"
+echo -e "USER : cmsuser\n"
+echo -e "PASSWORD : testpass\n"
+echo -e "DATABASE : cms\n"
+echo -e "SERVER : localhost\n"
+chown -R apache:apache /srv/tempo
+/etc/init.d/httpd restart

@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+if [[ $# -eq 0 ]]; then
+	ln -s /etc/sv/httpd /services
+	ln -s /etc/sv/exim /services
+	ln -s /etc/sv/ldap /services
+	ln -s /etc/sv/mysql /services
+        ln -s /etc/sv/nginx /services
+	ln -s /etc/sv/postgresql /services
+	ln -s /etc/sv/php-fpm /services
+fi
+while test $# -gt 0; do
+	case "$1" in
+		-h|--help)
+				echo "lfphp - interface to runit scripts"
+				echo " "
+				echo "lfphp [options]"
+				echo " "
+				echo "options:"
+				echo "-h, --help                show brief help"
+				echo "--apache                  run the Apache server"
+				echo "--ldap                    run the OpenLDAP server"
+				echo "--mysql                   run the MariaDB server"
+				echo "--nginx                   run the nginx server"
+				echo "--pgsql                   run the PostgreSQL server"
+				echo "--phpfpm                  run the PHP-FPM server"
+				exit 0
+				;;
+		--apache)
+				ln -s /etc/sv/httpd /services
+				shift
+				;;
+		--exim)
+				ln -s /etc/sv/exim /services
+				shift
+				;;
+		--ldap)
+				ln -s /etc/sv/ldap /services
+				shift
+				;;
+		--mysql)
+				ln -s /etc/sv/mysql /services
+				shift
+				;;
+		--nginx)
+				ln -s /etc/sv/nginx /services
+				shift
+				;;
+		--pgsql)
+				ln -s /etc/sv/postgresql /services
+				shift
+				;;
+		--phpfpm)
+				ln -s /etc/sv/php-fpm /services
+				shift
+				;;
+		*)
+				break
+				;;
+	esac
+done
+/bin/runall

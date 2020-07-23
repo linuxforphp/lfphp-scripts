@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+cd
+wget -O redis-stable.tar.gz http://download.redis.io/redis-stable.tar.gz
+tar -xzvf redis-stable.tar.gz
+cd redis-stable
+make
+if [[ $? -gt 0 ]]; then
+echo -e "\nRedis Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+make &&
+make install &&
+mkdir /etc/redis &&
+cp /root/redis-stable/redis.conf /etc/redis
+sed -i 's/daemonize no/daemonize yes/' /etc/redis/redis.conf
+sed -i 's/pidfile \/var\/run\/redis_6379.pid/pidfile \/var\/lib\/redis\/redis_6379.pid/' /etc/redis/redis.conf
+sed -i 's/logfile ""/logfile "\/var\/log\/redis.log"/' /etc/redis/redis.conf
+if [[ $? -gt 0 ]]; then
+echo -e "\nRedis Installation ERROR!  Aborting!\n"
+exit 1
+fi
+groupadd -g 102 redis
+useradd -u 102 -g redis redis
+mkdir -p /var/lib/redis
+chown -R redis:redis /var/lib/redis
+chmod -R 775 /var/lib/redis
+touch /var/log/redis.log
+chown redis:root /var/log/redis.log
+cat >/etc/init.d/redis << 'EOF'
+#! /bin/sh
+#######################################################################
+# Begin /etc/init.d/redis
+#
+# Description : Start the Redis Server
+#
+# Author      : A Caya - andrewscaya@yahoo.ca
+#
+# Version     : LfPHP 8.1.3
+#
+########################################################################
+
+### BEGIN INIT INFO
+# Provides:          redis
+# Required-Start:    $syslog $local_fs $network
+# Should-Start:      $remote_fs
+# Required-Stop:     $network
+# Should-Stop:       $remote_fs
+# Default-Start:     3 4 5
+# Default-Stop:      0 1 2 6
+# Short-Description: starts redis
+# Description:       starts the Redis daemon
+# X-LFS-Provided-By: LfPHP 8.1.3
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+#$LastChangedBy: andrew $
+#$Date: 2019-04-02 13:28:00 -0500 (Tue, 2 Apr 2019) $
+
+prefix=/usr
+exec_prefix=${prefix}/local
+
+redis_BIN=${exec_prefix}/bin/redis-server
+redis_CONF=/etc/redis/redis.conf
+redis_PID=/var/lib/redis/redis_6379.pid
+
+
+wait_for_pid () {
+	try=0
+
+	while test $try -lt 35 ; do
+
+		case "$1" in
+			'created')
+			if [ -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+
+			'removed')
+			if [ ! -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+		esac
+
+		echo -n .
+		try=`expr $try + 1`
+		sleep 1
+
+	done
+
+}
+
+case "$1" in
+	start)
+		log_info_msg "Starting Redis server..."
+
+		$redis_BIN $redis_CONF
+
+		if [ "$?" != 0 ] ; then
+			log_failure_msg2
+			exit
+		fi
+
+		wait_for_pid created $redis_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	stop)
+		log_info_msg "Stopping Redis Server..."
+
+		if [ ! -r $redis_PID ] ; then
+			log_warning_msg "redis not running?"
+			exit
+		fi
+
+		/usr/local/bin/redis-cli shutdown && rm -f $redis_PID
+
+		wait_for_pid removed $redis_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	status)
+		statusproc $redis_BIN
+	;;
+
+	restart)
+		$0 stop
+		$0 start
+	;;
+
+	reload)
+
+		log_info_msg "Reload service Redis..."
+		$0 stop
+		log_success_msg2
+	;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart|reload|status}"
+		exit 1
+	;;
+
+esac
+EOF
+chmod +x /etc/init.d/redis
+ln -sf  ../init.d/redis /etc/rc.d/rc0.d/K28redis
+ln -sf  ../init.d/redis /etc/rc.d/rc1.d/K28redis
+ln -sf  ../init.d/redis /etc/rc.d/rc2.d/K28redis
+ln -sf  ../init.d/redis /etc/rc.d/rc3.d/S32redis
+ln -sf  ../init.d/redis /etc/rc.d/rc4.d/S32redis
+ln -sf  ../init.d/redis /etc/rc.d/rc5.d/S32redis
+ln -sf  ../init.d/redis /etc/rc.d/rc6.d/K28redis
+mkdir -p /etc/sv/redis/supervise
+chmod -R 700 /etc/sv/redis/supervise
+touch /etc/sv/redis/run
+echo -e "#!/usr/bin/env bash" > /etc/sv/redis/run
+echo "exec /usr/local/bin/redis-server /etc/redis/redis.conf" >> /etc/sv/redis/run
+chmod +x /etc/sv/redis/run
+#ln -s /etc/sv/redis /services
+/etc/init.d/redis start
+cd

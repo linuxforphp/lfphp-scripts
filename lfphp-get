@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+if [[ "$( whoami )" != "root" ]]; then
+    echo -e "\nYou must login as the *** ROOT USER *** in order to continue..."
+    exit 126
+fi
+if [[ $# -eq 0 ]]; then
+    echo "Enter the command 'lfphp-get -h' to get help"
+    exit 0
+fi
+export LFPHPGET_VERSION=1.0.0
+if [[ ! -d /var/lib/lfphp ]]; then
+    mkdir /var/lib/lfphp
+    if [[ ! -f /var/lib/get.db ]]; then
+        touch /var/lib/get.db
+        sqlite3 -line /var/lib/lfphp/get.db 'CREATE TABLE installed(id INTEGER PRIMARY KEY AUTOINCREMENT, software TEXT);'
+    fi
+fi
+function db_read() {
+    sqlite3 -noheader -line /var/lib/lfphp/get.db 'SELECT software FROM installed GROUP BY software ORDER BY software' | grep . | awk '{print $3 }'
+}
+function db_find() {
+    sqlite3 -noheader -line /var/lib/lfphp/get.db "SELECT software FROM installed WHERE software LIKE '$1'" | grep . | awk '{print $3 }'
+}
+function db_save() {
+    sqlite3 -line /var/lib/lfphp/get.db "INSERT INTO installed(id, software) VALUES(null, '$1');"
+}
+function db_remove() {
+    sqlite3 -line /var/lib/lfphp/get.db "DELETE FROM installed WHERE software LIKE '$1';"
+}
+while test $# -gt 0; do
+    case "$1" in
+        -h|--help)
+            echo "lfphp-get - a utility to install or compile software packages"
+            echo " "
+            echo "lfphp-get [options] package_name"
+            echo " "
+            echo "options:"
+            echo "-h, --help                show brief help"
+            echo "--version                 version number of the LFPHP scripts/utilities"
+            echo "--self-update             update all of the LFPHP scripts/utilities"
+            echo "--list                    show list of all available packages"
+            echo "--installed               print a list of installed packages"
+            echo "--compile                 compile the package from source"
+            echo "--force                   force the installation of the package"
+            exit 0
+            ;;
+        --version)
+            echo "LfPHP Utilities, version $LFPHPGET_VERSION"
+            exit 0
+            ;;
+        --self-update)
+            export PACKAGENAME=lfphp
+            break
+            ;;
+        --list)
+            wget -O list http://bit.ly/3bsVseq
+            echo -e "*******************************\n"
+            echo -e "* List of available packages: *\n"
+            echo -e "*******************************\n"
+            while IFS= read -r var; do
+              echo "*$var" | awk '{ print $1 }'
+            done < list
+            echo -e "\n"
+            rm list
+            exit 0
+            ;;
+        --installed)
+            db_read
+            exit 0
+            ;;
+        --compile)
+            export COMPILE=1
+            shift
+            ;;
+        --force)
+            export FORCE=1
+            shift
+            ;;
+        --*)
+            echo -e "Unknown option. Enter the command 'lfphp-get -h' to get help\n\nExiting...\n"
+            exit 2
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+if [[ -z "$PACKAGENAME" ]]; then
+    if test $# -gt 0; then
+        export PACKAGENAME=$1
+    else
+        echo -e "\nNo package name specified! Exiting...\n"
+        exit 1
+    fi
+fi
+checkpackage=$( db_find "$PACKAGENAME" )
+if [[ ! -z "$checkpackage" ]]; then
+    if [[ ! -z "$FORCE" ]]; then
+        db_remove "$PACKAGENAME"
+    else
+        echo -e "\nPackage already installed! Exiting...\n"
+        exit 0
+    fi
+fi
+cd
+wget -O list http://bit.ly/3bsVseq
+export PACKAGEURL=$( grep -w ^$PACKAGENAME list | awk '{ print $2 }' )
+if [[ -z "$PACKAGEURL" ]]; then
+    CLOSESTMATCH=$( grep $PACKAGENAME list | awk '{ print $1 }' )
+    CLOSESTMATCH="${CLOSESTMATCH:-None}"
+    echo -e "\nPackage not found!\n\n* Closest match: $CLOSESTMATCH *\n\nExiting...\n"
+    exit 2
+else
+    shift
+    dependencylist=$( grep -w ^$PACKAGENAME list | awk '{ print $3 }' )
+    if [[ ! -z "$dependencylist" ]]; then
+        dependencylistArray=(${dependencylist//;/ })
+        for dependency in "${dependencylistArray[@]}"; do
+            checkdependency=$( db_find "$dependency" )
+            if [[ ! -z "$checkdependency" ]]; then
+                if [[ ! -z "$FORCE" ]]; then
+                    db_remove "$dependency"
+                else
+                    continue
+                fi
+            fi
+            dependencyurl=$( grep -w ^$dependency list | awk '{ print $2 }' )
+            tempfilename=$( mktemp )
+            wget -O $tempfilename $dependencyurl
+            /bin/bash $tempfilename "$@"
+            rm $tempfilename
+            if [[ "$dependency" != "lfphp" ]]; then
+                db_save $dependency
+            fi
+        done
+    fi
+    tempfilename=$( mktemp )
+    wget -O $tempfilename $PACKAGEURL
+    /bin/bash $tempfilename "$@"
+    if [[ "$PACKAGENAME" != "lfphp" ]]; then
+        db_save $PACKAGENAME
+    fi
+fi
+rm list $tempfilename

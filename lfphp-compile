@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+if [[ -z "$1" || "$1" == "8."* ]]; then
+    export phpvers=8.0.0dev
+    export phpverscheckout=master
+    #PHP 8.0-dev
+    export configoptions='--prefix=/usr --sysconfdir=/etc --localstatedir=/var --datadir=/usr/share/php --mandir=/usr/share/man --enable-fpm --with-fpm-user=apache --with-fpm-group=apache --with-config-file-path=/etc --with-zlib --enable-bcmath --with-bz2 --enable-calendar --enable-dba=shared --with-gdbm --with-gmp --enable-ftp --with-gettext=/usr --enable-mbstring --with-readline --with-mysql-sock=/run/mysqld/mysqld.sock --with-curl --with-openssl --with-openssl-dir=/usr --with-mhash --enable-intl --with-libdir=/lib64 --enable-sockets --enable-soap --with-zlib-dir=/usr --enable-exif --with-xsl --with-xmlrpc --with-pgsql --with-pdo-mysql=/usr --with-pdo-pgsql --with-mysqli --with-ldap --with-ldap-sasl'
+else
+    export phpvers=$1
+    export phpverscheckout=tags/php-$phpvers
+    export configoptions='--prefix=/usr --sysconfdir=/etc --localstatedir=/var --datadir=/usr/share/php --mandir=/usr/share/man --enable-fpm --with-fpm-user=apache --with-fpm-group=apache --with-config-file-path=/etc --with-zlib --enable-bcmath --with-bz2 --enable-calendar --enable-dba=shared --with-gdbm --with-gmp --enable-ftp --with-gettext=/usr --enable-mbstring --with-readline --with-mysql-sock=/run/mysqld/mysqld.sock --with-curl --with-openssl --with-openssl-dir=/usr --with-mhash --enable-intl --with-libdir=/lib64 --enable-sockets --enable-soap --with-zlib-dir=/usr --enable-exif --with-xsl --with-xmlrpc --with-pgsql --with-pdo-mysql=/usr --with-pdo-pgsql --with-mysqli --with-ldap --with-ldap-sasl'
+fi
+if [[ -z "$2" ]]; then
+    export threadsafe=nts
+else
+    export threadsafe=$2
+fi
+if [[ -d /root/php-src ]]; then
+  cd /root/php-src
+else
+  cd
+  git clone https://github.com/php/php-src
+  cd /root/php-src
+fi
+git fetch --all --tags
+git pull origin master
+git checkout $phpverscheckout
+./buildconf --force
+if [[ "$phpvers" == "5."* || "$phpvers" == "7.0."* || "$phpvers" == "7.1."* || "$phpvers" == "7.2."* || "$phpvers" == "7.3."* ]]; then
+    export configoptions="${configoptions} --with-gd --enable-libxml --with-libxml-dir=/usr --with-freetype-dir=/usr --with-jpeg-dir=/usr --with-png-dir=/usr"
+else
+    export configoptions="${configoptions} --enable-gd --with-libxml --with-freetype --with-jpeg --with-png"
+fi
+if [[ "$phpvers" == "5."* || "$phpvers" == "7.0."* || "$phpvers" == "7.1."* ]]; then
+    export configoptionscrypt=' --with-mcrypt=/usr'
+else
+    export configoptionscrypt=' --with-sodium=/usr'
+fi
+if [[ "$phpvers" == "7.4."* ]]; then
+    export configoptionszip=' --with-zip'
+elif [[ "$phpvers" == "5."* || "$phpvers" == "7.0."* || "$phpvers" == "7.1."* || "$phpvers" == "7.2."* || "$phpvers" == "7.3."* ]]; then
+    export configoptionszip=' --enable-zip'
+else
+    export configoptionszip=''
+fi
+if [[ "$phpvers" == "8.0.0dev" ]]; then
+    export configjit=' --enable-opcache-jit --with-pcre-jit'
+    
+    if [[ "$threadsafe" == "zts" ]]; then
+        export configoptionsts=' --enable-opcache --enable-zts'
+    else
+        export configoptionsts=' --enable-opcache'
+    fi
+else
+    export configjit=''
+    if [[ "$threadsafe" == "zts" ]]; then
+        export configoptionsts=' --enable-opcache --enable-maintainer-zts --enable-pthreads'
+    else
+        export configoptionsts=' --enable-opcache'
+    fi
+fi
+if [[ "$phpvers" == "7.4."* ]]; then
+    export configoptionspear=' --with-pear'
+    export configoptionsffi=' --with-ffi'
+else
+    export configoptionspear=''
+    export configoptionsffi=''
+fi
+export configoptions=$configoptions$configoptionscrypt$configoptionszip$configjit$configoptionsts$configoptionspear$configoptionsffi
+./configure $configoptions
+make
+make install
+install -v -m644 php.ini-production /etc/php.ini &&
+mv -v /etc/php-fpm.conf{.default,} &&
+install -v -m755 -d /usr/share/doc/php-"$phpvers" &&
+install -v -m644 CODING_STANDARDS EXTENSIONS INSTALL NEWS README* UPGRADING* php.gif \
+/usr/share/doc/php-"$phpvers" &&
+ln -v -sfn /usr/lib/php/doc/Archive_Tar/docs/Archive_Tar.txt \
+/usr/share/doc/php-"$phpvers" &&
+ln -v -sfn /usr/lib/php/doc/Structures_Graph/docs \
+/usr/share/doc/php-"$phpvers" &&
+cp -v /etc/php-fpm.d/www.conf.default /etc/php-fpm.d/www.conf
+sed -i 's@php/includes"@&\ninclude_path = ".:/usr/lib/php"@' \
+/etc/php.ini
+cat >>/etc/php.ini << EOF
+[OpCache]
+zend_extension = $( php -i | grep extensions | awk '{print $3}' )/opcache.so
+EOF
+echo -e "\nPHP from Master Dev Branch DONE!\n"
+cd
+rm -rf /root/php-src
+rm -rf /tmp/*
+composer self-update

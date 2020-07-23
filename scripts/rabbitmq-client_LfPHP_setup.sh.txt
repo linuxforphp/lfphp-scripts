@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+git clone https://github.com/alanxz/rabbitmq-c.git
+cd rabbitmq-c/
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr .. &&
+cmake --build . --target install
+if [[ $? -gt 0 ]]; then
+echo -e "\nRabbitMQ Client Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nRabbitMQ Client Compilation and Installation DONE!\n"
+else
+cd &&
+wget -O rabbitmq-c-latest-lfphp.tar.gz https://websiteurl/rabbitmq-c-latest-lfphp.tar.gz &&
+tar -xzvf rabbitmq-c-latest-lfphp.tar.gz &&
+cd rabbitmq-c/build &&
+cmake --build . --target install &&
+cd &&
+rm -rf rabbitmq-c
+if [[ $? -gt 0 ]]; then
+echo -e "\nRabbitMQ Client Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nRabbitMQ Client Installation DONE!\n"
+fi
+cd

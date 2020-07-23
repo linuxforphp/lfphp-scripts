@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+if [ ! -d /var/run/openldap ]; then
+    install -d -o ldap -g ldap -m 755 /var/run/openldap
+fi
+exec /usr/sbin/slapd -u ldap -g ldap

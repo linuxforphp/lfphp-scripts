@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+wget -O glib-2.60.1.tar.xz http://ftp.gnome.org/pub/gnome/sources/glib/2.60/glib-2.60.1.tar.xz
+tar -xvf glib-2.60.1.tar.xz
+cd glib-2.60.1
+mkdir build &&
+cd build &&
+meson --prefix=/usr -Dman=true -Dselinux=disabled .. &&
+ninja &&
+ninja install &&
+mkdir -p /usr/share/doc/glib-2.60.1 &&
+cp -r ../docs/reference/{NEWS,gio,glib,gobject} /usr/share/doc/glib-2.60.1 &&
+cd &&
+rm -rf glib-2.60.1
+if [[ $? -gt 0 ]]; then
+echo -e "\nGlib Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nGlib Compilation and Installation DONE!\n"
+else
+cd &&
+wget -O glib-2.60.1-lfphp.tar.gz https://websiteurl/glib-2.60.1-lfphp.tar.gz &&
+tar -xzvf glib-2.60.1-lfphp.tar.gz &&
+cd glib-2.60.1/build &&
+ninja reconfigure &&
+ninja &&
+ninja install &&
+mkdir -p /usr/share/doc/glib-2.60.1 &&
+cp -r ../docs/reference/{NEWS,gio,glib,gobject} /usr/share/doc/glib-2.60.1 &&
+cd &&
+rm -rf glib-2.60.1
+if [[ $? -gt 0 ]]; then
+echo -e "\nGlib Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nGlib Installation DONE!\n"
+fi
+cd

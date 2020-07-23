@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+cd
+pip install --upgrade pip
+pip install docutils sphinx
+if [[ ! -z "$COMPILE" ]]; then
+wget https://github.com/varnishcache/varnish-cache/archive/varnish-6.0.0.tar.gz &&
+tar -xvf varnish-6.0.0.tar.gz &&
+cd varnish-cache-varnish-6.0.0/ &&
+sh autogen.sh &&
+sh configure &&
+make &&
+make install
+if [[ $? -gt 0 ]]; then
+echo -e "\nVarnish Cache Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nVarnish Cache Compilation and Installation DONE!\n"
+else
+cd
+wget -O varnish-cache-varnish-6.0.0-lfphp.tar.gz https://websiteurl/varnish-cache-varnish-6.0.0-lfphp.tar.gz &&
+tar -xzvf varnish-cache-varnish-6.0.0-lfphp.tar.gz &&
+cd varnish-cache-varnish-6.0.0 &&
+make install
+if [[ $? -gt 0 ]]; then
+echo -e "\nVarnish Cache Installation ERROR!  Aborting!\n"
+exit 1
+fi
+cd
+rm -rf varnish-cache-varnish-6.0.0
+echo -e "\nVarnish Cache Installation DONE!\n"
+fi
+cd

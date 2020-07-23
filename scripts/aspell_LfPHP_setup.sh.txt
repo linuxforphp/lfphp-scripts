@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+wget -O aspell-0.60.6.1.tar.gz https://ftp.gnu.org/gnu/aspell/aspell-0.60.6.1.tar.gz
+tar -xzvf aspell-0.60.6.1.tar.gz
+cd aspell-0.60.6.1
+./configure --prefix=/usr &&
+make &&
+make install &&
+wget -O aspell6-en-2018.04.16-0.tar.bz2 https://ftp.gnu.org/gnu/aspell/dict/en/aspell6-en-2018.04.16-0.tar.bz2 &&
+tar -xvf aspell6-en-2018.04.16-0.tar.bz2 &&
+cd aspell6-en-2018.04.16-0 &&
+./configure &&
+make &&
+make install
+if [[ $? -gt 0 ]]; then
+echo -e "\nAspell Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nAspell Compilation and Installation DONE!\n"
+else
+cd &&
+wget -O aspell-0.60.6.1-lfphp.tar.gz https://websiteurl/aspell-0.60.6.1-lfphp.tar.gz &&
+tar -xzvf aspell-0.60.6.1-lfphp.tar.gz &&
+cd aspell-0.60.6.1 &&
+make install &&
+cd aspell6-en-2018.04.16-0 &&
+make install &&
+cd &&
+rm -rf aspell-0.60.6.1
+if [[ $? -gt 0 ]]; then
+echo -e "\nAspell Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nAspell Installation DONE!\n"
+fi
+cd

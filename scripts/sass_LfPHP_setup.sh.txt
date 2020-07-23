@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+read -r -p "What is the name of your SASS project?" response
+cd /srv
+npm install express-generator -g
+express $response
+cd $response
+npm install
+npm start </dev/null >/dev/null 2>&1 &
+gem install sass
+npm install grunt -g
+touch public/stylesheets/style.sass
+cat >gruntfile.js << 'EOF'
+module.exports = function(grunt) {
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+        express : {
+            dev: {
+                options: {
+        script: 'app.js'
+      }
+            }
+        },
+        sass: {
+            dist: {
+                files: {
+                    'public/stylesheets/style.css' : 'public/stylesheets/style.sass'
+                }
+            }
+        },
+        watch: {
+            css: {
+                files: '**/*.sass',
+                tasks: ['sass']
+            }
+        }
+    });
+    grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-express-server');
+    grunt.registerTask('dev',['express','sass','watch']);
+}
+EOF
+npm install grunt && npm install grunt-contrib-sass && npm install grunt-contrib-watch && npm install grunt-express-server
+grunt dev </dev/null >/dev/null 2>&1 &
+echo -e "\nThe Node.js server is currently running on port 3000."
+echo -e "\nYou can now modify the $PWD/public/stylesheets/style.sass file.\nEnjoy!"

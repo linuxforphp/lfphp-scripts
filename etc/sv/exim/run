@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec /usr/sbin/exim -bd -q15m

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+install -dm755 -o postgres -g postgres /run/postgresql
+exec su - postgres -c '/usr/bin/pg_ctl start -W -D /srv/pgsql/data \
+-l /srv/pgsql/data/logfile -o "-i"'

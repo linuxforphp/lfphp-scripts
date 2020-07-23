@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+cd
+pip3.7 install --upgrade pip &&
+pip3.7 install meson
+if [[ $? -gt 0 ]]; then
+echo -e "\nMeson Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nMeson Installation DONE!\n"
+cd

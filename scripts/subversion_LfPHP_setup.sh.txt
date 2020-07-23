@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+wget -O subversion-1.12.0.tar.bz2 https://archive.apache.org/dist/subversion/subversion-1.12.0.tar.bz2
+tar -xvf subversion-1.12.0.tar.bz2
+cd subversion-1.12.0
+./autogen.sh &&
+./configure --prefix=/usr \
+--disable-static \
+--with-apache-libexecdir \
+--with-lz4=internal \
+--with-utf8proc=internal &&
+make -j1 &&
+make install &&
+install -v -m755 -d /usr/share/doc/subversion-1.12.0 &&
+cp -v -R doc/* \
+/usr/share/doc/subversion-1.12.0 &&
+cd &&
+rm -rf subversion-1.12.0
+if [[ $? -gt 0 ]]; then
+echo -e "\nSubversion Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nSubversion Compilation and Installation DONE!\n"
+else
+cd &&
+wget -O subversion-1.12.0-lfphp.tar.gz https://websiteurl/subversion-1.12.0-lfphp.tar.gz &&
+tar -xzvf subversion-1.12.0-lfphp.tar.gz &&
+cd subversion-1.12.0 &&
+make install &&
+install -v -m755 -d /usr/share/doc/subversion-1.12.0 &&
+cp -v -R doc/* \
+/usr/share/doc/subversion-1.12.0 &&
+cd &&
+rm -rf subversion-1.12.0
+if [[ $? -gt 0 ]]; then
+echo -e "\nSubversion Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nSubversion Installation DONE!\n"
+fi
+cd

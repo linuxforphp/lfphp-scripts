@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+wget -O libmemcached-1.0.18.tar.gz https://launchpad.net/libmemcached/1.0/1.0.18/+download/libmemcached-1.0.18.tar.gz
+tar -xzvf libmemcached-1.0.18.tar.gz
+cd libmemcached-1.0.18
+./configure --prefix=/usr &&
+make &&
+make install
+if [[ $? -gt 0 ]]; then
+echo -e "\nlibmemcached Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nlibmemcached Compilation and Installation DONE!\n"
+else
+cd &&
+wget -O libmemcached-1.0.18-lfphp.tar.gz https://websiteurl/libmemcached-1.0.18-lfphp.tar.gz &&
+tar -xzvf libmemcached-1.0.18-lfphp.tar.gz &&
+cd libmemcached-1.0.18 &&
+make install &&
+cd &&
+rm -rf libmemcached-1.0.18
+if [[ $? -gt 0 ]]; then
+echo -e "\nlibmemcached Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nlibmemcached Installation DONE!\n"
+fi
+cd
