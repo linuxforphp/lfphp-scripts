@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+# Usage: lfphp-get gcc <VERSION> [--compile]
+# Example: "lfphp-get gcc gcc-9.3.0 --compile"
+export COMPILE=0
+export response="gcc-9.3.0"
+export flags=""
+# this needs to change!
+export source="http://opensource.unlikelysource.com"
+if [[ -z "$1" ]]; then
+    read -r -p "Which version of GCC do you wish to install? (8.4.0 / 9.3.0) " version
+    response=gcc-$version
+else
+    response=$1
+	for i in "$@"; do
+	  if [[ "$i" = "--compile" ]]; then
+	      export COMPILE=1
+	  elif [[ "$i" = "$1" ]]; then
+	      echo "GCC compiler selected: "$i
+	  else
+	      flags=$flags" "$i
+	  fi
+	done
+fi
+if [[ "$COMPILE" -gt 0 ]]; then
+	cd /tmp
+	wget https://bigsearcher.com/mirrors/gcc/releases/$response/$response.tar.gz
+	if [[ ! -f $response.tar.gz ]]; then
+	  echo -e "GCC version not found.  Aborting!"
+	  echo ""
+	  exit 1
+	fi
+	tar xvfz $response.tar.gz
+	cd /tmp/$response
+	./configure --disable-multilib $flags
+	make
+	make install
+	cd /tmp
+	rm -rf /tmp/$response
+	rm $response.tar.gz
+	if [[ $? -gt 0 ]]; then
+	  echo -e "GCC Compilation ERROR!  Aborting!"
+	echo ""
+	  exit 1
+	fi
+	echo "GCC Compilation and Installation DONE!"
+	echo ""
+else
+	cd /tmp
+	wget $source/$response.zip
+	cd /
+	unzip /tmp/$response.zip
+	# create symlinks
+	if [[ "$response" = "gcc-8.4.0" ]]; then
+		ln -s /usr/local/lib/libtsan.so.0.0.0 /usr/local/lib/libtsan.so
+		ln -s /usr/local/lib/libobjc.so.4.0.0 /usr/local/lib/libobjc.so.4
+		ln -s /usr/local/lib/libubsan.so.1.0.0 /usr/local/lib/libubsan.so.1
+		ln -s /usr/local/lib/libgfortran.so.5.0.0 /usr/local/lib/libgfortran.so
+		ln -s /usr/local/lib/libssp.so.0.0.0 /usr/local/lib/libssp.so
+		ln -s /usr/local/lib/libquadmath.so.0.0.0 /usr/local/lib/libquadmath.so.0
+		ln -s /usr/local/lib/libcc1.so.0.0.0 /usr/local/lib/libcc1.so
+		ln -s /usr/local/lib/libubsan.so.1.0.0 /usr/local/lib/libubsan.so
+		ln -s /usr/local/lib/libstdc++.so.6.0.25 /usr/local/lib/libstdc++.so.6
+		ln -s /usr/local/lib/libmpxwrappers.so.2.0.1 /usr/local/lib/libmpxwrappers.so
+		ln -s /usr/local/lib/libitm.so.1.0.0 /usr/local/lib/libitm.so
+		ln -s /usr/local/lib/libmpxwrappers.so.2.0.1 /usr/local/lib/libmpxwrappers.so.2
+		ln -s /usr/local/lib/libssp.so.0.0.0 /usr/local/lib/libssp.so.0
+		ln -s /usr/local/lib/libatomic.so.1.2.0 /usr/local/lib/libatomic.so
+		ln -s /usr/local/lib/libatomic.so.1.2.0 /usr/local/lib/libatomic.so.1
+		ln -s /usr/local/lib/gcc/x86_64-pc-linux-gnu/8.4.0/plugin/libcp1plugin.so.0.0.0 /usr/local/lib/gcc/x86_64-pc-linux-gnu/8.4.0/plugin/libcp1plugin.so
+		ln -s /usr/local/lib/gcc/x86_64-pc-linux-gnu/8.4.0/plugin/libcp1plugin.so.0.0.0 /usr/local/lib/gcc/x86_64-pc-linux-gnu/8.4.0/plugin/libcp1plugin.so.0
+		ln -s /usr/local/lib/gcc/x86_64-pc-linux-gnu/8.4.0/plugin/libcc1plugin.so.0.0.0 /usr/local/lib/gcc/x86_64-pc-linux-gnu/8.4.0/plugin/libcc1plugin.so
+		ln -s /usr/local/lib/gcc/x86_64-pc-linux-gnu/8.4.0/plugin/libcc1plugin.so.0.0.0 /usr/local/lib/gcc/x86_64-pc-linux-gnu/8.4.0/plugin/libcc1plugin.so.0
+		ln -s /usr/local/lib/libmpx.so.2.0.1 /usr/local/lib/libmpx.so
+		ln -s /usr/local/lib/libstdc++.so.6.0.25 /usr/local/lib/libstdc++.so
+		ln -s /usr/local/lib/libasan.so.5.0.0 /usr/local/lib/libasan.so
+		ln -s /usr/local/lib/libtsan.so.0.0.0 /usr/local/lib/libtsan.so.0
+		ln -s /usr/local/lib/libquadmath.so.0.0.0 /usr/local/lib/libquadmath.so
+		ln -s /usr/local/lib/libasan.so.5.0.0 /usr/local/lib/libasan.so.5
+		ln -s /usr/local/lib/libmpx.so.2.0.1 /usr/local/lib/libmpx.so.2
+		ln -s /usr/local/lib/libobjc.so.4.0.0 /usr/local/lib/libobjc.so
+		ln -s /usr/local/lib/libgomp.so.1.0.0 /usr/local/lib/libgomp.so
+		ln -s /usr/local/lib/liblsan.so.0.0.0 /usr/local/lib/liblsan.so.0
+		ln -s /usr/local/lib/libgfortran.so.5.0.0 /usr/local/lib/libgfortran.so.5
+		ln -s /usr/local/lib/libitm.so.1.0.0 /usr/local/lib/libitm.so.1
+		ln -s /usr/local/lib/libcc1.so.0.0.0 /usr/local/lib/libcc1.so.0
+		ln -s /usr/local/lib/liblsan.so.0.0.0 /usr/local/lib/liblsan.so
+		ln -s /usr/local/lib/libgomp.so.1.0.0 /usr/local/lib/libgomp.so.1
+		ln -s /usr/local/libexec/gcc/x86_64-pc-linux-gnu/8.4.0/liblto_plugin.so.0.0.0 /usr/local/libexec/gcc/x86_64-pc-linux-gnu/8.4.0/liblto_plugin.so
+		ln -s /usr/local/libexec/gcc/x86_64-pc-linux-gnu/8.4.0/liblto_plugin.so.0.0.0 /usr/local/libexec/gcc/x86_64-pc-linux-gnu/8.4.0/liblto_plugin.so.0
+	elif [[ "$response" = "gcc-9.3.0" ]]; then
+		ln -s /usr/local/lib/libobjc.so.4.0.0 /usr/local/lib/libobjc.so.4
+		ln -s /usr/local/lib/libubsan.so.1.0.0 /usr/local/lib/libubsan.so.1
+		ln -s /usr/local/lib/libgfortran.so.5.0.0 /usr/local/lib/libgfortran.so
+		ln -s /usr/local/lib/libssp.so.0.0.0 /usr/local/lib/libssp.so
+		ln -s /usr/local/lib/libquadmath.so.0.0.0 /usr/local/lib/libquadmath.so.0
+		ln -s /usr/local/lib/libcc1.so.0.0.0 /usr/local/lib/libcc1.so
+		ln -s /usr/local/lib/libubsan.so.1.0.0 /usr/local/lib/libubsan.so
+		ln -s /usr/local/lib/libstdc++.so.6.0.28 /usr/local/lib/libstdc++.so.6
+		ln -s /usr/local/lib/libitm.so.1.0.0 /usr/local/lib/libitm.so
+		ln -s /usr/local/lib/libssp.so.0.0.0 /usr/local/lib/libssp.so.0
+		ln -s /usr/local/lib/libatomic.so.1.2.0 /usr/local/lib/libatomic.so
+		ln -s /usr/local/lib/libatomic.so.1.2.0 /usr/local/lib/libatomic.so.1
+		ln -s /usr/local/lib/gcc/x86_64-pc-linux-gnu/9.3.0/plugin/libcp1plugin.so.0.0.0 /usr/local/lib/gcc/x86_64-pc-linux-gnu/9.3.0/plugin/libcp1plugin.so
+		ln -s /usr/local/lib/gcc/x86_64-pc-linux-gnu/9.3.0/plugin/libcp1plugin.so.0.0.0 /usr/local/lib/gcc/x86_64-pc-linux-gnu/9.3.0/plugin/libcp1plugin.so.0
+		ln -s /usr/local/lib/gcc/x86_64-pc-linux-gnu/9.3.0/plugin/libcc1plugin.so.0.0.0 /usr/local/lib/gcc/x86_64-pc-linux-gnu/9.3.0/plugin/libcc1plugin.so
+		ln -s /usr/local/lib/gcc/x86_64-pc-linux-gnu/9.3.0/plugin/libcc1plugin.so.0.0.0 /usr/local/lib/gcc/x86_64-pc-linux-gnu/9.3.0/plugin/libcc1plugin.so.0
+		ln -s /usr/local/lib/libstdc++.so.6.0.28 /usr/local/lib/libstdc++.so
+		ln -s /usr/local/lib/libasan.so.5.0.0 /usr/local/lib/libasan.so
+		ln -s /usr/local/lib/libtsan.so.0.0.0 /usr/local/lib/libtsan.so.0
+		ln -s /usr/local/lib/libquadmath.so.0.0.0 /usr/local/lib/libquadmath.so
+		ln -s /usr/local/lib/libasan.so.5.0.0 /usr/local/lib/libasan.so.5
+		ln -s /usr/local/lib/libobjc.so.4.0.0 /usr/local/lib/libobjc.so
+		ln -s /usr/local/lib/libgomp.so.1.0.0 /usr/local/lib/libgomp.so
+		ln -s /usr/local/lib/liblsan.so.0.0.0 /usr/local/lib/liblsan.so.0
+		ln -s /usr/local/lib/libgfortran.so.5.0.0 /usr/local/lib/libgfortran.so.5
+		ln -s /usr/local/lib/libitm.so.1.0.0 /usr/local/lib/libitm.so.1
+		ln -s /usr/local/lib/libcc1.so.0.0.0 /usr/local/lib/libcc1.so.0
+		ln -s /usr/local/lib/liblsan.so.0.0.0 /usr/local/lib/liblsan.so
+		ln -s /usr/local/lib/libgomp.so.1.0.0 /usr/local/lib/libgomp.so.1
+		ln -s /usr/local/libexec/gcc/x86_64-pc-linux-gnu/9.3.0/liblto_plugin.so.0.0.0 /usr/local/libexec/gcc/x86_64-pc-linux-gnu/9.3.0/liblto_plugin.so
+		ln -s /usr/local/libexec/gcc/x86_64-pc-linux-gnu/9.3.0/liblto_plugin.so.0.0.0 /usr/local/libexec/gcc/x86_64-pc-linux-gnu/9.3.0/liblto_plugin.so.0
+	else
+		echo 'Only "gcc-8.4.0" or "gcc-9.3.0" are available.'
+	    echo "GCC version not found.  Aborting!"
+	    echo ""
+		exit 1
+	fi
+	rm /tmp/$response.zip
+	echo "GCC Installation DONE!"
+	echo ""
+fi
+echo "Adjusting PATH ..."
+echo ""
+export PATH=/usr/local/bin:$PATH
+export CC=/usr/local/bin/gcc
+export CXX=/usr/local/bin/g++
+alias gcc=/usr/local/bin/gcc
+alias g++=/usr/local/bin/g++
+echo "# change location of GCC" >> /root/.bashrc
+echo "alias gcc=/usr/local/bin/gcc" >> /root/.bashrc
+echo "alias g++=/usr/local/bin/g++" >> /root/.bashrc
+echo "# change location of GCC" >> /root/.bash_profile
+echo "pathprepend /usr/local/bin" >> /root/.bash_profile
+echo "export CC=/usr/local/bin/gcc" >> /root/.bash_profile
+echo "export CXX=/usr/local/bin/g++" >> /root/.bash_profile
+echo "Old version is in: /usr/bin/gcc"
+echo "New version is in: /usr/local/bin/gcc"
+echo 'To change versions immediately type: ". ~/.bashrc"'
+cd
