@@ -1,0 +1,11 @@
+.settings/
+.project
+.buildpath
+deployment.xml
+deployment.properties
+.idea/
+vendor/*
+data/*
+docs/_build/*
+tests/_output/*
+.phpunit.result.cache
