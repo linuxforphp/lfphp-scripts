@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
-# Usage: lfphp-get gcc <VERSION> [--compile]
-# Example: "lfphp-get gcc gcc-9.3.0 --compile"
+# Usage: lfphp-get gcc <8.4.0|9.3.0> [--compile]
+# Example: "lfphp-get gcc 9.3.0 --compile"
 export COMPILE=0
-export response="gcc-9.3.0"
+export response="9.3.0"
 export flags=""
+export src_source="https://bigsearcher.com/mirrors/gcc/releases"
 # this needs to change!
-export source="http://opensource.unlikelysource.com"
+export bin_source="http://opensource.unlikelysource.com"
 if [[ -z "$1" ]]; then
     read -r -p "Which version of GCC do you wish to install? (8.4.0 / 9.3.0) " version
     response=gcc-$version
 else
-    response=$1
+    response=gcc-$1
 	for i in "$@"; do
 	  if [[ "$i" = "--compile" ]]; then
 	      export COMPILE=1
@@ -23,7 +24,7 @@ else
 fi
 if [[ "$COMPILE" -gt 0 ]]; then
 	cd /tmp
-	wget https://bigsearcher.com/mirrors/gcc/releases/$response/$response.tar.gz
+	wget $src_source/$response/$response.tar.gz
 	if [[ ! -f $response.tar.gz ]]; then
 	  echo -e "GCC version not found.  Aborting!"
 	  echo ""
@@ -46,7 +47,7 @@ if [[ "$COMPILE" -gt 0 ]]; then
 	echo ""
 else
 	cd /tmp
-	wget $source/$response.zip
+	wget $bin_source/$response.zip
 	cd /
 	unzip /tmp/$response.zip
 	# create symlinks

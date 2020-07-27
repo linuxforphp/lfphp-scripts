@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Usage: lfphp-get dpkg [1.19.7] [--compile]
+export COMPILE=0
+export flags=""
+export src_vers="1.19.7"
+export src_source="http://deb.debian.org/debian/pool/main/d/dpkg"
+# this needs to change!
+export bin_source="http://opensource.unlikelysource.com"
+if [[ -z "$1" ]]; then
+    read -r -p "Which version of dpkg do you wish to install? (1.19.7) " src_vers
+else
+    src_vers=$1
+fi
+if [[ ! -z "$2" ]]; then
+    if [[ "$2" = "--compile" ]]; then
+        COMPILE=1
+    fi
+fi
+if [[ "$COMPILE" -gt 0 ]]; then
+	cd /tmp
+	wget $src_source/dpkg_$src_vers.tar.xz
+	if [[ ! -f dpkg_$src_vers.tar.xz ]]; then
+	  echo -e "dpkg not found.  Aborting!"
+	  echo ""
+	  exit 1
+	fi
+	tar xvf dpkg_$src_vers.tar.xz
+	cd /tmp/dpkg-$src_vers
+	./configure
+	make
+	make install
+	cd /tmp
+	rm /tmp/dpkg_$src_vers.tar.xz
+	rm -rf /tmp/dpkg-$src_vers
+	if [[ $? -gt 0 ]]; then
+	  echo -e "dpkg Compilation ERROR!  Aborting!"
+	echo ""
+	  exit 1
+	fi
+	echo "dkpg Compilation and Installation DONE!"
+	echo ""
+else
+	cd /
+	wget $bin_source/dpkg-$src_vers.zip
+	unzip -u -q dpkg-$src_vers.zip
+	rm dpkg-$src_vers.zip
+	echo "dpkg Installation DONE!"
+	echo ""
+fi
+# create symlink(s)
+if [[ ! -f /usr/bin/pager ]]; then
+	ln -s /usr/bin/less /usr/bin/pager
+fi
+touch /usr/local/var/lib/dpkg/status
+dpkg --version
+cd
