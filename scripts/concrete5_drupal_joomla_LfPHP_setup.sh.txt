@@ -8,14 +8,16 @@ cat >>/etc/php.ini << EOF
 [OpCache]
 zend_extension = $( php -i | grep extensions | awk '{print $3}' )/opcache.so
 EOF
-sed -i 's/memory_limit = 128M/memory_limit = 512M/' /etc/php.ini
+sed --follow-symlinks -i 's/memory_limit = 128M/memory_limit = 512M/' /etc/php.ini
+sed --follow-symlinks -i 's/max_execution_time = 30/max_execution_time = 600/' /etc/php.ini
+sed --follow-symlinks -i 's/max_input_time = 60/max_input_time = 600/' /etc/php.ini
 if [[ -z "$1" ]]; then
 echo -e "\n"
 echo -e "1 - Concrete5 8.5.2\n"
 echo -e "2 - Drupal 8.9.1\n"
 echo -e "3 - Joomla 3.9.18\n"
 echo -e "4 - WordPress (latest version)\n"
-echo -e "5 - Magento CE 2.3.4 E-Commerce Solution\n"
+echo -e "5 - Magento CE 2.3.2 E-Commerce Solution\n"
 echo -e "6 - Prestashop 1.7.6.3 E-Commerce Solution\n"
 echo -e "\n"
 read -r -p "Which CMS do you wish to install? (1 / 2 / 3 / 4 / 5 / 6)" cms
@@ -30,97 +32,350 @@ mysql -uroot -e "GRANT ALL PRIVILEGES ON cms.* TO 'cmsuser'@'localhost';"
 mysql -uroot -e "FLUSH PRIVILEGES;"
 mv /srv/www /srv/www.OLD
 if [[ "$cms" != "1" && "$cms" != "2" && "$cms" != "3" && "$cms" != "4" && "$cms" != "5" && "$cms" != "6" && "$cms" != "concrete5" && "$cms" != "drupal" && "$cms" != "joomla" && "$cms" != "wordpress" && "$cms" != "magento" && "$cms" != "prestashop" ]]; then
-	echo -e "ERROR! You did not choose one of the above. ABORTING..."
-	exit 1
+    echo -e "ERROR! You did not choose one of the above. ABORTING..."
+    exit 1
 elif [[ "$cms" == "1" || "$cms" == "concrete5" ]]; then
-	wget -O concrete5.zip https://www.concrete5.org/download_file/-/view/111592/
-	unzip concrete5.zip
-	rm concrete5.zip
-	mv concrete5-8.5.2 concrete5
-	cd ..
-	chmod -R 777 tempo/concrete5-8.5.2/application/config tempo/concrete5-8.5.2/application/files tempo/concrete5-8.5.2/packages
-	ln -s tempo/concrete5 www
+    wget -O concrete5.zip https://www.concrete5.org/download_file/-/view/111592/
+    unzip concrete5.zip
+    rm concrete5.zip
+    mv concrete5-8.5.2 concrete5
+    cd ..
+    chmod -R 777 tempo/concrete5-8.5.2/application/config tempo/concrete5-8.5.2/application/files tempo/concrete5-8.5.2/packages
+    ln -s tempo/concrete5 www
 elif [[ "$cms" == "2" || "$cms" == "drupal" ]]; then
-	wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-8.9.1.tar.gz
-	tar -xvf drupal.tar.gz
-	rm drupal.tar.gz
-	mv drupal-8.9.1 drupal
-	cd ..
-	ln -s tempo/drupal www
-	cp /srv/www/sites/default/default.settings.php /srv/www/sites/default/settings.php
-	chmod -R 777 /srv/www/sites
-	wget -O /srv/www/.htaccess https://raw.githubusercontent.com/drupal/drupal/8.9.x/.htaccess
+    wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-8.9.1.tar.gz
+    tar -xvf drupal.tar.gz
+    rm drupal.tar.gz
+    mv drupal-8.9.1 drupal
+    cd ..
+    ln -s tempo/drupal www
+    cp /srv/www/sites/default/default.settings.php /srv/www/sites/default/settings.php
+    chmod -R 777 /srv/www/sites
+    wget -O /srv/www/.htaccess https://raw.githubusercontent.com/drupal/drupal/8.9.x/.htaccess
 elif [[ "$cms" == "3" || "$cms" == "joomla" ]]; then
-	wget -O joomla.tar.gz "https://downloads.joomla.org/cms/joomla3/3-9-18/Joomla_3-9-18-Stable-Full_Package.tar.gz?format=gz"
-	mkdir joomla
-	tar -xvf joomla.tar.gz -C joomla
-	rm joomla.tar.gz
-	cd ..
-	ln -s tempo/joomla www
+    wget -O joomla.tar.gz "https://downloads.joomla.org/cms/joomla3/3-9-18/Joomla_3-9-18-Stable-Full_Package.tar.gz?format=gz"
+    mkdir joomla
+    tar -xvf joomla.tar.gz -C joomla
+    rm joomla.tar.gz
+    cd ..
+    ln -s tempo/joomla www
 elif [[ "$cms" == "4" || "$cms" == "wordpress" ]]; then
-	wget -O wordpress.tar.gz https://wordpress.org/latest.tar.gz
-	tar -xvf wordpress.tar.gz
-	rm wordpress.tar.gz
-	cd ..
-	ln -s tempo/wordpress www
-	chmod -R 777 /srv/www
+    wget -O wordpress.tar.gz https://wordpress.org/latest.tar.gz
+    tar -xvf wordpress.tar.gz
+    rm wordpress.tar.gz
+    cd ..
+    ln -s tempo/wordpress www
+    chmod -R 777 /srv/www
 elif [[ "$cms" == "5" || "$cms" == "magento" ]]; then
-	wget -O magento.tar.gz https://github.com/magento/magento2/archive/2.3.2.tar.gz
-	#mkdir magento && cd magento
-	tar -xvf magento.tar.gz
-	mv magento2-2.3.2 magento
-	rm magento.tar.gz
-	cd ..
-	ln -s tempo/magento www
-	cd tempo/magento
-	composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
-	composer require mageplaza/magento-2-french-language-pack
-	php bin/magento setup:static-content:deploy fr_FR -f
-	php bin/magento setup:static-content:deploy fr_CA -f
-	php bin/magento indexer:reindex
-	php bin/magento cache:clean
-	php bin/magento cache:flush
-	#find . -type d -exec chmod 755 {} \; && find . -type f -exec chmod 644 {} \; && chmod u+x bin/magento
-	rm -rf var/cache/* var/view_preprocessed/* generated/* pub/static/*
-	chmod -R 0777 var/ pub/ generated/ app/etc/
-	cd ../..
-	touch tempo/magento/safe.php
-	cat >tempo/magento/safe.php << 'EOF'
-<?php
+    wget -O magento.tar.gz https://github.com/magento/magento2/archive/2.3.2.tar.gz
+    tar -xvf magento.tar.gz
+    mv magento2-2.3.2 magento
+    rm magento.tar.gz
+    cd ..
+    ln -s tempo/magento www
+    cd tempo/magento
+    composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
+    composer require mageplaza/magento-2-french-language-pack
+    php bin/magento setup:static-content:deploy fr_FR -f
+    php bin/magento setup:static-content:deploy fr_CA -f
+    #find . -type d -exec chmod 755 {} \; && find . -type f -exec chmod 644 {} \; && chmod u+x bin/magento
+    chmod -R 0777 var/ pub/ generated/ app/etc/
+    cd ../..
+	touch tempo/magento/bin/optimize.bash
+    cat >tempo/magento/bin/optimize.bash << 'EOF'
+#!/usr/bin/env bash
+lfphp --mysql --phpfpm --apache >/dev/null 2>&1 &
+lfphp-get --force varnish-cache
+ln -s /etc/sv/redis /services
+sed -i 's/#LoadModule deflate_module/LoadModule deflate_module/' /etc/httpd/httpd.conf
+sed -i 's/#LoadModule expires_module/LoadModule expires_module/' /etc/httpd/httpd.conf
+echo 'AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css application/xml application/xhtml+xml application/rss+xml application/javascript application/x-javascript' >> /etc/httpd/httpd.conf
+echo 'ExpiresDefault "access plus 1 month"' >> /etc/httpd/httpd.conf
+sed -i 's/listen 8080/listen 8181/' /etc/nginx/nginx.conf
+/etc/init.d/varnish stop
+/etc/init.d/httpd stop
+cd /srv/tempo/magento
+php bin/magento config:set catalog/frontend/flat_catalog_category 1
+php bin/magento config:set dev/js/merge_files 1
+php bin/magento config:set dev/js/enable_js_bundling 1
+php bin/magento config:set dev/js/minify_files 1
+php bin/magento config:set dev/css/merge_css_files 1
+php bin/magento config:set dev/css/minify_files 1
+php bin/magento setup:config:set --cache-backend=redis --cache-backend-redis-server=127.0.0.1 --cache-backend-redis-db=0
+mv /etc/varnish/default.vcl /etc/varnish/default.vcl.BAK
+cp /etc/varnish/magento2.vcl /etc/varnish/default.vcl
+/etc/init.d/varnish stop
+php bin/magento config:set --scope=default --scope-code=0 system/full_page_cache/caching_application 2
+php bin/magento indexer:reindex
+php bin/magento cache:clean
+php bin/magento cache:flush
+rm -rf /srv/tempo/magento/install/
+#php bin/magento setup:upgrade
+#php bin/magento indexer:reindex
+#php bin/magento deploy:mode:set production -s (or --skip-compilation)
+#php bin/magento setup:di:compile
+#php bin/magento setup:static-content:deploy en_CA (in this case)
+php bin/magento deploy:mode:set production
+chmod -R 0777 var/ pub/ generated/ app/etc/
+rm -f /srv/tempo/magento/bin/optimize.bash
+cd
+EOF
+chmod +x tempo/magento/bin/optimize.bash
+mkdir -p /etc/varnish && touch /etc/varnish/magento2.vcl
+    cat >/etc/varnish/magento2.vcl << 'EOF'
+# VCL version 5.0 is not supported so it should be 4.0 even though actually used Varnish version is 5
+vcl 4.0;
 
-delete_files(__DIR__ . DIRECTORY_SEPARATOR . 'install/');
+import std;
+# The minimal Varnish version is 5.0
+# For SSL offloading, pass the following header in your proxy server or load balancer: 'X-Forwarded-Proto: https'
 
-/* 
- * php delete function that deals with directories recursively
- */
-function delete_files($target) {
-    if(is_dir($target)){
-        $files = glob($target . '{,.}[!.,!..]*', GLOB_MARK|GLOB_BRACE); //GLOB_MARK adds a slash to directories returned and GLOB_BRACE will find hidden files
-    
-        foreach($files as $file){
-            delete_files($file);      
+backend default {
+    .host = "127.0.0.1";
+    .port = "8080";
+    .first_byte_timeout = 600s;
+    .probe = {
+        .url = "/pub/health_check.php";
+        .timeout = 2s;
+        .interval = 5s;
+        .window = 10;
+        .threshold = 5;
+   }
+}
+
+acl purge {
+    "127.0.0.1";
+}
+
+sub vcl_recv {
+    if (req.method == "PURGE") {
+        if (client.ip !~ purge) {
+            return (synth(405, "Method not allowed"));
         }
-    
-        rmdir($target);
-    } elseif(is_file($target)) {
-        unlink($target);
+        # To use the X-Pool header for purging varnish during automated deployments, make sure the X-Pool header
+        # has been added to the response in your backend server config. This is used, for example, by the
+        # capistrano-magento2 gem for purging old content from varnish during it's deploy routine.
+        if (!req.http.X-Magento-Tags-Pattern && !req.http.X-Pool) {
+            return (synth(400, "X-Magento-Tags-Pattern or X-Pool header required"));
+        }
+        if (req.http.X-Magento-Tags-Pattern) {
+          ban("obj.http.X-Magento-Tags ~ " + req.http.X-Magento-Tags-Pattern);
+        }
+        if (req.http.X-Pool) {
+          ban("obj.http.X-Pool ~ " + req.http.X-Pool);
+        }
+        return (synth(200, "Purged"));
+    }
+
+    if (req.method != "GET" &&
+        req.method != "HEAD" &&
+        req.method != "PUT" &&
+        req.method != "POST" &&
+        req.method != "TRACE" &&
+        req.method != "OPTIONS" &&
+        req.method != "DELETE") {
+          /* Non-RFC2616 or CONNECT which is weird. */
+          return (pipe);
+    }
+
+    # We only deal with GET and HEAD by default
+    if (req.method != "GET" && req.method != "HEAD") {
+        return (pass);
+    }
+
+    # Bypass shopping cart, checkout and search requests
+    if (req.url ~ "/checkout" || req.url ~ "/catalogsearch") {
+        return (pass);
+    }
+
+    # Bypass health check requests
+    if (req.url ~ "/pub/health_check.php") {
+        return (pass);
+    }
+
+    # Set initial grace period usage status
+    set req.http.grace = "none";
+
+    # normalize url in case of leading HTTP scheme and domain
+    set req.url = regsub(req.url, "^http[s]?://", "");
+
+    # collect all cookies
+    std.collect(req.http.Cookie);
+
+    # Compression filter. See https://www.varnish-cache.org/trac/wiki/FAQ/Compression
+    if (req.http.Accept-Encoding) {
+        if (req.url ~ "\.(jpg|jpeg|png|gif|gz|tgz|bz2|tbz|mp3|ogg|swf|flv)$") {
+            # No point in compressing these
+            unset req.http.Accept-Encoding;
+        } elsif (req.http.Accept-Encoding ~ "gzip") {
+            set req.http.Accept-Encoding = "gzip";
+        } elsif (req.http.Accept-Encoding ~ "deflate" && req.http.user-agent !~ "MSIE") {
+            set req.http.Accept-Encoding = "deflate";
+        } else {
+            # unknown algorithm
+            unset req.http.Accept-Encoding;
+        }
+    }
+
+    # Remove all marketing get parameters to minimize the cache objects
+    if (req.url ~ "(\?|&)(gclid|cx|ie|cof|siteurl|zanpid|origin|fbclid|mc_[a-z]+|utm_[a-z]+|_bta_[a-z]+)=") {
+        set req.url = regsuball(req.url, "(gclid|cx|ie|cof|siteurl|zanpid|origin|fbclid|mc_[a-z]+|utm_[a-z]+|_bta_[a-z]+)=[-_A-z0-9+()%.]+&?", "");
+        set req.url = regsub(req.url, "[?|&]+$", "");
+    }
+
+    # Static files caching
+    if (req.url ~ "^/(pub/)?(media|static)/") {
+        # Static files should not be cached by default
+        return (pass);
+
+        # But if you use a few locales and don't use CDN you can enable caching static files by commenting previous line (#return (pass);) and uncommenting next 3 lines
+        #unset req.http.Https;
+        #unset req.http.X-Forwarded-Proto;
+        #unset req.http.Cookie;
+    }
+
+    return (hash);
+}
+
+sub vcl_hash {
+    if (req.http.cookie ~ "X-Magento-Vary=") {
+        hash_data(regsub(req.http.cookie, "^.*?X-Magento-Vary=([^;]+);*.*$", "\1"));
+    }
+
+    # For multi site configurations to not cache each other's content
+    if (req.http.host) {
+        hash_data(req.http.host);
+    } else {
+        hash_data(server.ip);
+    }
+
+    # To make sure http users don't see ssl warning
+    if (req.http.X-Forwarded-Proto) {
+        hash_data(req.http.X-Forwarded-Proto);
     }
     
-    unlink('safe.php');
+
+    if (req.url ~ "/graphql") {
+        call process_graphql_headers;
+    }
+}
+
+sub process_graphql_headers {
+    if (req.http.Store) {
+        hash_data(req.http.Store);
+    }
+    if (req.http.Content-Currency) {
+        hash_data(req.http.Content-Currency);
+    }
+}
+
+sub vcl_backend_response {
+
+    set beresp.grace = 3d;
+
+    if (beresp.http.content-type ~ "text") {
+        set beresp.do_esi = true;
+    }
+
+    if (bereq.url ~ "\.js$" || beresp.http.content-type ~ "text") {
+        set beresp.do_gzip = true;
+    }
+
+    if (beresp.http.X-Magento-Debug) {
+        set beresp.http.X-Magento-Cache-Control = beresp.http.Cache-Control;
+    }
+
+    # cache only successfully responses and 404s
+    if (beresp.status != 200 && beresp.status != 404) {
+        set beresp.ttl = 0s;
+        set beresp.uncacheable = true;
+        return (deliver);
+    } elsif (beresp.http.Cache-Control ~ "private") {
+        set beresp.uncacheable = true;
+        set beresp.ttl = 86400s;
+        return (deliver);
+    }
+
+    # validate if we need to cache it and prevent from setting cookie
+    if (beresp.ttl > 0s && (bereq.method == "GET" || bereq.method == "HEAD")) {
+        unset beresp.http.set-cookie;
+    }
+
+   # If page is not cacheable then bypass varnish for 2 minutes as Hit-For-Pass
+   if (beresp.ttl <= 0s ||
+       beresp.http.Surrogate-control ~ "no-store" ||
+       (!beresp.http.Surrogate-Control &&
+       beresp.http.Cache-Control ~ "no-cache|no-store") ||
+       beresp.http.Vary == "*") {
+        # Mark as Hit-For-Pass for the next 2 minutes
+        set beresp.ttl = 120s;
+        set beresp.uncacheable = true;
+    }
+
+    return (deliver);
+}
+
+sub vcl_deliver {
+    if (resp.http.X-Magento-Debug) {
+        if (resp.http.x-varnish ~ " ") {
+            set resp.http.X-Magento-Cache-Debug = "HIT";
+            set resp.http.Grace = req.http.grace;
+        } else {
+            set resp.http.X-Magento-Cache-Debug = "MISS";
+        }
+    } else {
+        unset resp.http.Age;
+    }
+
+    # Not letting browser to cache non-static files.
+    if (resp.http.Cache-Control !~ "private" && req.url !~ "^/(pub/)?(media|static)/") {
+        set resp.http.Pragma = "no-cache";
+        set resp.http.Expires = "-1";
+        set resp.http.Cache-Control = "no-store, no-cache, must-revalidate, max-age=0";
+    }
+
+    unset resp.http.X-Magento-Debug;
+    unset resp.http.X-Magento-Tags;
+    unset resp.http.X-Powered-By;
+    unset resp.http.Server;
+    unset resp.http.X-Varnish;
+    unset resp.http.Via;
+    unset resp.http.Link;
+}
+
+sub vcl_hit {
+    if (obj.ttl >= 0s) {
+        # Hit within TTL period
+        return (deliver);
+    }
+    if (std.healthy(req.backend_hint)) {
+        if (obj.ttl + 300s > 0s) {
+            # Hit after TTL expiration, but within grace period
+            set req.http.grace = "normal (healthy server)";
+            return (deliver);
+        } else {
+            # Hit after TTL and grace expiration
+            return (miss);
+        }
+    } else {
+        # server is not healthy, retrieve from cache
+        set req.http.grace = "unlimited (unhealthy server)";
+        return (deliver);
+    }
 }
 EOF
 elif [[ "$cms" == "6" || "$cms" == "prestashop" ]]; then
-	wget -O prestashop_orig.zip https://github.com/PrestaShop/PrestaShop/releases/download/1.7.6.3/prestashop_1.7.6.3.zip
-	unzip prestashop_orig.zip
-	mkdir prestashop && cd prestashop
-	unzip ../prestashop.zip
-	cd ..
-	chmod -R 0777 prestashop
-	rm prestashop_orig.zip
-	rm prestashop.zip
-	cd ..
-	ln -s tempo/prestashop www
-	touch tempo/prestashop/safe.php
+    wget -O prestashop_orig.zip https://github.com/PrestaShop/PrestaShop/releases/download/1.7.6.3/prestashop_1.7.6.3.zip
+    unzip prestashop_orig.zip
+    mkdir prestashop && cd prestashop
+    unzip ../prestashop.zip
+    cd ..
+    chmod -R 0777 prestashop
+    rm prestashop_orig.zip
+    rm prestashop.zip
+    cd ..
+    ln -s tempo/prestashop www
+    touch tempo/prestashop/safe.php
 cat >tempo/prestashop/safe.php << 'EOF'
 <?php
 
