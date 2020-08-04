@@ -37,9 +37,9 @@ if [[ "$COMPILE" -gt 0 ]]; then
 	echo ""
 else
 	cd /
-	wget $bin_source/dpkg-$src_vers.zip
-	unzip -u -q dpkg-$src_vers.zip
-	rm dpkg-$src_vers.zip
+	wget $bin_source/tree-$src_vers.zip
+	unzip -u -q tree-$src_vers.zip
+	rm tree-$src_vers.zip
 	echo "tree Installation DONE!"
 	echo ""
 fi
