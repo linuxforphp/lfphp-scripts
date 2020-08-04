@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 cd
+groupadd varnish
+useradd -r -g varnish -s /bin/false varnish
 pip install --upgrade pip
 pip install docutils sphinx
 if [[ ! -z "$COMPILE" ]]; then
@@ -30,3 +32,249 @@ rm -rf varnish-cache-varnish-6.0.0
 echo -e "\nVarnish Cache Installation DONE!\n"
 fi
 cd
+touch /etc/varnish.conf
+cat >/etc/varnish.conf << 'EOF'
+# Configuration file for varnish
+#
+# /etc/init.d/varnish expects the variable $DAEMON_OPTS
+# to be set from this shell script fragment.
+#
+# Note: If using runit, this file is ignored.
+
+# Maximum number of open files (for ulimit -n)
+#NFILES=131072
+
+# Maximum locked memory size (for ulimit -l)
+# Used for locking the shared memory log in memory.  If you increase log size,
+# you need to increase this number as well
+#MEMLOCK=82000
+
+# Default varnish instance name is the local nodename.  Can be overridden with
+# the -n switch, to have more instances on a single server.
+# You may need to uncomment this variable for alternatives 1 and 3 below.
+INSTANCE=$(uname -n)
+
+# This file contains 4 alternatives, please use only one.
+
+## Alternative 1, Minimal configuration, no VCL
+#
+# Listen on port 6081, administration on localhost:6082, and forward to
+# content server on localhost:8080.  Use a 1GB fixed-size cache file.
+#
+# This example uses the INSTANCE variable above, which you need to uncomment.
+#
+# DAEMON_OPTS="-a :6081 \
+#              -T localhost:6082 \
+# 	     -b localhost:8080 \
+# 	     -u varnish -g varnish \
+#            -S /etc/varnish/secret \
+# 	     -s file,/var/lib/varnish/$INSTANCE/varnish_storage.bin,1G"
+
+
+## Alternative 2, Configuration with VCL
+#
+# Listen on port 6081, administration on localhost:6082, and forward to
+# one content server selected by the vcl file, based on the request.
+#
+DAEMON_OPTS="-a :80 \
+             -T localhost:6082 \
+             -f /etc/varnish/default.vcl \
+             -S /etc/varnish/secret \
+             -s malloc,256m"
+
+
+## Alternative 3, Advanced configuration
+#
+# This example uses the INSTANCE variable above, which you need to uncomment.
+#
+# See varnishd(1) for more information.
+#
+# # Main configuration file. You probably want to change it :)
+# VARNISH_VCL_CONF=/etc/varnish/default.vcl
+#
+# # Default address and port to bind to
+# # Blank address means all IPv4 and IPv6 interfaces, otherwise specify
+# # a host name, an IPv4 dotted quad, or an IPv6 address in brackets.
+# VARNISH_LISTEN_ADDRESS=
+# VARNISH_LISTEN_PORT=6081
+#
+# # Telnet admin interface listen address and port
+# VARNISH_ADMIN_LISTEN_ADDRESS=127.0.0.1
+# VARNISH_ADMIN_LISTEN_PORT=6082
+#
+# # Cache file location
+# VARNISH_STORAGE_FILE=/var/lib/varnish/$INSTANCE/varnish_storage.bin
+#
+# # Cache file size: in bytes, optionally using k / M / G / T suffix,
+# # or in percentage of available disk space using the % suffix.
+# VARNISH_STORAGE_SIZE=1G
+#
+# # File containing administration secret
+# VARNISH_SECRET_FILE=/etc/varnish/secret
+# 
+# # Backend storage specification
+# VARNISH_STORAGE="file,${VARNISH_STORAGE_FILE},${VARNISH_STORAGE_SIZE}"
+#
+# # Default TTL used when the backend does not specify one
+# VARNISH_TTL=120
+#
+# # DAEMON_OPTS is used by the init script.  If you add or remove options, make
+# # sure you update this section, too.
+# DAEMON_OPTS="-a ${VARNISH_LISTEN_ADDRESS}:${VARNISH_LISTEN_PORT} \
+#              -f ${VARNISH_VCL_CONF} \
+#              -T ${VARNISH_ADMIN_LISTEN_ADDRESS}:${VARNISH_ADMIN_LISTEN_PORT} \
+#              -t ${VARNISH_TTL} \
+# 	       -S ${VARNISH_SECRET_FILE} \
+#              -s ${VARNISH_STORAGE}"
+#
+
+## Alternative 4, Do It Yourself
+#
+# DAEMON_OPTS=""
+EOF
+mkdir -p /etc/varnish
+touch /etc/varnish/default.vcl
+cat >/etc/varnish/default.vcl << 'EOF'
+#
+# This is an example VCL file for Varnish.
+#
+# It does not do anything by default, delegating control to the
+# builtin VCL. The builtin VCL is called when there is no explicit
+# return statement.
+#
+# See the VCL chapters in the Users Guide at https://www.varnish-cache.org/docs/
+# and https://www.varnish-cache.org/trac/wiki/VCLExamples for more examples.
+
+# Marker to tell the VCL compiler that this VCL has been adapted to the
+# new 4.0 format.
+vcl 4.0;
+
+# Default backend definition. Set this to point to your content server.
+backend default {
+    .host = "127.0.0.1";
+    .port = "8080";
+}
+
+sub vcl_recv {
+    # Happens before we check if we have this in cache already.
+    #
+    # Typically you clean up the request here, removing cookies you don't need,
+    # rewriting the request, etc.
+}
+
+sub vcl_backend_response {
+    # Happens after we have read the response headers from the backend.
+    #
+    # Here you clean the response headers, removing silly Set-Cookie headers
+    # and other mistakes your backend does.
+}
+
+sub vcl_deliver {
+    # Happens when we have all the pieces we need, and are about to send the
+    # response to the client.
+    #
+    # You can do accounting or modifying the final object here.
+}
+EOF
+touch /etc/varnish/secret
+dd if=/dev/random of=/etc/varnish/secret count=1 >/dev/null 2>&1
+chmod 644 /etc/varnish/secret
+touch /etc/init.d/varnish
+cat >/etc/init.d/varnish << 'EOF'
+#!/bin/sh
+#######################################################################
+# Begin /etc/init.d/varnish
+#
+# Description : Start the Varnish Cache Server
+#
+# Author      : A Caya - andrewscaya@yahoo.ca
+#
+# Version     : LfPHP 8.2.0
+#
+########################################################################
+### BEGIN INIT INFO
+# Provides:            varnishd
+# Required-Start:      $local_fs $remote_fs $network
+# Required-Stop:       $local_fs $remote_fs $network
+# Default-Start:       2 3 4 5
+# Default-Stop:        0 1 6
+# Short-Description:   Start HTTP accelerator
+# Description:         This script provides a server-side cache
+#                      to be run in front of a httpd and should
+#                      listen on port 80 on a properly configured
+#                      system
+# X-LFS-Provided-By:   LfPHP 8.2.0
+### END INIT INFO
+
+#$LastChangedBy: Andrew Caya $
+#$Date: 2020-07-28 13:08:00 -0400 (Tue, 28 Jul 2020) $
+
+# Source function library
+. /lib/lsb/init-functions
+
+NAME=varnishd
+DESC="HTTP accelerator"
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+BIN_FILE=/usr/local/sbin/varnishd
+PIDFILE=/run/$NAME.pid
+
+# Include varnish defaults if available
+if [ -f /etc/varnish.conf ] ; then
+        . /etc/varnish.conf
+fi
+
+# If $DAEMON_OPTS is not set at all in /etc/default/varnish, use minimal useful
+# defaults (Backend at localhost:8080, a common place to put a locally
+# installed application server.)
+DAEMON_OPTS=${DAEMON_OPTS:--b localhost}
+
+# Ensure we have a PATH
+export PATH="${PATH:+$PATH:}/usr/sbin:/usr/bin:/sbin:/bin"
+
+case "$1" in
+   start)
+      log_info_msg "Starting Varnish Cache..."
+      ${BIN_FILE} -P ${PIDFILE} ${DAEMON_OPTS} >/dev/null 2>&1 &
+      evaluate_retval
+      ;;
+
+   stop)
+      log_info_msg "Stopping Varnish Cache..."
+      killproc ${BIN_FILE}
+      evaluate_retval
+      ;;
+
+   restart)
+      $0 stop
+      sleep 1
+      $0 start
+      ;;
+
+   status)
+      statusproc ${BIN_FILE}
+      ;;
+
+   *)
+      echo "Usage: $0 {start|stop|restart|status}"
+      exit 1
+      ;;
+esac
+
+# End /etc/init.d/varnish
+EOF
+chmod +x /etc/init.d/varnish
+sed -i 's/Listen 80/Listen 8080/' /etc/httpd/httpd.conf
+ln -sf  ../init.d/varnish /etc/rc.d/rc0.d/K28varnish
+ln -sf  ../init.d/varnish /etc/rc.d/rc1.d/K28influxdb
+ln -sf  ../init.d/varnish /etc/rc.d/rc2.d/K28varnish
+ln -sf  ../init.d/varnish /etc/rc.d/rc3.d/S32varnish
+ln -sf  ../init.d/varnish /etc/rc.d/rc4.d/S32varnish
+ln -sf  ../init.d/varnish /etc/rc.d/rc5.d/S32varnish
+ln -sf  ../init.d/varnish /etc/rc.d/rc6.d/K28varnish
+mkdir -p /etc/sv/varnish/supervise &&
+chmod -R 700 /etc/sv/varnish/supervise &&
+touch /etc/sv/varnish/run &&
+echo -e "#!/usr/bin/env bash\n" > /etc/sv/varnish/run &&
+echo "exec /usr/local/sbin/varnishd -a :80 -T 0.0.0.0:6082 -b 127.0.0.1:8080" >> /etc/sv/varnish/run &&
+chmod +x /etc/sv/varnish/run &&
+ln -s /etc/sv/varnish /services

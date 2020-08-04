@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+cd
+groupadd mysql
+useradd -r -g mysql -s /bin/false mysql
+ln -s /etc/mysql/my.cnf /etc
+rm -rf /srv/mysql/*
+#mkdir /srv/mysql/data
+#pidname="$( cat /etc/hostname )"
+#touch /srv/mysql/"$pidname".pid
+chown -R mysql:mysql /srv/mysql
+chmod -R 755 /srv/mysql
+rm -f /usr/sbin/mysqld
+if [[ ! -z "$COMPILE" ]]; then
+wget https://cdn.mysql.com/archives/mysql-5.7/mysql-boost-5.7.30.tar.gz &&
+tar -xvf mysql-boost-5.7.30.tar.gz &&
+cd mysql-5.7.30/ &&
+mkdir build &&
+cd build &&
+cmake .. -DBUILD_CONFIG=mysql_release -DCMAKE_INSTALL_PREFIX=/usr -DDOWNLOAD_BOOST=1 -DWITH_BOOST=../boost -DMYSQL_DATADIR=/srv/mysql/data &&
+make &&
+make install &&
+/usr/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure --user=mysql
+mysql_ssl_rsa_setup &&
+mv /etc/init.d/mysql /etc/init.d/mysql.OLD &&
+cp support-files/mysql.server /etc/init.d/mysql &&
+chmod +x /etc/init.d/mysql
+if [[ $? -gt 0 ]]; then
+echo -e "\nMySQL Community Server 5.7 Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nMySQL Community Server 5.7 Compilation and Installation DONE!\n"
+else
+wget -O mysql-5.7.30-lfphp.tar.gz https://websiteurl/mysql-5.7.30-lfphp.tar.gz &&
+tar -C / -xvf mysql-5.7.30-lfphp.tar.gz &&
+/usr/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure --user=mysql &&
+mysql_ssl_rsa_setup &&
+mv /etc/init.d/mysql /etc/init.d/mysql.OLD &&
+cp /usr/support-files/mysql.server /etc/init.d/mysql &&
+chmod +x /etc/init.d/mysql &&
+cd
+if [[ $? -gt 0 ]]; then
+echo -e "\nMySQL Community Server 5.7 Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nMySQL Community Server 5.7 Installation DONE!\n"
+fi
+cp /usr/man/man1/mysql.1 /usr/share/man/man1/
+cp /usr/man/man8/mysqld.8 /usr/share/man/man8/
+cd
