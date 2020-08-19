@@ -6,7 +6,7 @@ export flags=""
 export src_vers="1.8.0"
 export src_source="http://mama.indstate.edu/users/ice/tree/src"
 # this needs to change!
-export bin_source="http://opensource.unlikelysource.com"
+export bin_source="https://websiteurl/tree-linux-x86_64-1.8.0-lfphp.tar.gz"
 if [[ ! -z "$1" ]]; then
     if [[ "$1" = "--compile" ]]; then
         COMPILE=1

@@ -2,7 +2,7 @@
 # Usage: lfphp-get openssl [1.1.1] [--compile]
 export COMPILE=0
 # this needs to change!
-export bin_source="http://opensource.unlikelysource.com"
+export bin_source="https://websiteurl/openssl-linux-x86_64-1.1.1-lfphp.tar.gz"
 cd
 if [[ -z "$1" ]]; then
     read -r -p "Which version of OpenSSL do you wish to install? (1.1.1) " response

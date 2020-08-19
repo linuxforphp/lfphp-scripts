@@ -6,7 +6,7 @@ export response="9.3.0"
 export flags=""
 export src_source="https://bigsearcher.com/mirrors/gcc/releases"
 # this needs to change!
-export bin_source="http://opensource.unlikelysource.com"
+export bin_source="https://websiteurl/gcc-linux-x86_64-9.3.0-lfphp.tar.gz"
 if [[ -z "$1" ]]; then
     read -r -p "Which version of GCC do you wish to install? (8.4.0 / 9.3.0) " version
     response=gcc-$version

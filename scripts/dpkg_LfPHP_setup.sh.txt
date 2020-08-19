@@ -5,7 +5,7 @@ export flags=""
 export src_vers="1.19.7"
 export src_source="http://deb.debian.org/debian/pool/main/d/dpkg"
 # this needs to change!
-export bin_source="http://opensource.unlikelysource.com"
+export bin_source="https://websiteurl/dpkg-linux-x86_64-1.19.7-lfphp.tar.gz"
 if [[ -z "$1" ]]; then
     read -r -p "Which version of dpkg do you wish to install? (1.19.7) " src_vers
 else

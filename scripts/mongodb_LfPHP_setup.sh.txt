@@ -1,13 +1,16 @@
-O#!/usr/bin/env bash
-# Usage: lfphp-get mongodb [3.6.8 | 3.6.17 | 4.0.16 | 4.2.8] [--compile]
+#!/usr/bin/env bash
+# Usage: lfphp-get mongodb [3.6.8 | 3.6.17 | 4.0.19 | 4.2.8] [--compile]
 cd
 if [[ -z "$1" ]]; then
-    read -r -p "Which version of MongoDB do you wish to install? (3.6.8 / 3.6.17 / 4.0.16 / 4.2.8) " response
+    read -r -p "Which version of MongoDB do you wish to install? (3.6.8 / 3.6.17 / 4.0.19 / 4.2.8) " response
 else
     response=$1
 fi
-if [[ "$response" != "3.6.8" && "$response" != "3.6.17" && "$response" != "4.0.16" && "$response" != "4.2.8" ]]; then
-    echo -e "ERROR! You must choose from one of these versions: 3.6.8, 3.6.17, 4.0.16, 4.2.8 ABORTING..."
+if [[ "$response" == "4.0.16" ]]; then
+-    response="4.0.19"
+-fi
+if [[ "$response" != "3.6.8" && "$response" != "3.6.17" && "$response" != "4.0.19" && "$response" != "4.2.8" ]]; then
+    echo -e "ERROR! You must choose from one of these versions: 3.6.8, 3.6.17, 4.0.19, 4.2.8 ABORTING..."
     exit 2
 fi
 if [[ ! -z "$2" && "$2" == "--compile" ]]; then
@@ -76,10 +79,10 @@ if [[ ! -z "$COMPILE" ]]; then
 		fi
 		cd
         rm -rf /tmp/mongodb-src-r3.6.17
-    elif [[ "$response" == "4.0.16" ]]; then
-        wget -O mongodb-src-r4.0.16.tar.gz https://fastdl.mongodb.org/src/mongodb-src-r4.0.16.tar.gz
-        tar -xzvf mongodb-src-r4.0.16.tar.gz
-        cd mongodb-src-r4.0.16
+    elif [[ "$response" == "4.0.19" ]]; then
+        wget -O mongodb-src-r4.0.19.tar.gz https://fastdl.mongodb.org/src/mongodb-src-r4.0.19.tar.gz
+        tar -xzvf mongodb-src-r4.0.19.tar.gz
+        cd mongodb-src-r4.0.19
 		pip install --upgrade pip &&
 		pip2 install --upgrade pip &&
 		pip2 install --user regex &&
@@ -91,7 +94,7 @@ if [[ ! -z "$COMPILE" ]]; then
 			exit 1
 		fi
 		cd
-        rm -rf /tmp/mongodb-src-r4.0.16
+        rm -rf /tmp/mongodb-src-r4.0.19
     elif [[ "$response" == "4.2.8" ]]; then
 		is_dpkg=`dpkg --version`
 		is_openssl_11=`openssl version |cut -c 9-11`
@@ -127,26 +130,26 @@ if [[ ! -z "$COMPILE" ]]; then
     echo -e "\nMongoDB Compilation and Installation DONE!\n"
 else
     if [[ "$response" == "3.6.8" ]]; then
-        wget -O mongodb-linux-x86_64-3.6.8-lfphp.tar.gz https://files.linuxforphp.net/mongodb-linux-x86_64-3.6.8-lfphp.tar.gz
+        wget -O mongodb-linux-x86_64-3.6.8-lfphp.tar.gz https://websiteurl/mongodb-linux-x86_64-3.6.8-lfphp.tar.gz
         tar -xzvf mongodb-linux-x86_64-3.6.8-lfphp.tar.gz
         cd mongodb-linux-x86_64-3.6.8-lfphp
         cp bin/* /usr/bin
         cd
         rm -rf /tmp/mongodb-linux-x86_64-3.6.8-lfphp
     elif [[ "$response" == "3.6.17" ]]; then
-        wget -O mongodb-linux-x86_64-3.6.17-lfphp.tar.gz https://files.linuxforphp.net/mongodb-linux-x86_64-3.6.17-lfphp.tar.gz
+        wget -O mongodb-linux-x86_64-3.6.17-lfphp.tar.gz https://websiteurl/mongodb-linux-x86_64-3.6.17-lfphp.tar.gz
         tar -xzvf mongodb-linux-x86_64-3.6.17-lfphp.tar.gz
         cd mongodb-linux-x86_64-3.6.17-lfphp
         cp bin/* /usr/bin
         cd
         rm -rf /tmp/mongodb-linux-x86_64-3.6.17-lfphp
-    elif [[ "$response" == "4.0.16" ]]; then
-        wget -O mongodb-linux-x86_64-4.0.16-lfphp.tar.gz https://files.linuxforphp.net/mongodb-linux-x86_64-4.0.16-lfphp.tar.gz
-        tar -xzvf mongodb-linux-x86_64-4.0.16-lfphp.tar.gz
-        cd mongodb-linux-x86_64-4.0.16-lfphp
+    elif [[ "$response" == "4.0.19" ]]; then
+        wget -O mongodb-linux-x86_64-4.0.19-lfphp.tar.gz https://websiteurl/mongodb-linux-x86_64-4.0.19-lfphp.tar.gz
+        tar -xzvf mongodb-linux-x86_64-4.0.19-lfphp.tar.gz
+        cd mongodb-linux-x86_64-4.0.19-lfphp
         cp bin/* /usr/bin
         cd
-        rm -rf /tmp/mongodb-linux-x86_64-4.0.16-lfphp
+        rm -rf /tmp/mongodb-linux-x86_64-4.0.19-lfphp
     elif [[ "$response" == "4.2.8" || "$response" == "4.3.6" ]]; then
 		is_openssl_11=`openssl version |cut -c 9-11`
 		ok_to_proceed="Y"
@@ -305,7 +308,7 @@ case "$1" in
 
 esac
 EOF
-if [[ "$response" == "3.6.8" || "$response" == "3.6.17" || "$response" == "4.0.16" ]]; then
+if [[ "$response" == "3.6.8" || "$response" == "3.6.17" || "$response" == "4.0.19" ]]; then
 cat >/etc/mongodb.conf << 'EOF'
 # mongodb.conf
 

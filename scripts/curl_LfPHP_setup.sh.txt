@@ -3,7 +3,7 @@
 export COMPILE=0
 export src_source="https://curl.haxx.se/download"
 # this needs to change!
-export bin_source="http://opensource.unlikelysource.com"
+export bin_source="https://websiteurl/curl-linux-x86_64-7.71.1-lfphp.tar.gz"
 if [[ -z "$1" ]]; then
     read -r -p "Which version of curl do you wish to install? (7.71.1) " response
 else
