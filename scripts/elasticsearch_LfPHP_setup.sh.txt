@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 cd &&
-wget https://files.linuxforphp.net/elasticsearch-6.8.11-lfphp.tar.gz &&
-#wget https://files.linuxforphp.net/elasticsearch-6.8.11-lfphp.tar.gz.sha512
+wget https://websiteurl/elasticsearch-6.8.11-lfphp.tar.gz &&
+#wget https://websiteurl/elasticsearch-6.8.11-lfphp.tar.gz.sha512
 #shasum -a 512 -c elasticsearch-6.8.11-lfphp.tar.gz.sha512 
 tar -C /opt -xzf elasticsearch-6.8.11-lfphp.tar.gz &&
 groupadd elastic &&
