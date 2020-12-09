@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+export NAME="libyaml"
+export PKG="yaml-0.2.5"
+cd \tmp
+wget https://github.com/yaml/libyaml/releases/download/0.2.5/$PKG.tar.gz
+tar -xvf $PKG.tar.gz
+cd $PKG
+./configure prefix=/usr
+make
+make install
+cd \tmp
+rm -rf $PKG
+if [[ $? -gt 0 ]]; then
+  echo -e "\n$NAME Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\n$NAME Installation DONE!\n"
+cd
