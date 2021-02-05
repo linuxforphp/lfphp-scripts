@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 cd &&
-wget -O phpMyAdmin-5.0.2-all-languages.tar.gz https://files.phpmyadmin.net/phpMyAdmin/5.0.2/phpMyAdmin-5.0.2-all-languages.tar.gz &&
-tar -xvf phpMyAdmin-5.0.2-all-languages.tar.gz &&
-cp -rf phpMyAdmin-5.0.2-all-languages /srv/phpmyadmin &&
-rm -rf phpMyAdmin-5.0.2-all-languages &&
+wget -O phpMyAdmin-5.0.4-all-languages.tar.gz https://files.phpmyadmin.net/phpMyAdmin/5.0.4/phpMyAdmin-5.0.4-all-languages.tar.gz &&
+tar -xvf phpMyAdmin-5.0.4-all-languages.tar.gz &&
+cp -rf phpMyAdmin-5.0.4-all-languages /srv/phpmyadmin &&
+rm -rf phpMyAdmin-5.0.4-all-languages &&
 cat >/etc/httpd/extra/httpd-phpmyadmin.conf << 'EOF' &&
 Alias /phpmyadmin /srv/phpmyadmin
 
