@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Usage: lfphp-get leptonica [--compile]
+# Example: lfphp-get leptonica --compile
+#
+# Includes the following conversion utilities:
+# /usr/local/bin/convertfilestopdf
+# /usr/local/bin/convertfilestops
+# /usr/local/bin/convertformat
+# /usr/local/bin/convertsegfilestopdf
+# /usr/local/bin/convertsegfilestops
+# /usr/local/bin/converttopdf
+# /usr/local/bin/converttops
+# /usr/local/bin/fileinfo
+# /usr/local/bin/imagetops
+# /usr/local/bin/xtractprotos
+# See: http://www.leptonica.org/
+#
+export COMPILE=0
+export flags=""
+export src_vers="1.80.0"
+export src_source="http://www.leptonica.org/source"
+# this needs to change!
+export bin_source="https://opensource.unlikelysource.com/leptonica.zip"
+if [[ ! -z "$1" ]]; then
+    if [[ "$1" = "--compile" ]]; then
+        COMPILE=1
+    fi
+fi
+if [[ "$COMPILE" -gt 0 ]]; then
+    cd /tmp
+    wget $src_source/leptonica-$src_vers.tar.gz
+    if [[ ! -f /tmp/leptonica-$src_vers.tar.gz ]]; then
+      echo -e "leptonica source code not found.  Aborting!"
+      echo ""
+      exit 1
+    fi
+    tar xvfz leptonica-$src_vers.tar.gz
+    cd /tmp/leptonica-$src_vers
+    ./autogen.sh
+    ./configure
+    make
+    make install
+    ldconfig
+    cd /tmp
+    rm /tmp/leptonica-$src_vers.tar.gz
+    rm -rf /tmp/leptonica-$src_vers
+    if [[ $? -gt 0 ]]; then
+      echo -e "leptonica Compilation ERROR!  Aborting!"
+    echo ""
+      exit 1
+    fi
+    echo "leptonica Compilation and Installation DONE!"
+    echo ""
+else
+    cd /
+    wget $bin_source/leptonica-$src_vers.zip
+    unzip -u -q leptonica-$src_vers.zip
+    rm leptonica-$src_vers.zip
+    echo "leptonica installation DONE!"
+    echo ""
+fi
+ls -l /usr/local/bin/convert*
+cd
+

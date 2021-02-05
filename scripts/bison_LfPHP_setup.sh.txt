@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+export NAME="bison"
+export PKG="bison-2.6.5"
+cd \tmp
+wget http://gnu.mirror.iweb.com/bison/$PKG.tar.gz
+tar xvfz /tmp/$PKG.tar.gz
+cd $PKG
+./configure prefix=/usr
+make
+make install
+cd \tmp
+rm -rf $PKG
+if [[ $? -gt 0 ]]; then
+  echo -e "\n$NAME Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\n$NAME Installation DONE!\n"
+cd

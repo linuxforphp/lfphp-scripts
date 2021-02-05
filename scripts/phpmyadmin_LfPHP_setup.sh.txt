@@ -42,6 +42,11 @@ EOF
 echo 'Include /etc/httpd/extra/httpd-phpmyadmin.conf' >> /etc/httpd/httpd.conf &&
 cp /srv/phpmyadmin/config.sample.inc.php /srv/phpmyadmin/config.inc.php &&
 sed -i "s/AllowNoPassword'] = false;/AllowNoPassword'] = true;/" /srv/phpmyadmin/config.inc.php
+echo "Setting apache as owner ..."
+chown -v apache:apache /srv/phpmyadmin
+echo "Configuring blowfish secret in /srv/phpmyadmin/config.inc.php ... "
+export SECRET=`php -r "echo md5(date('Y-m-d-H-i-s') . rand(1000,9999));"`
+echo "\$cfg['blowfish_secret'] = '$SECRET';" >> /srv/phpmyadmin/config.inc.php
 if [[ $? -gt 0 ]]; then
 echo -e "\nphpMyAdmin Installation ERROR!  Aborting!\n"
 exit 1
