@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Usage: lfphp-get openjre [16.0.1_9]
+# NOTE: no compile option: these are *already* pre-compiled
+export DEFAULT_VER="16.0.1_9"
+export src_source="https://github.com/AdoptOpenJDK/openjdk16-binaries/releases/download"
+# this needs to change!
+export bin_source="https://websiteurl/jdk-"$DEFAULT_VER"-lfphp.tar.gz"
+if [[ -z "$1" ]]; then
+    read -r -p "Which version of OpenJRE do you wish to install? ("$DEFAULT_VER") " response
+    response=${response:-$DEFAULT_VER}
+else
+    response=$1
+fi
+current_ver=`java --version |head -n 1 |cut -c 09- |cut -d " "  -f 1`
+ok_continue="Y"
+if [[ -z "$current_ver" ]]; then
+    ok_continue="Y"
+elif [[ "$current_ver" == "$response" ]]; then
+    echo "You are already using OpenJRE version "$current_ver
+    read -r -p "Do you wish to continue? (Y/N)" ok_continue
+fi
+if [[ "$ok_continue" != "Y" ]]; then
+    echo -e "OpenJRE Compilation Aborting at User Request"
+    echo ""
+    exit 1
+fi
+if [[ "$response" != $DEFAULT_VER ]]; then
+    echo -e "SORRY! Only these versions are currently supported: "$DEFAULT_VER ". ABORTING..."
+    exit 2
+fi
+export src_adopt=OpenJDK16U-jre_x64_linux_hotspot_"$response"
+export src_jdk=jdk-`echo $response|tr _ +`
+export src_download="$src_source"/"$src_jdk"/"$src_adopt".tar.gz
+cd /tmp
+wget -O jdk.tar.gz $src_download
+if [[ ! -f jdk.tar.gz ]]; then
+  echo -e "This version of OpenJRE not found.  Aborting!"
+  echo ""
+  exit 1
+fi
+# install
+export src_dir="$src_jdk"-jre
+tar xvfz jdk.tar.gz
+mv $src_dir /usr/lib/java
+ln -s /usr/lib/java/bin/java /usr/bin/java
+java --version |head -n 1
+echo "OpenJRE Compilation and Installation DONE!"
+echo ""
+cd
