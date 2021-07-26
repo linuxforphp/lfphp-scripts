@@ -1,0 +1,216 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+git clone https://github.com/memcached/memcached &&
+cd memcached &&
+./autogen.sh &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd &&
+rm -rf memcached
+if [[ $? -gt 0 ]]; then
+echo -e "\nMemcached Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nMemcached Compilation and Installation DONE!\n"
+else
+wget -O memcached-1.6.8_linux_amd64-lfphp.tar.gz https://websiteurl/memcached-1.6.8_linux_amd64-lfphp.tar.gz &&
+tar -xvf memcached-1.6.8_linux_amd64-lfphp.tar.gz &&
+cd memcached &&
+make install &&
+cd &&
+rm -rf memcached
+if [[ $? -gt 0 ]]; then
+echo -e "\nMemcached Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nMemcached Installation DONE!\n"
+fi
+cat >/etc/memcached.conf << 'EOF'
+# memcached default config file
+# 2003 - Jay Bonci <jaybonci@debian.org>
+# This configuration file is read by the start-memcached script provided as
+# part of the ASCLinux distribution. 
+
+# Run memcached as a daemon. This command is implied, and is not needed for the
+# daemon to run. See the README.Debian that comes with this package for more
+# information.
+-d
+
+# Log memcached's output to /var/log/memcached
+logfile /var/log/memcached.log
+
+# Be verbose
+# -v
+
+# Be even more verbose (print client commands as well)
+# -vv
+
+# How much memory to make available. This is the maximum memory that can be
+# allocated, not how much the Daemon grabs at startup.
+-m 128
+
+# Default connection port is 11211
+-p 11211 
+
+# Run the daemon as root. The start-memcached will default to running as root if no
+# -u command is present in this config file
+-u nobody
+
+# Specify which IP address to listen on. The default is to listen on all IP addresses
+# This parameter is one of the only security measures that memcached has, so make sure
+# it's listening on a firewalled interface.
+#-l a.b.c.d
+
+# Limit the number of simultaneous incoming connections. The daemon default is 1024
+# -c 1024
+
+# Lock down all paged memory. Consult with the README and homepage before you do this
+# -k
+
+# Return error when memory is exhausted (rather than removing items)
+# -M
+
+# Maximize core file limit
+# -r
+EOF
+cat >/etc/init.d/memcached << 'EOF'
+#!/bin/sh
+#######################################################################
+# Begin /etc/init.d/memcached
+#
+# Description : Start the memcached Server
+#
+# Author      : A Caya - andrewscaya@yahoo.ca
+#
+# Version     : LfPHP 8.2.0
+#
+########################################################################
+### BEGIN INIT INFO
+# Provides:            memcached
+# Required-Start:      $remote_fs $syslog
+# Required-Stop:       $remote_fs $syslog
+# Default-Start:       2 3 4 5
+# Default-Stop:        0 1 6
+# Short-Description:   Starts memcached.
+# Description:         Starts memcached daemon.
+# X-LFS-Provided-By:   LfPHP 8.2.0
+### END INIT INFO
+
+#$LastChangedBy: Andrew Caya $
+#$Date: 2020-10-27 18:59:56 -0400 (Thu, 270 Oct 2020) $
+
+if [ `id -u` -ne 0 ]; then
+    echo "You need root privileges to run this script"
+    exit 1
+fi
+
+. /etc/profile
+
+MEMCACHED_BIN_FILE="/usr/bin/memcached"
+MEMCACHED_USER="nobody"
+MEMCACHED_PID_FILE="/var/run/memcached.pid"
+
+. /lib/lsb/init-functions
+
+get_pid() {
+    if [[ -f "$MEMCACHED_PID_FILE" ]]; then
+        cat "$MEMCACHED_PID_FILE"
+    else
+        cat /dev/null
+    fi
+}
+
+is_running() {
+    [ -f "$MEMCACHED_PID_FILE" ] && grep -q '[^[:space:]]' < "$MEMCACHED_PID_FILE" && ps `get_pid` > /dev/null 2>&1
+}
+
+memcached_start() {
+    if is_running; then
+        echo "memcached is already running (PID "`get_pid`")..."
+    else
+        echo "Starting memcached ..."
+        $MEMCACHED_BIN_FILE -d -u $MEMCACHED_USER -P $MEMCACHED_PID_FILE
+        sleep 5
+        if ! is_running; then
+            echo "Unable to start"
+            exit 1
+        else
+            echo "memcached is started"
+        fi
+    fi
+}
+
+memcached_stop() {
+    if is_running; then
+        echo -n "Stopping memcached ..."
+        kill `get_pid`
+        for i in {1..10}
+        do
+            if ! is_running; then
+                break
+            fi
+
+            echo -n "."
+            sleep 3
+        done
+        echo
+        
+        if is_running; then
+            echo "memcached is not stopped; it may still be shutting down or shutdown may have failed"
+            exit 1
+        else
+            echo "memcached is stopped"
+            if [ -f "$MEMCACHED_PID_FILE" ]; then
+                rm "$MEMCACHED_PID_FILE"
+            fi
+        fi
+    else
+        echo "memcached is not running"
+    fi
+}
+
+case "$1" in
+    start)
+        memcached_start
+    ;;
+    stop)    
+        memcached_stop
+    ;;
+    restart)
+        memcached_stop
+        memcached_start
+    ;;
+    status)
+        if is_running; then
+            echo "memcached is running (PID "`get_pid`")"
+        else
+            echo "memcached is not running"
+            exit 1
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+    ;;
+esac
+
+# End /etc/init.d/memcached
+EOF
+chmod +x /etc/init.d/memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc0.d/K28memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc1.d/K28memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc2.d/K28memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc3.d/S32memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc4.d/S32memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc5.d/S32memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc6.d/K28memcached
+mkdir -p /etc/sv/memcached/supervise &&
+chmod -R 700 /etc/sv/memcached/supervise &&
+touch /etc/sv/memcached/run &&
+echo -e "#!/usr/bin/env bash\n" > /etc/sv/memcached/run &&
+echo "exec /etc/init.d/memcached start >/dev/null 2>&1" >> /etc/sv/memcached/run &&
+chmod +x /etc/sv/memcached/run &&
+ln -s /etc/sv/memcached /services
+cd
