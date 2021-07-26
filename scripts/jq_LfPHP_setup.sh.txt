@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+cd
+git clone https://github.com/stedolan/jq.git &&
+cd jq &&
+autoreconf -i &&
+./configure --prefix=/usr --disable-maintainer-mode &&
+make &&
+make install
+if [[ $? -gt 0 ]]; then
+echo -e "\njq Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+cd
+rm -rf jq
+echo -e "\njq Installation DONE!\n"
+jq --version
