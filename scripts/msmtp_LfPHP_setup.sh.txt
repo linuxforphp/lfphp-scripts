@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-git clone https://git.marlam.de/git/msmtp.git
-cd msmtp/
-autoreconf -i &&
-./configure --prefix=/usr &&
-make &&
-make install
-if [[ $? -gt 0 ]]; then
-echo -e "\nMSMTP Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nMSMTP Compilation and Installation DONE!\n"
+  git clone https://git.marlam.de/git/msmtp.git
+  cd msmtp/
+  autoreconf -i &&
+    ./configure --prefix=/usr &&
+    make &&
+    make install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nMSMTP Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nMSMTP Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O msmtp-latest-lfphp.tar.gz https://websiteurl/msmtp-latest-lfphp.tar.gz &&
-tar -xzvf msmtp-latest-lfphp.tar.gz &&
-cd msmtp &&
-make install &&
-cd &&
-rm -rf msmtp
-if [[ $? -gt 0 ]]; then
-echo -e "\nMSMTP Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nMSMTP Installation DONE!\n"
+  cd &&
+    wget -O msmtp-latest-lfphp.tar.gz https://websiteurl/msmtp-latest-lfphp.tar.gz &&
+    tar -xzvf msmtp-latest-lfphp.tar.gz &&
+    cd msmtp &&
+    make install &&
+    cd &&
+    rm -rf msmtp
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nMSMTP Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nMSMTP Installation DONE!\n"
 fi
 cd

@@ -5,19 +5,19 @@ tar -xzvf redis-stable.tar.gz
 cd redis-stable
 make
 if [[ $? -gt 0 ]]; then
-echo -e "\nRedis Compilation ERROR!  Aborting!\n"
-exit 1
+  echo -e "\nRedis Compilation ERROR!  Aborting!\n"
+  exit 1
 fi
 make &&
-make install &&
-mkdir /etc/redis &&
-cp /root/redis-stable/redis.conf /etc/redis
+  make install &&
+  mkdir /etc/redis &&
+  cp /root/redis-stable/redis.conf /etc/redis
 sed -i 's/daemonize no/daemonize yes/' /etc/redis/redis.conf
 sed -i 's/pidfile \/var\/run\/redis_6379.pid/pidfile \/var\/lib\/redis\/redis_6379.pid/' /etc/redis/redis.conf
 sed -i 's/logfile ""/logfile "\/var\/log\/redis.log"/' /etc/redis/redis.conf
 if [[ $? -gt 0 ]]; then
-echo -e "\nRedis Installation ERROR!  Aborting!\n"
-exit 1
+  echo -e "\nRedis Installation ERROR!  Aborting!\n"
+  exit 1
 fi
 groupadd -g 102 redis
 useradd -u 102 -g redis redis
@@ -26,7 +26,7 @@ chown -R redis:redis /var/lib/redis
 chmod -R 775 /var/lib/redis
 touch /var/log/redis.log
 chown redis:root /var/log/redis.log
-cat >/etc/init.d/redis << 'EOF'
+cat >/etc/init.d/redis <<'EOF'
 #! /bin/sh
 #######################################################################
 # Begin /etc/init.d/redis
@@ -157,18 +157,18 @@ case "$1" in
 esac
 EOF
 chmod +x /etc/init.d/redis
-ln -sf  ../init.d/redis /etc/rc.d/rc0.d/K28redis
-ln -sf  ../init.d/redis /etc/rc.d/rc1.d/K28redis
-ln -sf  ../init.d/redis /etc/rc.d/rc2.d/K28redis
-ln -sf  ../init.d/redis /etc/rc.d/rc3.d/S32redis
-ln -sf  ../init.d/redis /etc/rc.d/rc4.d/S32redis
-ln -sf  ../init.d/redis /etc/rc.d/rc5.d/S32redis
-ln -sf  ../init.d/redis /etc/rc.d/rc6.d/K28redis
+ln -sf ../init.d/redis /etc/rc.d/rc0.d/K28redis
+ln -sf ../init.d/redis /etc/rc.d/rc1.d/K28redis
+ln -sf ../init.d/redis /etc/rc.d/rc2.d/K28redis
+ln -sf ../init.d/redis /etc/rc.d/rc3.d/S32redis
+ln -sf ../init.d/redis /etc/rc.d/rc4.d/S32redis
+ln -sf ../init.d/redis /etc/rc.d/rc5.d/S32redis
+ln -sf ../init.d/redis /etc/rc.d/rc6.d/K28redis
 mkdir -p /etc/sv/redis/supervise
 chmod -R 700 /etc/sv/redis/supervise
 touch /etc/sv/redis/run
-echo -e "#!/usr/bin/env bash" > /etc/sv/redis/run
-echo "exec /usr/local/bin/redis-server /etc/redis/redis.conf" >> /etc/sv/redis/run
+echo -e "#!/usr/bin/env bash" >/etc/sv/redis/run
+echo "exec /usr/local/bin/redis-server /etc/redis/redis.conf" >>/etc/sv/redis/run
 chmod +x /etc/sv/redis/run
 #ln -s /etc/sv/redis /services
 /etc/init.d/redis start

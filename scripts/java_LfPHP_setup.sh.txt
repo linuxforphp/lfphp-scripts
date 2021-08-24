@@ -4,14 +4,14 @@ wget -O OpenJDK-1.8.0.141-x86_64-bin.tar.xz http://anduin.linuxfromscratch.org/B
 tar -xvf OpenJDK-1.8.0.141-x86_64-bin.tar.xz
 cd OpenJDK-1.8.0.141-x86_64-bin
 install -vdm755 /opt/OpenJDK-1.8.0.141-bin &&
-mv -v * /opt/OpenJDK-1.8.0.141-bin &&
-chown -R root:root /opt/OpenJDK-1.8.0.141-bin &&
-ln -sfn OpenJDK-1.8.0.141-bin /opt/jdk
+  mv -v * /opt/OpenJDK-1.8.0.141-bin &&
+  chown -R root:root /opt/OpenJDK-1.8.0.141-bin &&
+  ln -sfn OpenJDK-1.8.0.141-bin /opt/jdk
 if [[ $? -gt 0 ]]; then
-echo -e "\nJava Installation ERROR!  Aborting!\n"
-exit 1
+  echo -e "\nJava Installation ERROR!  Aborting!\n"
+  exit 1
 fi
-cat > /etc/profile.d/openjdk.sh << "EOF"
+cat >/etc/profile.d/openjdk.sh <<"EOF"
 # Begin /etc/profile.d/openjdk.sh
 
 # Set JAVA_HOME directory
@@ -44,16 +44,16 @@ unset AUTO_CLASSPATH_DIR dir jar
 
 # End /etc/profile.d/openjdk.sh
 EOF
-cat >> /etc/man_db.conf << "EOF" &&
+cat >>/etc/man_db.conf <<"EOF" &&
 # Begin Java addition
 MANDATORY_MANPATH     /opt/jdk/man
 MANPATH_MAP           /opt/jdk/bin     /opt/jdk/man
 MANDB_MAP             /opt/jdk/man     /var/cache/man/jdk
 # End Java addition
 EOF
-mkdir -p /var/cache/man &&
-mandb -c /opt/jdk/man &&
-cd &&
-rm -rf OpenJDK-1.8.0.141-x86_64-bin
+  mkdir -p /var/cache/man &&
+  mandb -c /opt/jdk/man &&
+  cd &&
+  rm -rf OpenJDK-1.8.0.141-x86_64-bin
 echo -e "\nJava Compilation and Installation DONE!\n"
 cd

@@ -8,40 +8,40 @@ export src_source="http://mama.indstate.edu/users/ice/tree/src"
 # this needs to change!
 export bin_source="https://websiteurl/tree-linux-x86_64-1.8.0-lfphp.tar.gz"
 if [[ ! -z "$1" ]]; then
-    if [[ "$1" = "--compile" ]]; then
-        COMPILE=1
-    fi
+  if [[ "$1" == "--compile" ]]; then
+    COMPILE=1
+  fi
 fi
 if [[ "$COMPILE" -gt 0 ]]; then
-	cd /tmp
-	wget $src_source/tree-$src_vers.tgz
-	if [[ ! -f tree-$src_vers.tgz ]]; then
-	  echo -e "tree source code not found.  Aborting!"
-	  echo ""
-	  exit 1
-	fi
-	tar xvf tree-$src_vers.tgz
-	cd /tmp/tree-$src_vers
-	./configure
-	make
-	make install
-	cd /tmp
-	rm /tmp/tree-$src_vers.tgz
-	rm -rf /tmp/tree-$src_vers
-	if [[ $? -gt 0 ]]; then
-	  echo -e "tree Compilation ERROR!  Aborting!"
-	echo ""
-	  exit 1
-	fi
-	echo "tree Compilation and Installation DONE!"
-	echo ""
+  cd /tmp
+  wget $src_source/tree-$src_vers.tgz
+  if [[ ! -f tree-$src_vers.tgz ]]; then
+    echo -e "tree source code not found.  Aborting!"
+    echo ""
+    exit 1
+  fi
+  tar xvf tree-$src_vers.tgz
+  cd /tmp/tree-$src_vers
+  ./configure
+  make
+  make install
+  cd /tmp
+  rm /tmp/tree-$src_vers.tgz
+  rm -rf /tmp/tree-$src_vers
+  if [[ $? -gt 0 ]]; then
+    echo -e "tree Compilation ERROR!  Aborting!"
+    echo ""
+    exit 1
+  fi
+  echo "tree Compilation and Installation DONE!"
+  echo ""
 else
-	cd /
-	wget $bin_source/tree-$src_vers.zip
-	unzip -u -q tree-$src_vers.zip
-	rm tree-$src_vers.zip
-	echo "tree Installation DONE!"
-	echo ""
+  cd /
+  wget $bin_source/tree-$src_vers.zip
+  unzip -u -q tree-$src_vers.zip
+  rm tree-$src_vers.zip
+  echo "tree Installation DONE!"
+  echo ""
 fi
 tree --version
 cd

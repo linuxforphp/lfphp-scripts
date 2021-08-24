@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 cd
-currentversion=$( lfphp-get --version | grep '.*' | awk '{ print $4 }' )
+currentversion=$(lfphp-get --version | grep '.*' | awk '{ print $4 }')
 wget -O lfphp.tar.gz https://websiteurl/lfphp.tar.gz
 tar -xvf lfphp.tar.gz
 cd lfphp/bin
-newversion=$( ./lfphp-get --version | grep '.*' | awk '{ print $4 }' )
+newversion=$(./lfphp-get --version | grep '.*' | awk '{ print $4 }')
 if [[ "$currentversion" == "$newversion" ]]; then
-    echo -e "\nAlready up to date. Nothing to do.\nCurrent version: $currentversion\n"
+  echo -e "\nAlready up to date. Nothing to do.\nCurrent version: $currentversion\n"
 else
-    cp -rf lfphp* /bin
-    echo -e "\nUpdated to version: $newversion\n"
+  cp -rf lfphp* /bin
+  echo -e "\nUpdated to version: $newversion\n"
 fi
 cd && rm -rf lfphp lfphp.tar.gz

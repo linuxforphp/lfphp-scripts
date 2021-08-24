@@ -5,68 +5,68 @@ export src_source="https://curl.haxx.se/download"
 # this needs to change!
 export bin_source="https://websiteurl/curl-linux-x86_64-7.71.1-lfphp.tar.gz"
 if [[ -z "$1" ]]; then
-    read -r -p "Which version of curl do you wish to install? (7.71.1) " response
+  read -r -p "Which version of curl do you wish to install? (7.71.1) " response
 else
-    response=$1
+  response=$1
 fi
-current_ver=`curl --version |head -n 1 |cut -c 6-11`
+current_ver=$(curl --version | head -n 1 | cut -c 6-11)
 ok_continue="Y"
-if [[ "$current_ver" = "$response" ]]; then
-	echo "You are already using CURL version "$current_ver
-    read -r -p "Do you wish to continue? (Y/N)" ok_continue
+if [[ "$current_ver" == "$response" ]]; then
+  echo "You are already using CURL version "$current_ver
+  read -r -p "Do you wish to continue? (Y/N)" ok_continue
 fi
 if [[ "$ok_continue" != "Y" ]]; then
-	echo -e "CURL Compilation Aborting at User Request"
-	echo ""
-	exit 1
-fi	
-if [[ "$response" = "7.71.1" ]]; then
-	export src_root=curl-"$response"
-else
-    echo -e "SORRY! Only these versions are currently supported: 7.71.1 . ABORTING..."
-    exit 2
+  echo -e "CURL Compilation Aborting at User Request"
+  echo ""
+  exit 1
 fi
-is_openssl_11=`openssl version |cut -c 9-11`
-if [[ "$is_openssl_11" = "1.0" ]]; then
-	echo "OpenSSL version needs to be 1.1 or above"
-	echo "Install using 'lfphp-get openssl 1.1.1'"
-    exit 2
+if [[ "$response" == "7.71.1" ]]; then
+  export src_root=curl-"$response"
+else
+  echo -e "SORRY! Only these versions are currently supported: 7.71.1 . ABORTING..."
+  exit 2
+fi
+is_openssl_11=$(openssl version | cut -c 9-11)
+if [[ "$is_openssl_11" == "1.0" ]]; then
+  echo "OpenSSL version needs to be 1.1 or above"
+  echo "Install using 'lfphp-get openssl 1.1.1'"
+  exit 2
 fi
 if [[ ! -z "$2" && "$2" == "--compile" ]]; then
-    COMPILE=1
+  COMPILE=1
 fi
 if [[ "$COMPILE" -gt 0 ]]; then
-	cd /tmp
-	wget -O curl.tar.gz "$src_source"/"$src_root".tar.gz
-	if [[ ! -f curl.tar.gz ]]; then
-	  echo -e "This version of CURL not found.  Aborting!"
-	  echo ""
-	  exit 1
-	fi
-	# install libcurl-dev
-	cd /tmp
-	tar xvfz curl.tar.gz
-	cd $src_root
-	./configure --prefix=/usr
-	make
-	make install
-	cd /tmp
-	rm -rf $src_root
-	rm curl.tar.gz 
-	if [[ $? -gt 0 ]]; then
-	  echo -e "CURL Compilation ERROR!  Aborting!"
-	  echo ""
-	  exit 1
-	fi
+  cd /tmp
+  wget -O curl.tar.gz "$src_source"/"$src_root".tar.gz
+  if [[ ! -f curl.tar.gz ]]; then
+    echo -e "This version of CURL not found.  Aborting!"
+    echo ""
+    exit 1
+  fi
+  # install libcurl-dev
+  cd /tmp
+  tar xvfz curl.tar.gz
+  cd $src_root
+  ./configure --prefix=/usr
+  make
+  make install
+  cd /tmp
+  rm -rf $src_root
+  rm curl.tar.gz
+  if [[ $? -gt 0 ]]; then
+    echo -e "CURL Compilation ERROR!  Aborting!"
+    echo ""
+    exit 1
+  fi
 else
-	cd /
-	wget $bin_source/$src_root.zip
-	# unzip
-	unzip -o $src_root.zip
-	# create new symlinks
-	ln -s -f /usr/lib/libcurl.so.4.6.0 /usr/lib/libcurl.so
-	ln -s -f /usr/lib/libcurl.so.4.6.0 /usr/lib/libcurl.so.4
-	rm $src_root.zip
+  cd /
+  wget $bin_source/$src_root.zip
+  # unzip
+  unzip -o $src_root.zip
+  # create new symlinks
+  ln -s -f /usr/lib/libcurl.so.4.6.0 /usr/lib/libcurl.so
+  ln -s -f /usr/lib/libcurl.so.4.6.0 /usr/lib/libcurl.so.4
+  rm $src_root.zip
 fi
 curl --version
 echo "CURL Compilation and Installation DONE!"

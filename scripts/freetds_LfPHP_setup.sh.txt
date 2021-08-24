@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O freetds-1.00.112.tar.gz ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.112.tar.gz
-tar -xzvf freetds-1.00.112.tar.gz
-cd freetds-1.00.112
-./configure --prefix=/usr &&
-make &&
-make install
-if [[ $? -gt 0 ]]; then
-echo -e "\nFreeTDS Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nFreeTDS Compilation and Installation DONE!\n"
+  wget -O freetds-1.00.112.tar.gz ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.112.tar.gz
+  tar -xzvf freetds-1.00.112.tar.gz
+  cd freetds-1.00.112
+  ./configure --prefix=/usr &&
+    make &&
+    make install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nFreeTDS Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nFreeTDS Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O freetds-1.00.112-lfphp.tar.gz https://websiteurl/freetds-1.00.112-lfphp.tar.gz &&
-tar -xzvf freetds-1.00.112-lfphp.tar.gz &&
-cd freetds-1.00.112 &&
-make install &&
-cd &&
-rm -rf freetds-1.00.112
-if [[ $? -gt 0 ]]; then
-echo -e "\nFreeTDS Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nFreeTDS Installation DONE!\n"
+  cd &&
+    wget -O freetds-1.00.112-lfphp.tar.gz https://websiteurl/freetds-1.00.112-lfphp.tar.gz &&
+    tar -xzvf freetds-1.00.112-lfphp.tar.gz &&
+    cd freetds-1.00.112 &&
+    make install &&
+    cd &&
+    rm -rf freetds-1.00.112
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nFreeTDS Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nFreeTDS Installation DONE!\n"
 fi
 cd

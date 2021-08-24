@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O giflib-5.1.4.tar.bz2 https://downloads.sourceforge.net/giflib/giflib-5.1.4.tar.bz2
-tar -xvf giflib-5.1.4.tar.bz2
-cd giflib-5.1.4
-./configure --prefix=/usr --disable-static &&
-make &&
-make install
-if [[ $? -gt 0 ]]; then
-echo -e "\nGiflib Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nGiflib Compilation and Installation DONE!\n"
+  wget -O giflib-5.1.4.tar.bz2 https://downloads.sourceforge.net/giflib/giflib-5.1.4.tar.bz2
+  tar -xvf giflib-5.1.4.tar.bz2
+  cd giflib-5.1.4
+  ./configure --prefix=/usr --disable-static &&
+    make &&
+    make install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nGiflib Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nGiflib Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O giflib-5.1.4-lfphp.tar.gz https://websiteurl/giflib-5.1.4-lfphp.tar.gz &&
-tar -xzvf giflib-5.1.4-lfphp.tar.gz &&
-cd giflib-5.1.4 &&
-make install &&
-cd &&
-rm -rf giflib-5.1.4
-if [[ $? -gt 0 ]]; then
-echo -e "\nGiflib Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nGiflib Installation DONE!\n"
+  cd &&
+    wget -O giflib-5.1.4-lfphp.tar.gz https://websiteurl/giflib-5.1.4-lfphp.tar.gz &&
+    tar -xzvf giflib-5.1.4-lfphp.tar.gz &&
+    cd giflib-5.1.4 &&
+    make install &&
+    cd &&
+    rm -rf giflib-5.1.4
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nGiflib Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nGiflib Installation DONE!\n"
 fi
 cd

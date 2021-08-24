@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O alsa-lib-1.1.4.1.tar.bz2 ftp://ftp.alsa-project.org/pub/lib/alsa-lib-1.1.4.1.tar.bz2
-tar -xvf alsa-lib-1.1.4.1.tar.bz2
-cd alsa-lib-1.1.4.1
-./configure --prefix=/usr &&
-make &&
-make install
-if [[ $? -gt 0 ]]; then
-echo -e "\nAlsa Library Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nAlsa Library Compilation and Installation DONE!\n"
+  wget -O alsa-lib-1.1.4.1.tar.bz2 ftp://ftp.alsa-project.org/pub/lib/alsa-lib-1.1.4.1.tar.bz2
+  tar -xvf alsa-lib-1.1.4.1.tar.bz2
+  cd alsa-lib-1.1.4.1
+  ./configure --prefix=/usr &&
+    make &&
+    make install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nAlsa Library Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nAlsa Library Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O alsa-lib-1.1.4.1-lfphp.tar.gz https://websiteurl/alsa-lib-1.1.4.1-lfphp.tar.gz &&
-tar -xzvf alsa-lib-1.1.4.1-lfphp.tar.gz &&
-cd alsa-lib-1.1.4.1 &&
-make install &&
-cd &&
-rm -rf alsa-lib-1.1.4.1
-if [[ $? -gt 0 ]]; then
-echo -e "\nAlsa Library Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nAlsa Library Installation DONE!\n"
+  cd &&
+    wget -O alsa-lib-1.1.4.1-lfphp.tar.gz https://websiteurl/alsa-lib-1.1.4.1-lfphp.tar.gz &&
+    tar -xzvf alsa-lib-1.1.4.1-lfphp.tar.gz &&
+    cd alsa-lib-1.1.4.1 &&
+    make install &&
+    cd &&
+    rm -rf alsa-lib-1.1.4.1
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nAlsa Library Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nAlsa Library Installation DONE!\n"
 fi
 cd

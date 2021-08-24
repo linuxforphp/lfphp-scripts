@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-git clone https://github.com/ninja-build/ninja/
-cd ninja
-./configure.py --bootstrap &&
-cp ninja /usr/bin &&
-cd &&
-rm -rf ninja
-if [[ $? -gt 0 ]]; then
-echo -e "\nNinja Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nNinja Compilation and Installation DONE!\n"
+  git clone https://github.com/ninja-build/ninja/
+  cd ninja
+  ./configure.py --bootstrap &&
+    cp ninja /usr/bin &&
+    cd &&
+    rm -rf ninja
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nNinja Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nNinja Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O ninja-latest-lfphp.tar.gz https://websiteurl/ninja-latest-lfphp.tar.gz &&
-tar -xzvf ninja-latest-lfphp.tar.gz &&
-cd ninja &&
-cp ninja /usr/bin &&
-cd &&
-rm -rf ninja
-if [[ $? -gt 0 ]]; then
-echo -e "\nNinja Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nNinja Installation DONE!\n"
+  cd &&
+    wget -O ninja-latest-lfphp.tar.gz https://websiteurl/ninja-latest-lfphp.tar.gz &&
+    tar -xzvf ninja-latest-lfphp.tar.gz &&
+    cd ninja &&
+    cp ninja /usr/bin &&
+    cd &&
+    rm -rf ninja
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nNinja Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nNinja Installation DONE!\n"
 fi
 cd

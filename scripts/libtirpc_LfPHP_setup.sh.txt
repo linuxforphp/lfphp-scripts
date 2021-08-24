@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget https://downloads.sourceforge.net/libtirpc/libtirpc-1.3.1.tar.bz2 &&
-tar -xvf libtirpc-1.3.1.tar.bz2 &&
-cd libtirpc-1.3.1 &&
-./configure --prefix=/usr --sysconfdir=/etc --disable-static --disable-gssapi &&
-make &&
-make install &&
-mv -v /usr/lib/libtirpc.so.* /lib &&
-ln -sfv ../../lib/libtirpc.so.3.0.0 /usr/lib/libtirpc.so
-if [[ $? -gt 0 ]]; then
-echo -e "\nTIRPC Library Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nTIRPC Library Compilation and Installation DONE!\n"
+  wget https://downloads.sourceforge.net/libtirpc/libtirpc-1.3.1.tar.bz2 &&
+    tar -xvf libtirpc-1.3.1.tar.bz2 &&
+    cd libtirpc-1.3.1 &&
+    ./configure --prefix=/usr --sysconfdir=/etc --disable-static --disable-gssapi &&
+    make &&
+    make install &&
+    mv -v /usr/lib/libtirpc.so.* /lib &&
+    ln -sfv ../../lib/libtirpc.so.3.0.0 /usr/lib/libtirpc.so
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nTIRPC Library Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nTIRPC Library Compilation and Installation DONE!\n"
 else
-wget -O libtirpc-1.3.1-lfphp.tar.gz https://websiteurl/libtirpc-1.3.1-lfphp.tar.gz &&
-tar -xvf libtirpc-1.3.1-lfphp.tar.gz &&
-cd libtirpc-1.3.1 &&
-make install &&
-mv -v /usr/lib/libtirpc.so.* /lib &&
-ln -sfv ../../lib/libtirpc.so.3.0.0 /usr/lib/libtirpc.so
-if [[ $? -gt 0 ]]; then
-echo -e "\nTIRPC Library Installation ERROR!  Aborting!\n"
-exit 1
-fi
-cd
-rm -rf libtirpc-1.3.1
-echo -e "\nTIRPC Library Installation DONE!\n"
+  wget -O libtirpc-1.3.1-lfphp.tar.gz https://websiteurl/libtirpc-1.3.1-lfphp.tar.gz &&
+    tar -xvf libtirpc-1.3.1-lfphp.tar.gz &&
+    cd libtirpc-1.3.1 &&
+    make install &&
+    mv -v /usr/lib/libtirpc.so.* /lib &&
+    ln -sfv ../../lib/libtirpc.so.3.0.0 /usr/lib/libtirpc.so
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nTIRPC Library Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  cd
+  rm -rf libtirpc-1.3.1
+  echo -e "\nTIRPC Library Installation DONE!\n"
 fi
 cd

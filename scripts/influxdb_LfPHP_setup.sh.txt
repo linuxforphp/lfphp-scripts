@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O influxdb-1.8.0_linux_amd64.tar.gz https://dl.influxdata.com/influxdb/releases/influxdb-1.8.0_linux_amd64.tar.gz &&
-tar -xvf influxdb-1.8.0_linux_amd64.tar.gz &&
-cp -rf influxdb-1.8.0-1/* / &&
-rm -rf influxdb-1.8.0-1 influxdb-1.8.0_linux_amd64.tar.gz
-if [[ $? -gt 0 ]]; then
-echo -e "\nInfluxDB Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nInfluxDB Compilation and Installation DONE!\n"
+  wget -O influxdb-1.8.0_linux_amd64.tar.gz https://dl.influxdata.com/influxdb/releases/influxdb-1.8.0_linux_amd64.tar.gz &&
+    tar -xvf influxdb-1.8.0_linux_amd64.tar.gz &&
+    cp -rf influxdb-1.8.0-1/* / &&
+    rm -rf influxdb-1.8.0-1 influxdb-1.8.0_linux_amd64.tar.gz
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nInfluxDB Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nInfluxDB Compilation and Installation DONE!\n"
 else
-wget -O influxdb-1.8.0_linux_amd64-lfphp.tar.gz https://websiteurl/influxdb-1.8.0_linux_amd64-lfphp.tar.gz &&
-tar -xvf influxdb-1.8.0_linux_amd64-lfphp.tar.gz &&
-cp -rf influxdb-1.8.0-1/* / &&
-rm -rf influxdb-1.8.0-1 influxdb-1.8.0_linux_amd64-lfphp.tar.gz
-if [[ $? -gt 0 ]]; then
-echo -e "\nInfluxDB Installation ERROR!  Aborting!\n"
-exit 1
+  wget -O influxdb-1.8.0_linux_amd64-lfphp.tar.gz https://websiteurl/influxdb-1.8.0_linux_amd64-lfphp.tar.gz &&
+    tar -xvf influxdb-1.8.0_linux_amd64-lfphp.tar.gz &&
+    cp -rf influxdb-1.8.0-1/* / &&
+    rm -rf influxdb-1.8.0-1 influxdb-1.8.0_linux_amd64-lfphp.tar.gz
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nInfluxDB Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nInfluxDB Installation DONE!\n"
 fi
-echo -e "\nInfluxDB Installation DONE!\n"
-fi
-cat >/etc/init.d/influxdb << 'EOF'
+cat >/etc/init.d/influxdb <<'EOF'
 #!/bin/sh
 #######################################################################
 # Begin /etc/init.d/influxdb
@@ -86,18 +86,18 @@ esac
 # End /etc/init.d/influxdb
 EOF
 chmod +x /etc/init.d/influxdb
-ln -sf  ../init.d/influxdb /etc/rc.d/rc0.d/K28influxdb
-ln -sf  ../init.d/influxdb /etc/rc.d/rc1.d/K28influxdb
-ln -sf  ../init.d/influxdb /etc/rc.d/rc2.d/K28influxdb
-ln -sf  ../init.d/influxdb /etc/rc.d/rc3.d/S32influxdb
-ln -sf  ../init.d/influxdb /etc/rc.d/rc4.d/S32influxdb
-ln -sf  ../init.d/influxdb /etc/rc.d/rc5.d/S32influxdb
-ln -sf  ../init.d/influxdb /etc/rc.d/rc6.d/K28influxdb
+ln -sf ../init.d/influxdb /etc/rc.d/rc0.d/K28influxdb
+ln -sf ../init.d/influxdb /etc/rc.d/rc1.d/K28influxdb
+ln -sf ../init.d/influxdb /etc/rc.d/rc2.d/K28influxdb
+ln -sf ../init.d/influxdb /etc/rc.d/rc3.d/S32influxdb
+ln -sf ../init.d/influxdb /etc/rc.d/rc4.d/S32influxdb
+ln -sf ../init.d/influxdb /etc/rc.d/rc5.d/S32influxdb
+ln -sf ../init.d/influxdb /etc/rc.d/rc6.d/K28influxdb
 mkdir -p /etc/sv/influxdb/supervise &&
-chmod -R 700 /etc/sv/influxdb/supervise &&
-touch /etc/sv/influxdb/run &&
-echo -e "#!/usr/bin/env bash\n" > /etc/sv/influxdb/run &&
-echo "exec influxd -config /etc/influxdb/influxdb.conf" >> /etc/sv/influxdb/run &&
-chmod +x /etc/sv/influxdb/run &&
-ln -s /etc/sv/influxdb /services
+  chmod -R 700 /etc/sv/influxdb/supervise &&
+  touch /etc/sv/influxdb/run &&
+  echo -e "#!/usr/bin/env bash\n" >/etc/sv/influxdb/run &&
+  echo "exec influxd -config /etc/influxdb/influxdb.conf" >>/etc/sv/influxdb/run &&
+  chmod +x /etc/sv/influxdb/run &&
+  ln -s /etc/sv/influxdb /services
 cd

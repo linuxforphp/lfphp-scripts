@@ -1,39 +1,39 @@
 #!/usr/bin/env bash
 cd
 if [[ -d /usr/lib/node_modules ]]; then
-rm -rf /usr/lib/node_modules/ /usr/bin/npm
+  rm -rf /usr/lib/node_modules/ /usr/bin/npm
 fi
 if [[ ! -z "$COMPILE" ]]; then
-cd
-wget -O node-12.22.3.tar.gz https://github.com/nodejs/node/archive/v12.22.3.tar.gz
-tar -xvf node-12.22.3.tar.gz
-cd node-12.22.3
-PKG_CONFIG_PATH=/usr/lib/openssl-1.0/pkgconfig \
-./configure --prefix=/usr &&
-make -j4 &&
-make install &&
-ln -sf node /usr/share/doc/node-12.22.3
-if [[ $? -gt 0 ]]; then
-echo -e "\nNodeJS Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-cd
-rm -rf which-2.21
-rm -rf node-12.22.3
-echo -e "\nNodeJS Compilation and Installation DONE!\n"
-node -e "console.log('Hello from Node.js ' + process.version)"
+  cd
+  wget -O node-12.22.3.tar.gz https://github.com/nodejs/node/archive/v12.22.3.tar.gz
+  tar -xvf node-12.22.3.tar.gz
+  cd node-12.22.3
+  PKG_CONFIG_PATH=/usr/lib/openssl-1.0/pkgconfig \
+    ./configure --prefix=/usr &&
+    make -j4 &&
+    make install &&
+    ln -sf node /usr/share/doc/node-12.22.3
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nNodeJS Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  cd
+  rm -rf which-2.21
+  rm -rf node-12.22.3
+  echo -e "\nNodeJS Compilation and Installation DONE!\n"
+  node -e "console.log('Hello from Node.js ' + process.version)"
 else
-wget -O node-v12.22.3-linux-x64.tar.xz https://nodejs.org/dist/v12.22.3/node-v12.22.3-linux-x64.tar.xz &&
-tar -xvf node-v12.22.3-linux-x64.tar.xz &&
-cd node-v12.22.3-linux-x64 &&
-rm CHANGELOG.md LICENSE README.md &&
-cp -rf * /usr
-if [[ $? -gt 0 ]]; then
-echo -e "\nNodeJS Installation ERROR!  Aborting!\n"
-exit 1
-fi
-cd
-rm -rf node-v12.22.3-linux-x64
-echo -e "\nNodeJS Installation DONE!\n"
-node -e "console.log('Hello from Node.js ' + process.version)"
+  wget -O node-v12.22.3-linux-x64.tar.xz https://nodejs.org/dist/v12.22.3/node-v12.22.3-linux-x64.tar.xz &&
+    tar -xvf node-v12.22.3-linux-x64.tar.xz &&
+    cd node-v12.22.3-linux-x64 &&
+    rm CHANGELOG.md LICENSE README.md &&
+    cp -rf * /usr
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nNodeJS Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  cd
+  rm -rf node-v12.22.3-linux-x64
+  echo -e "\nNodeJS Installation DONE!\n"
+  node -e "console.log('Hello from Node.js ' + process.version)"
 fi

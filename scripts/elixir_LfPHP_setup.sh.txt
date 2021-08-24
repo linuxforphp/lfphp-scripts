@@ -1,42 +1,42 @@
 #!/usr/bin/env bash
 java -version
 if [[ $? -gt 0 ]]; then
-echo -e "\n\n###############################################################"
-echo -e "\nYou must have a login shell to install this package...\n\nPlease enter the command 'login root' before installing Elixir!\n"
-echo -e "###############################################################\n"
-exit 1
+  echo -e "\n\n###############################################################"
+  echo -e "\nYou must have a login shell to install this package...\n\nPlease enter the command 'login root' before installing Elixir!\n"
+  echo -e "###############################################################\n"
+  exit 1
 fi
 export LANG=en_US.UTF-8 &&
-sed -i 's/LANG=en_US.ISO-8859-1/LANG=en_US.UTF-8/' /etc/profile.d/i18n.sh
+  sed -i 's/LANG=en_US.ISO-8859-1/LANG=en_US.UTF-8/' /etc/profile.d/i18n.sh
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O v1.10.2.tar.gz https://github.com/elixir-lang/elixir/archive/v1.10.2.tar.gz &&
-tar -xvf v1.10.2.tar.gz &&
-cd elixir-1.10.2 &&
-make &&
-cp -rf bin/* /usr/bin &&
-cp -rf lib/* /usr/lib &&
-cd .. &&
-rm -rf elixir-1.10.2 &&
-rm v1.10.2.tar.gz
-if [[ $? -gt 0 ]]; then
-echo -e "\nElixir Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nElixir Compilation and Installation DONE!\n"
+  wget -O v1.10.2.tar.gz https://github.com/elixir-lang/elixir/archive/v1.10.2.tar.gz &&
+    tar -xvf v1.10.2.tar.gz &&
+    cd elixir-1.10.2 &&
+    make &&
+    cp -rf bin/* /usr/bin &&
+    cp -rf lib/* /usr/lib &&
+    cd .. &&
+    rm -rf elixir-1.10.2 &&
+    rm v1.10.2.tar.gz
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nElixir Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nElixir Compilation and Installation DONE!\n"
 else
-wget -O elixir-x86_64-v1.10.2-lfphp.tar.gz https://websiteurl/elixir-x86_64-v1.10.2-lfphp.tar.gz &&
-tar -xvf elixir-x86_64-v1.10.2-lfphp.tar.gz &&
-cd elixir-1.10.2 &&
-cp -rf bin/* /usr/bin &&
-cp -rf lib/* /usr/lib &&
-cd .. &&
-rm -rf elixir-1.10.2 &&
-rm elixir-x86_64-v1.10.2-lfphp.tar.gz
-if [[ $? -gt 0 ]]; then
-echo -e "\nElixir Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nElixir Installation DONE!\n"
+  wget -O elixir-x86_64-v1.10.2-lfphp.tar.gz https://websiteurl/elixir-x86_64-v1.10.2-lfphp.tar.gz &&
+    tar -xvf elixir-x86_64-v1.10.2-lfphp.tar.gz &&
+    cd elixir-1.10.2 &&
+    cp -rf bin/* /usr/bin &&
+    cp -rf lib/* /usr/lib &&
+    cd .. &&
+    rm -rf elixir-1.10.2 &&
+    rm elixir-x86_64-v1.10.2-lfphp.tar.gz
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nElixir Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nElixir Installation DONE!\n"
 fi
 cd

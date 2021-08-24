@@ -3,17 +3,17 @@ cd
 git clone https://github.com/linuxforphp/imap
 cd imap
 make slx SSLINCLUDE=/usr/include/openssl GSSDIR=/usr/include/krb5 &&
-mkdir -p /usr/local/imap-2007f/{c-client,lib,include} &&
-cp -f c-client/c-client.a /usr/local/imap-2007f/c-client &&
-cp -f c-client/c-client.a /usr/local/imap-2007f/c-client/libc-client.a &&
-find ./c-client -name "*.h" -exec cp -f {} /usr/local/imap-2007f/include \; &&
-find ./c-client -name "*.c" -exec cp -f {} /usr/local/imap-2007f/lib \; &&
-ln -s /usr/local/imap-2007f/c-client/c-client.a /usr/lib &&
-ln -s /usr/local/imap-2007f/c-client/libc-client.a /usr/lib &&
-find /usr/local/imap-2007f/include -name "*.h" -exec ln -s {} /usr/include \;
+  mkdir -p /usr/local/imap-2007f/{c-client,lib,include} &&
+  cp -f c-client/c-client.a /usr/local/imap-2007f/c-client &&
+  cp -f c-client/c-client.a /usr/local/imap-2007f/c-client/libc-client.a &&
+  find ./c-client -name "*.h" -exec cp -f {} /usr/local/imap-2007f/include \; &&
+  find ./c-client -name "*.c" -exec cp -f {} /usr/local/imap-2007f/lib \; &&
+  ln -s /usr/local/imap-2007f/c-client/c-client.a /usr/lib &&
+  ln -s /usr/local/imap-2007f/c-client/libc-client.a /usr/lib &&
+  find /usr/local/imap-2007f/include -name "*.h" -exec ln -s {} /usr/include \;
 if [[ $? -gt 0 ]]; then
-echo -e "\nIMAP C Client Compilation ERROR!  Aborting!\n"
-exit 1
+  echo -e "\nIMAP C Client Compilation ERROR!  Aborting!\n"
+  exit 1
 fi
 echo -e "\nIMAP C Client Installation DONE!\n"
 cd

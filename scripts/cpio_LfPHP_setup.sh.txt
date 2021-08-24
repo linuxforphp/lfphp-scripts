@@ -1,45 +1,45 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O cpio-2.12.tar.bz2 https://ftp.gnu.org/gnu/cpio/cpio-2.12.tar.bz2
-tar -xvf cpio-2.12.tar.bz2
-cd cpio-2.12
-./configure --prefix=/usr \
---bindir=/bin \
---enable-mt \
---with-rmt=/usr/libexec/rmt &&
-make &&
-makeinfo --html -o doc/html doc/cpio.texi &&
-makeinfo --html --no-split -o doc/cpio.html doc/cpio.texi &&
-makeinfo --plaintext -o doc/cpio.txt  doc/cpio.texi &&
-make install &&
-install -v -m755 -d /usr/share/doc/cpio-2.12/html &&
-install -v -m644 doc/html/* \
-/usr/share/doc/cpio-2.12/html &&
-install -v -m644 doc/cpio.{html,txt} \
-/usr/share/doc/cpio-2.12
-if [[ $? -gt 0 ]]; then
-echo -e "\nCPIO Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nCPIO Compilation and Installation DONE!\n"
+  wget -O cpio-2.12.tar.bz2 https://ftp.gnu.org/gnu/cpio/cpio-2.12.tar.bz2
+  tar -xvf cpio-2.12.tar.bz2
+  cd cpio-2.12
+  ./configure --prefix=/usr \
+    --bindir=/bin \
+    --enable-mt \
+    --with-rmt=/usr/libexec/rmt &&
+    make &&
+    makeinfo --html -o doc/html doc/cpio.texi &&
+    makeinfo --html --no-split -o doc/cpio.html doc/cpio.texi &&
+    makeinfo --plaintext -o doc/cpio.txt doc/cpio.texi &&
+    make install &&
+    install -v -m755 -d /usr/share/doc/cpio-2.12/html &&
+    install -v -m644 doc/html/* \
+      /usr/share/doc/cpio-2.12/html &&
+    install -v -m644 doc/cpio.{html,txt} \
+      /usr/share/doc/cpio-2.12
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nCPIO Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nCPIO Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O cpio-2.12-lfphp.tar.gz https://websiteurl/cpio-2.12-lfphp.tar.gz &&
-tar -xzvf cpio-2.12-lfphp.tar.gz &&
-cd cpio-2.12 &&
-make install &&
-install -v -m755 -d /usr/share/doc/cpio-2.12/html &&
-install -v -m644 doc/html/* \
-/usr/share/doc/cpio-2.12/html &&
-install -v -m644 doc/cpio.{html,txt} \
-/usr/share/doc/cpio-2.12 &&
-cd &&
-rm -rf cpio-2.12
-if [[ $? -gt 0 ]]; then
-echo -e "\nCPIO Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nCPIO Installation DONE!\n"
+  cd &&
+    wget -O cpio-2.12-lfphp.tar.gz https://websiteurl/cpio-2.12-lfphp.tar.gz &&
+    tar -xzvf cpio-2.12-lfphp.tar.gz &&
+    cd cpio-2.12 &&
+    make install &&
+    install -v -m755 -d /usr/share/doc/cpio-2.12/html &&
+    install -v -m644 doc/html/* \
+      /usr/share/doc/cpio-2.12/html &&
+    install -v -m644 doc/cpio.{html,txt} \
+      /usr/share/doc/cpio-2.12 &&
+    cd &&
+    rm -rf cpio-2.12
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nCPIO Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nCPIO Installation DONE!\n"
 fi
 cd

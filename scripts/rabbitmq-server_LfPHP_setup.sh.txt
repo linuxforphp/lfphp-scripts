@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 java -version
 if [[ $? -gt 0 ]]; then
-echo -e "\n\n###############################################################"
-echo -e "\nYou must have a login shell to install this package...\n\nPlease enter the command 'login root' before installing Rabbit MQ!\n"
-echo -e "###############################################################\n"
-exit 1
+  echo -e "\n\n###############################################################"
+  echo -e "\nYou must have a login shell to install this package...\n\nPlease enter the command 'login root' before installing Rabbit MQ!\n"
+  echo -e "###############################################################\n"
+  exit 1
 fi
 cd
 export LANG=en_US.UTF-8 &&
-sed -i 's/LANG=en_US.ISO-8859-1/LANG=en_US.UTF-8/' /etc/profile.d/i18n.sh
+  sed -i 's/LANG=en_US.ISO-8859-1/LANG=en_US.UTF-8/' /etc/profile.d/i18n.sh
 #git clone https://github.com/rabbitmq/rabbitmq-server.git
 #cd rabbitmq-server
 #make
@@ -24,7 +24,7 @@ cd ..
 rm -rf rabbitmq_server-3.8.3
 rm rabbitmq-server-generic-unix-3.8.3.tar.xz
 touch /etc/init.d/rabbitmq-server
-cat >/etc/init.d/rabbitmq-server << 'EOF'
+cat >/etc/init.d/rabbitmq-server <<'EOF'
 #! /bin/sh
 #######################################################################
 # Begin /etc/init.d/rabbitmq-server
@@ -165,15 +165,15 @@ esac
 
 EOF
 chmod +x /etc/init.d/rabbitmq-server
-ln -sf  ../init.d/rabbitmq-server /etc/rc.d/rc0.d/K28rabbitmq-server
-ln -sf  ../init.d/rabbitmq-server /etc/rc.d/rc1.d/K28rabbitmq-server
-ln -sf  ../init.d/rabbitmq-server /etc/rc.d/rc2.d/K28rabbitmq-server
-ln -sf  ../init.d/rabbitmq-server /etc/rc.d/rc3.d/S32rabbitmq-server
-ln -sf  ../init.d/rabbitmq-server /etc/rc.d/rc4.d/S32rabbitmq-server
-ln -sf  ../init.d/rabbitmq-server /etc/rc.d/rc5.d/S32rabbitmq-server
-ln -sf  ../init.d/rabbitmq-server /etc/rc.d/rc6.d/K28rabbitmq-server
+ln -sf ../init.d/rabbitmq-server /etc/rc.d/rc0.d/K28rabbitmq-server
+ln -sf ../init.d/rabbitmq-server /etc/rc.d/rc1.d/K28rabbitmq-server
+ln -sf ../init.d/rabbitmq-server /etc/rc.d/rc2.d/K28rabbitmq-server
+ln -sf ../init.d/rabbitmq-server /etc/rc.d/rc3.d/S32rabbitmq-server
+ln -sf ../init.d/rabbitmq-server /etc/rc.d/rc4.d/S32rabbitmq-server
+ln -sf ../init.d/rabbitmq-server /etc/rc.d/rc5.d/S32rabbitmq-server
+ln -sf ../init.d/rabbitmq-server /etc/rc.d/rc6.d/K28rabbitmq-server
 touch /etc/rabbitmq/rabbitmq.conf
-cat >/etc/rabbitmq/rabbitmq.conf << 'EOF'
+cat >/etc/rabbitmq/rabbitmq.conf <<'EOF'
 # ======================================
 # RabbitMQ broker section
 # ======================================
@@ -1147,7 +1147,7 @@ cat >/etc/rabbitmq/rabbitmq.conf << 'EOF'
 
 EOF
 touch /etc/rabbitmq/rabbitmq-env.conf
-cat >/etc/rabbitmq/rabbitmq-env.conf << 'EOF'
+cat >/etc/rabbitmq/rabbitmq-env.conf <<'EOF'
 # Example rabbitmq-env.conf file entries. Note that the variables
 # do not have the RABBITMQ_ prefix.
 #
@@ -1186,7 +1186,7 @@ PID_FILE=/usr/var/lib/rabbitmq/mnesia/rabbitmq.pid
 
 EOF
 touch /etc/rabbitmq/advanced.config.dist
-cat >>/etc/rabbitmq/advanced.config.dist << 'EOF'
+cat >>/etc/rabbitmq/advanced.config.dist <<'EOF'
 [
 
 
@@ -1296,21 +1296,21 @@ cat >>/etc/rabbitmq/advanced.config.dist << 'EOF'
 
 EOF
 rabbitmq-plugins enable rabbitmq_management &&
-/etc/init.d/rabbitmq-server start &&
-sleep 10 &&
-wget -O /usr/sbin/rabbitmqadmin http://localhost:15672/cli/rabbitmqadmin &&
-chmod +x /usr/sbin/rabbitmqadmin &&
-/etc/init.d/rabbitmq-server stop &&
-mkdir -p /etc/sv/rabbitmq-server/supervise &&
-chmod -R 700 /etc/sv/rabbitmq-server/supervise &&
-touch /etc/sv/rabbitmq-server/run &&
-echo -e "#!/usr/bin/env bash\n" > /etc/sv/rabbitmq-server/run &&
-echo "exec /usr/sbin/rabbitmq-server > /dev/null 2>&1" >> /etc/sv/rabbitmq-server/run &&
-chmod +x /etc/sv/rabbitmq-server/run &&
-ln -s /etc/sv/rabbitmq-server /services
+  /etc/init.d/rabbitmq-server start &&
+  sleep 10 &&
+  wget -O /usr/sbin/rabbitmqadmin http://localhost:15672/cli/rabbitmqadmin &&
+  chmod +x /usr/sbin/rabbitmqadmin &&
+  /etc/init.d/rabbitmq-server stop &&
+  mkdir -p /etc/sv/rabbitmq-server/supervise &&
+  chmod -R 700 /etc/sv/rabbitmq-server/supervise &&
+  touch /etc/sv/rabbitmq-server/run &&
+  echo -e "#!/usr/bin/env bash\n" >/etc/sv/rabbitmq-server/run &&
+  echo "exec /usr/sbin/rabbitmq-server > /dev/null 2>&1" >>/etc/sv/rabbitmq-server/run &&
+  chmod +x /etc/sv/rabbitmq-server/run &&
+  ln -s /etc/sv/rabbitmq-server /services
 if [[ $? -gt 0 ]]; then
-echo -e "\nRabbitMQ Installation ERROR!  Aborting!\n"
-exit 1
+  echo -e "\nRabbitMQ Installation ERROR!  Aborting!\n"
+  exit 1
 else
-echo -e "\nRabbitMQ Installation DONE!\n"
+  echo -e "\nRabbitMQ Installation DONE!\n"
 fi

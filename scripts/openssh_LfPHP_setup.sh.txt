@@ -1,65 +1,65 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O openssh-8.0p1.tar.gz http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.0p1.tar.gz
-tar -xzvf openssh-8.0p1.tar.gz
-cd openssh-8.0p1
-install -v -m700 -d /var/lib/sshd &&
-chown -v root:sys /var/lib/sshd &&
-groupadd -g 50 sshd &&
-useradd  -c 'sshd PrivSep' \
--d /var/lib/sshd \
--g sshd \
--s /bin/false \
--u 50 sshd &&
-./configure --prefix=/usr \
---sysconfdir=/etc/ssh \
---with-md5-passwords \
---with-privsep-path=/var/lib/sshd &&
-make &&
-make install &&
-install -v -m755 contrib/ssh-copy-id /usr/bin &&
-install -v -m644 contrib/ssh-copy-id.1 \
-/usr/share/man/man1 &&
-install -v -m755 -d /usr/share/doc/openssh-8.0p1 &&
-install -v -m644 INSTALL LICENCE OVERVIEW README* \
-/usr/share/doc/openssh-8.0p1 &&
-cd &&
-rm -rf openssh-8.0p1
-if [[ $? -gt 0 ]]; then
-echo -e "\nOpenSSH Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nOpenSSH Compilation and Installation DONE!\n"
+  wget -O openssh-8.0p1.tar.gz http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-8.0p1.tar.gz
+  tar -xzvf openssh-8.0p1.tar.gz
+  cd openssh-8.0p1
+  install -v -m700 -d /var/lib/sshd &&
+    chown -v root:sys /var/lib/sshd &&
+    groupadd -g 50 sshd &&
+    useradd -c 'sshd PrivSep' \
+      -d /var/lib/sshd \
+      -g sshd \
+      -s /bin/false \
+      -u 50 sshd &&
+    ./configure --prefix=/usr \
+      --sysconfdir=/etc/ssh \
+      --with-md5-passwords \
+      --with-privsep-path=/var/lib/sshd &&
+    make &&
+    make install &&
+    install -v -m755 contrib/ssh-copy-id /usr/bin &&
+    install -v -m644 contrib/ssh-copy-id.1 \
+      /usr/share/man/man1 &&
+    install -v -m755 -d /usr/share/doc/openssh-8.0p1 &&
+    install -v -m644 INSTALL LICENCE OVERVIEW README* \
+      /usr/share/doc/openssh-8.0p1 &&
+    cd &&
+    rm -rf openssh-8.0p1
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nOpenSSH Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nOpenSSH Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O openssh-8.0p1-lfphp.tar.gz https://websiteurl/openssh-8.0p1-lfphp.tar.gz &&
-tar -xzvf openssh-8.0p1-lfphp.tar.gz &&
-cd openssh-8.0p1 &&
-install -v -m700 -d /var/lib/sshd &&
-chown -v root:sys /var/lib/sshd &&
-groupadd -g 50 sshd &&
-useradd  -c 'sshd PrivSep' \
--d /var/lib/sshd \
--g sshd \
--s /bin/false \
--u 50 sshd &&
-make install &&
-install -v -m755 contrib/ssh-copy-id /usr/bin &&
-install -v -m644 contrib/ssh-copy-id.1 \
-/usr/share/man/man1 &&
-install -v -m755 -d /usr/share/doc/openssh-8.0p1 &&
-install -v -m644 INSTALL LICENCE OVERVIEW README* \
-/usr/share/doc/openssh-8.0p1 &&
-cd &&
-rm -rf openssh-8.0p1
-if [[ $? -gt 0 ]]; then
-echo -e "\nOpenSSH Installation ERROR!  Aborting!\n"
-exit 1
+  cd &&
+    wget -O openssh-8.0p1-lfphp.tar.gz https://websiteurl/openssh-8.0p1-lfphp.tar.gz &&
+    tar -xzvf openssh-8.0p1-lfphp.tar.gz &&
+    cd openssh-8.0p1 &&
+    install -v -m700 -d /var/lib/sshd &&
+    chown -v root:sys /var/lib/sshd &&
+    groupadd -g 50 sshd &&
+    useradd -c 'sshd PrivSep' \
+      -d /var/lib/sshd \
+      -g sshd \
+      -s /bin/false \
+      -u 50 sshd &&
+    make install &&
+    install -v -m755 contrib/ssh-copy-id /usr/bin &&
+    install -v -m644 contrib/ssh-copy-id.1 \
+      /usr/share/man/man1 &&
+    install -v -m755 -d /usr/share/doc/openssh-8.0p1 &&
+    install -v -m644 INSTALL LICENCE OVERVIEW README* \
+      /usr/share/doc/openssh-8.0p1 &&
+    cd &&
+    rm -rf openssh-8.0p1
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nOpenSSH Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nOpenSSH Installation DONE!\n"
 fi
-echo -e "\nOpenSSH Installation DONE!\n"
-fi
-cat >/etc/init.d/sshd << 'EOF'
+cat >/etc/init.d/sshd <<'EOF'
 #!/bin/sh
 ########################################################################
 # Begin sshd
@@ -139,11 +139,11 @@ esac
 # End sshd bootscript
 EOF
 chmod +x /etc/init.d/sshd
-ln -sf  ../init.d/sshd /etc/rc.d/rc0.d/K30sshd
-ln -sf  ../init.d/sshd /etc/rc.d/rc1.d/K30sshd
-ln -sf  ../init.d/sshd /etc/rc.d/rc2.d/K30sshd
-ln -sf  ../init.d/sshd /etc/rc.d/rc3.d/S30sshd
-ln -sf  ../init.d/sshd /etc/rc.d/rc4.d/S30sshd
-ln -sf  ../init.d/sshd /etc/rc.d/rc5.d/S30sshd
-ln -sf  ../init.d/sshd /etc/rc.d/rc6.d/K30sshd
+ln -sf ../init.d/sshd /etc/rc.d/rc0.d/K30sshd
+ln -sf ../init.d/sshd /etc/rc.d/rc1.d/K30sshd
+ln -sf ../init.d/sshd /etc/rc.d/rc2.d/K30sshd
+ln -sf ../init.d/sshd /etc/rc.d/rc3.d/S30sshd
+ln -sf ../init.d/sshd /etc/rc.d/rc4.d/S30sshd
+ln -sf ../init.d/sshd /etc/rc.d/rc5.d/S30sshd
+ln -sf ../init.d/sshd /etc/rc.d/rc6.d/K30sshd
 cd

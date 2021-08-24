@@ -1,36 +1,36 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O tidy-html5-5.4.0.tar.gz https://github.com/htacg/tidy-html5/releases/download/5.4.0/tidy-html5-5.4.0.tar.gz &&
-tar -xzvf tidy-html5-5.4.0.tar.gz &&
-cd tidy-html5-5.4.0 &&
-cd build/cmake &&
-cmake -DCMAKE_INSTALL_PREFIX=/usr \
--DCMAKE_BUILD_TYPE=Release \
--DBUILD_TAB2SPACE=ON \
-../.. &&
-make &&
-make install &&
-install -v -m755 tab2space /usr/bin
-if [[ $? -gt 0 ]]; then
-echo -e "\nTidy HTML Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nTidy HTML Compilation and Installation DONE!\n"
+  wget -O tidy-html5-5.4.0.tar.gz https://github.com/htacg/tidy-html5/releases/download/5.4.0/tidy-html5-5.4.0.tar.gz &&
+    tar -xzvf tidy-html5-5.4.0.tar.gz &&
+    cd tidy-html5-5.4.0 &&
+    cd build/cmake &&
+    cmake -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DBUILD_TAB2SPACE=ON \
+      ../.. &&
+    make &&
+    make install &&
+    install -v -m755 tab2space /usr/bin
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nTidy HTML Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nTidy HTML Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O tidy-html5-5.4.0-lfphp.tar.gz https://websiteurl/tidy-html5-5.4.0-lfphp.tar.gz &&
-tar -xzvf tidy-html5-5.4.0-lfphp.tar.gz &&
-cd tidy-html5-5.4.0 &&
-cd build/cmake &&
-make install &&
-install -v -m755 tab2space /usr/bin &&
-cd &&
-rm -rf tidy-html5-5.4.0
-if [[ $? -gt 0 ]]; then
-echo -e "\nTidy HTML Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nTidy HTML Installation DONE!\n"
+  cd &&
+    wget -O tidy-html5-5.4.0-lfphp.tar.gz https://websiteurl/tidy-html5-5.4.0-lfphp.tar.gz &&
+    tar -xzvf tidy-html5-5.4.0-lfphp.tar.gz &&
+    cd tidy-html5-5.4.0 &&
+    cd build/cmake &&
+    make install &&
+    install -v -m755 tab2space /usr/bin &&
+    cd &&
+    rm -rf tidy-html5-5.4.0
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nTidy HTML Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nTidy HTML Installation DONE!\n"
 fi
 cd

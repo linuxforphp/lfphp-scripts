@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O net-snmp-5.8.tar.gz https://sourceforge.net/projects/net-snmp/files/net-snmp/5.8/net-snmp-5.8.tar.gz/download
-tar -xzvf net-snmp-5.8.tar.gz
-cd net-snmp-5.8
-./configure --prefix=/usr &&
-make &&
-make install
-if [[ $? -gt 0 ]]; then
-echo -e "\nSNMP Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nSNMP Compilation and Installation DONE!\n"
+  wget -O net-snmp-5.8.tar.gz https://sourceforge.net/projects/net-snmp/files/net-snmp/5.8/net-snmp-5.8.tar.gz/download
+  tar -xzvf net-snmp-5.8.tar.gz
+  cd net-snmp-5.8
+  ./configure --prefix=/usr &&
+    make &&
+    make install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nSNMP Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nSNMP Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O net-snmp-5.8-lfphp.tar.gz https://websiteurl/net-snmp-5.8-lfphp.tar.gz &&
-tar -xzvf net-snmp-5.8-lfphp.tar.gz &&
-cd net-snmp-5.8 &&
-make install &&
-cd &&
-rm -rf net-snmp-5.8
-if [[ $? -gt 0 ]]; then
-echo -e "\nSNMP Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nSNMP Installation DONE!\n"
+  cd &&
+    wget -O net-snmp-5.8-lfphp.tar.gz https://websiteurl/net-snmp-5.8-lfphp.tar.gz &&
+    tar -xzvf net-snmp-5.8-lfphp.tar.gz &&
+    cd net-snmp-5.8 &&
+    make install &&
+    cd &&
+    rm -rf net-snmp-5.8
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nSNMP Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nSNMP Installation DONE!\n"
 fi
 cd

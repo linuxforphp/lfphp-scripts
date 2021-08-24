@@ -1,35 +1,35 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-git clone https://github.com/doxygen/doxygen.git
-cd doxygen
-mkdir -v build &&
-cd build &&
-cmake -G "Unix Makefiles" \
--DCMAKE_BUILD_TYPE=Release \
--DCMAKE_INSTALL_PREFIX=/usr \
--Wno-dev .. &&
-make &&
-make install &&
-install -vm644 ../doc/*.1 /usr/share/man/man1
-if [[ $? -gt 0 ]]; then
-echo -e "\nDoxygen Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nDoxygen Compilation and Installation DONE!\n"
+  git clone https://github.com/doxygen/doxygen.git
+  cd doxygen
+  mkdir -v build &&
+    cd build &&
+    cmake -G "Unix Makefiles" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -Wno-dev .. &&
+    make &&
+    make install &&
+    install -vm644 ../doc/*.1 /usr/share/man/man1
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nDoxygen Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nDoxygen Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O doxygen-latest-lfphp.tar.gz https://websiteurl/doxygen-latest-lfphp.tar.gz &&
-tar -xzvf doxygen-latest-lfphp.tar.gz &&
-cd doxygen/build &&
-make install &&
-install -vm644 ../doc/*.1 /usr/share/man/man1 &&
-cd &&
-rm -rf doxygen
-if [[ $? -gt 0 ]]; then
-echo -e "\nDoxygen Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nDoxygen Installation DONE!\n"
+  cd &&
+    wget -O doxygen-latest-lfphp.tar.gz https://websiteurl/doxygen-latest-lfphp.tar.gz &&
+    tar -xzvf doxygen-latest-lfphp.tar.gz &&
+    cd doxygen/build &&
+    make install &&
+    install -vm644 ../doc/*.1 /usr/share/man/man1 &&
+    cd &&
+    rm -rf doxygen
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nDoxygen Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nDoxygen Installation DONE!\n"
 fi
 cd

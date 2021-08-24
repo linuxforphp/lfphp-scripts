@@ -1,41 +1,41 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O enchant-2.2.3.tar.gz https://github.com/AbiWord/enchant/releases/download/v2.2.3/enchant-2.2.3.tar.gz
-tar -xzvf enchant-2.2.3.tar.gz
-cd enchant-2.2.3
-./configure --prefix=/usr --disable-static &&
-make &&
-make install &&
-rm -rf /usr/include/enchant &&
-ln -sfv enchant-2 /usr/include/enchant &&
-ln -sfv enchant-2 /usr/bin/enchant &&
-ln -sfv libenchant-2.so /usr/lib/libenchant.so &&
-ln -sfv enchant-2.pc /usr/lib/pkgconfig/enchant.pc &&
-cd &&
-rm -rf enchant-2.2.3
-if [[ $? -gt 0 ]]; then
-echo -e "\nEnchant Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nEnchant Compilation and Installation DONE!\n"
+  wget -O enchant-2.2.3.tar.gz https://github.com/AbiWord/enchant/releases/download/v2.2.3/enchant-2.2.3.tar.gz
+  tar -xzvf enchant-2.2.3.tar.gz
+  cd enchant-2.2.3
+  ./configure --prefix=/usr --disable-static &&
+    make &&
+    make install &&
+    rm -rf /usr/include/enchant &&
+    ln -sfv enchant-2 /usr/include/enchant &&
+    ln -sfv enchant-2 /usr/bin/enchant &&
+    ln -sfv libenchant-2.so /usr/lib/libenchant.so &&
+    ln -sfv enchant-2.pc /usr/lib/pkgconfig/enchant.pc &&
+    cd &&
+    rm -rf enchant-2.2.3
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nEnchant Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nEnchant Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O enchant-2.2.3-lfphp.tar.gz https://websiteurl/enchant-2.2.3-lfphp.tar.gz &&
-tar -xzvf enchant-2.2.3-lfphp.tar.gz &&
-cd enchant-2.2.3 &&
-make install &&
-rm -rf /usr/include/enchant &&
-ln -sfv enchant-2 /usr/include/enchant &&
-ln -sfv enchant-2 /usr/bin/enchant &&
-ln -sfv libenchant-2.so /usr/lib/libenchant.so &&
-ln -sfv enchant-2.pc /usr/lib/pkgconfig/enchant.pc &&
-cd &&
-rm -rf enchant-2.2.3
-if [[ $? -gt 0 ]]; then
-echo -e "\nEnchant Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nEnchant Installation DONE!\n"
+  cd &&
+    wget -O enchant-2.2.3-lfphp.tar.gz https://websiteurl/enchant-2.2.3-lfphp.tar.gz &&
+    tar -xzvf enchant-2.2.3-lfphp.tar.gz &&
+    cd enchant-2.2.3 &&
+    make install &&
+    rm -rf /usr/include/enchant &&
+    ln -sfv enchant-2 /usr/include/enchant &&
+    ln -sfv enchant-2 /usr/bin/enchant &&
+    ln -sfv libenchant-2.so /usr/lib/libenchant.so &&
+    ln -sfv enchant-2.pc /usr/lib/pkgconfig/enchant.pc &&
+    cd &&
+    rm -rf enchant-2.2.3
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nEnchant Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nEnchant Installation DONE!\n"
 fi
 cd

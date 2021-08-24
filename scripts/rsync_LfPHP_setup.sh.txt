@@ -2,29 +2,29 @@
 # Recommended: openssh
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O rsync-3.1.3.tar.gz https://download.samba.org/pub/rsync/src/rsync-3.1.3.tar.gz
-tar -xzvf rsync-3.1.3.tar.gz
-cd rsync-3.1.3
-./configure --prefix=/usr &&
-make &&
-make install
-if [[ $? -gt 0 ]]; then
-echo -e "\nRsync Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nRsync Compilation and Installation DONE!\n"
+  wget -O rsync-3.1.3.tar.gz https://download.samba.org/pub/rsync/src/rsync-3.1.3.tar.gz
+  tar -xzvf rsync-3.1.3.tar.gz
+  cd rsync-3.1.3
+  ./configure --prefix=/usr &&
+    make &&
+    make install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nRsync Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nRsync Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O rsync-3.1.3-lfphp.tar.gz https://websiteurl/rsync-3.1.3-lfphp.tar.gz &&
-tar -xzvf rsync-3.1.3-lfphp.tar.gz &&
-cd rsync-3.1.3 &&
-make install &&
-cd &&
-rm -rf rsync-3.1.3
-if [[ $? -gt 0 ]]; then
-echo -e "\nRsync Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nRsync Installation DONE!\n"
+  cd &&
+    wget -O rsync-3.1.3-lfphp.tar.gz https://websiteurl/rsync-3.1.3-lfphp.tar.gz &&
+    tar -xzvf rsync-3.1.3-lfphp.tar.gz &&
+    cd rsync-3.1.3 &&
+    make install &&
+    cd &&
+    rm -rf rsync-3.1.3
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nRsync Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nRsync Installation DONE!\n"
 fi
 cd

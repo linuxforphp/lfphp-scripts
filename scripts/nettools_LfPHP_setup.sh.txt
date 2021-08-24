@@ -1,37 +1,37 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O net-tools-CVS_20101030.tar.gz http://anduin.linuxfromscratch.org/BLFS/net-tools/net-tools-CVS_20101030.tar.gz &&
-wget http://www.linuxfromscratch.org/patches/blfs/8.2/net-tools-CVS_20101030-remove_dups-1.patch &&
-tar -xvf net-tools-CVS_20101030.tar.gz &&
-cd net-tools-CVS_20101030 &&
-patch -Np1 -i ../net-tools-CVS_20101030-remove_dups-1.patch &&
-sed -i '/#include <netinet\/ip.h>/d'  iptunnel.c &&
-sed -i 's/ y$/ n/g' config.in &&
-sed -i 's/HAVE_AFUNIX n/HAVE_AFUNIX y/' config.in &&
-sed -i 's/HAVE_AFINET n/HAVE_AFINET y/' config.in &&
-yes "" | make config &&
-make &&
-make update &&
-cd &&
-rm -rf net-tools-CVS_20101030
-if [[ $? -gt 0 ]]; then
-echo -e "\nNet Tools Library Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nNet Tools Library Compilation and Installation DONE!\n"
+  wget -O net-tools-CVS_20101030.tar.gz http://anduin.linuxfromscratch.org/BLFS/net-tools/net-tools-CVS_20101030.tar.gz &&
+    wget http://www.linuxfromscratch.org/patches/blfs/8.2/net-tools-CVS_20101030-remove_dups-1.patch &&
+    tar -xvf net-tools-CVS_20101030.tar.gz &&
+    cd net-tools-CVS_20101030 &&
+    patch -Np1 -i ../net-tools-CVS_20101030-remove_dups-1.patch &&
+    sed -i '/#include <netinet\/ip.h>/d' iptunnel.c &&
+    sed -i 's/ y$/ n/g' config.in &&
+    sed -i 's/HAVE_AFUNIX n/HAVE_AFUNIX y/' config.in &&
+    sed -i 's/HAVE_AFINET n/HAVE_AFINET y/' config.in &&
+    yes "" | make config &&
+    make &&
+    make update &&
+    cd &&
+    rm -rf net-tools-CVS_20101030
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nNet Tools Library Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nNet Tools Library Compilation and Installation DONE!\n"
 else
-cd &&
-wget -O net-tools-CVS_20101030-lfphp.tar.gz https://websiteurl/net-tools-CVS_20101030-lfphp.tar.gz &&
-tar -xzvf net-tools-CVS_20101030-lfphp.tar.gz &&
-cd net-tools-CVS_20101030 &&
-make update &&
-cd &&
-rm -rf net-tools-CVS_20101030
-if [[ $? -gt 0 ]]; then
-echo -e "\nNet Tools Library Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nNet Tools Library Installation DONE!\n"
+  cd &&
+    wget -O net-tools-CVS_20101030-lfphp.tar.gz https://websiteurl/net-tools-CVS_20101030-lfphp.tar.gz &&
+    tar -xzvf net-tools-CVS_20101030-lfphp.tar.gz &&
+    cd net-tools-CVS_20101030 &&
+    make update &&
+    cd &&
+    rm -rf net-tools-CVS_20101030
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nNet Tools Library Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nNet Tools Library Installation DONE!\n"
 fi
 cd

@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 cd &&
-wget https://websiteurl/elasticsearch-6.8.11-lfphp.tar.gz &&
-#wget https://websiteurl/elasticsearch-6.8.11-lfphp.tar.gz.sha512
-#shasum -a 512 -c elasticsearch-6.8.11-lfphp.tar.gz.sha512 
-tar -C /opt -xzf elasticsearch-6.8.11-lfphp.tar.gz &&
-groupadd elastic &&
-useradd -g elastic elastic &&
-cp -rf /etc/skel /home/elastic &&
-mkdir -p /opt/elasticsearch-6.8.11/lib/elasticsearch
+  wget https://websiteurl/elasticsearch-6.8.11-lfphp.tar.gz &&
+  #wget https://websiteurl/elasticsearch-6.8.11-lfphp.tar.gz.sha512
+  #shasum -a 512 -c elasticsearch-6.8.11-lfphp.tar.gz.sha512
+  tar -C /opt -xzf elasticsearch-6.8.11-lfphp.tar.gz &&
+  groupadd elastic &&
+  useradd -g elastic elastic &&
+  cp -rf /etc/skel /home/elastic &&
+  mkdir -p /opt/elasticsearch-6.8.11/lib/elasticsearch
 mkdir -p /opt/elasticsearch-6.8.11/tmp
 touch /opt/elasticsearch-6.8.11/elasticsearch.pid
 sed -i 's/-Xms1g/-Xms256m/g' /opt/elasticsearch-6.8.11/config/jvm.options
 sed -i 's/-Xmx1g/-Xmx256m/g' /opt/elasticsearch-6.8.11/config/jvm.options
 chown -R elastic:elastic /home/elastic &&
-chown -R elastic:elastic /opt/elasticsearch-6.8.11 &&
-echo "elastic:elastic" | chpasswd
+  chown -R elastic:elastic /opt/elasticsearch-6.8.11 &&
+  echo "elastic:elastic" | chpasswd
 #cd /opt/elasticsearch-6.8.11
 if [[ $? -gt 0 ]]; then
-echo -e "\nElasticsearch Installation ERROR!  Aborting!\n"
-exit 1
+  echo -e "\nElasticsearch Installation ERROR!  Aborting!\n"
+  exit 1
 fi
 echo -e "\nElasticsearch Installation DONE!\n"
-cat >/etc/init.d/elasticsearch << 'EOF'
+cat >/etc/init.d/elasticsearch <<'EOF'
 #!/bin/sh
 #######################################################################
 # Begin /etc/init.d/elasticsearch
@@ -162,18 +162,18 @@ esac
 # End /etc/init.d/elasticsearch
 EOF
 chmod +x /etc/init.d/elasticsearch
-ln -sf  ../init.d/elasticsearch /etc/rc.d/rc0.d/K28elasticsearch
-ln -sf  ../init.d/elasticsearch /etc/rc.d/rc1.d/K28elasticsearch
-ln -sf  ../init.d/elasticsearch /etc/rc.d/rc2.d/K28elasticsearch
-ln -sf  ../init.d/elasticsearch /etc/rc.d/rc3.d/S32elasticsearch
-ln -sf  ../init.d/elasticsearch /etc/rc.d/rc4.d/S32elasticsearch
-ln -sf  ../init.d/elasticsearch /etc/rc.d/rc5.d/S32elasticsearch
-ln -sf  ../init.d/elasticsearch /etc/rc.d/rc6.d/K28elasticsearch
+ln -sf ../init.d/elasticsearch /etc/rc.d/rc0.d/K28elasticsearch
+ln -sf ../init.d/elasticsearch /etc/rc.d/rc1.d/K28elasticsearch
+ln -sf ../init.d/elasticsearch /etc/rc.d/rc2.d/K28elasticsearch
+ln -sf ../init.d/elasticsearch /etc/rc.d/rc3.d/S32elasticsearch
+ln -sf ../init.d/elasticsearch /etc/rc.d/rc4.d/S32elasticsearch
+ln -sf ../init.d/elasticsearch /etc/rc.d/rc5.d/S32elasticsearch
+ln -sf ../init.d/elasticsearch /etc/rc.d/rc6.d/K28elasticsearch
 mkdir -p /etc/sv/elasticsearch/supervise &&
-chmod -R 700 /etc/sv/elasticsearch/supervise &&
-touch /etc/sv/elasticsearch/run &&
-echo -e "#!/usr/bin/env bash\n" > /etc/sv/elasticsearch/run &&
-echo "exec /etc/init.d/elasticsearch start >/dev/null 2>&1" >> /etc/sv/elasticsearch/run &&
-chmod +x /etc/sv/elasticsearch/run &&
-ln -s /etc/sv/elasticsearch /services
+  chmod -R 700 /etc/sv/elasticsearch/supervise &&
+  touch /etc/sv/elasticsearch/run &&
+  echo -e "#!/usr/bin/env bash\n" >/etc/sv/elasticsearch/run &&
+  echo "exec /etc/init.d/elasticsearch start >/dev/null 2>&1" >>/etc/sv/elasticsearch/run &&
+  chmod +x /etc/sv/elasticsearch/run &&
+  ln -s /etc/sv/elasticsearch /services
 cd

@@ -1,28 +1,28 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.2.31.zip &&
-unzip awscliv2.zip &&
-./aws/install
-if [[ $? -gt 0 ]]; then
-echo -e "\nAWS CLI Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nAWS CLI Compilation and Installation DONE!\n"
+  wget -O awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.2.31.zip &&
+    unzip awscliv2.zip &&
+    ./aws/install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nAWS CLI Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nAWS CLI Compilation and Installation DONE!\n"
 else
-wget -O awscliv2-lfphp.tar.gz https://websiteurl/awscliv2-lfphp.tar.gz &&
-tar -xvf awscliv2-lfphp.tar.gz &&
-./aws/install
-if [[ $? -gt 0 ]]; then
-echo -e "\nAWS CLI Installation ERROR!  Aborting!\n"
-exit 1
-fi
-cd
-rm -rf aws
-echo -e "\nAWS CLI Installation DONE!\n"
+  wget -O awscliv2-lfphp.tar.gz https://websiteurl/awscliv2-lfphp.tar.gz &&
+    tar -xvf awscliv2-lfphp.tar.gz &&
+    ./aws/install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nAWS CLI Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  cd
+  rm -rf aws
+  echo -e "\nAWS CLI Installation DONE!\n"
 fi
 mkdir -p /root/.aws
-cat > /root/.aws/credentials << "EOF"
+cat >/root/.aws/credentials <<"EOF"
 [default]
 aws_access_key_id=
 aws_secret_access_key=

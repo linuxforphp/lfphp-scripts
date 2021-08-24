@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-wget -O siege-4.0.2.tar.gz http://download.joedog.org/siege/siege-4.0.2.tar.gz &&
-tar -xzvf siege-4.0.2.tar.gz &&
-cd siege-4.0.2 &&
-./configure &&
-make &&
-make install
-if [[ $? -gt 0 ]]; then
-echo -e "\nSiege Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nSiege Compilation and Installation DONE!\n"
+  wget -O siege-4.0.2.tar.gz http://download.joedog.org/siege/siege-4.0.2.tar.gz &&
+    tar -xzvf siege-4.0.2.tar.gz &&
+    cd siege-4.0.2 &&
+    ./configure &&
+    make &&
+    make install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nSiege Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nSiege Compilation and Installation DONE!\n"
 else
-cd
-wget -O siege-4.0.2-lfphp.tar.gz https://websiteurl/siege-4.0.2-lfphp.tar.gz
-tar -xzvf siege-4.0.2-lfphp.tar.gz
-cd siege-4.0.2
-make install
-cd
-rm -rf siege-4.0.2
-echo -e "\nSiege Installation DONE!\n"
+  cd
+  wget -O siege-4.0.2-lfphp.tar.gz https://websiteurl/siege-4.0.2-lfphp.tar.gz
+  tar -xzvf siege-4.0.2-lfphp.tar.gz
+  cd siege-4.0.2
+  make install
+  cd
+  rm -rf siege-4.0.2
+  echo -e "\nSiege Installation DONE!\n"
 fi
 cd

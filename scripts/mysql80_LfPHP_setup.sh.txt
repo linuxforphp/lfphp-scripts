@@ -11,38 +11,38 @@ chown -R mysql:mysql /srv/mysql
 chmod -R 755 /srv/mysql
 rm -f /usr/sbin/mysqld
 if [[ ! -z "$COMPILE" ]]; then
-wget https://cdn.mysql.com/archives/mysql-8.0/mysql-boost-8.0.20.tar.gz &&
-tar -xvf mysql-boost-8.0.20.tar.gz &&
-cd mysql-8.0.20/ &&
-mkdir build &&
-cd build &&
-cmake .. -DBUILD_CONFIG=mysql_release -DCMAKE_INSTALL_PREFIX=/usr -DDOWNLOAD_BOOST=1 -DWITH_BOOST=../boost -DMYSQL_DATADIR=/srv/mysql/data &&
-make &&
-make install &&
-/usr/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure --user=mysql
-mysql_ssl_rsa_setup &&
-mv /etc/init.d/mysql /etc/init.d/mysql.OLD &&
-cp support-files/mysql.server /etc/init.d/mysql &&
-chmod +x /etc/init.d/mysql
-if [[ $? -gt 0 ]]; then
-echo -e "\nMySQL Community Server 8.0 Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nMySQL Community Server 8.0 Compilation and Installation DONE!\n"
+  wget https://cdn.mysql.com/archives/mysql-8.0/mysql-boost-8.0.20.tar.gz &&
+    tar -xvf mysql-boost-8.0.20.tar.gz &&
+    cd mysql-8.0.20/ &&
+    mkdir build &&
+    cd build &&
+    cmake .. -DBUILD_CONFIG=mysql_release -DCMAKE_INSTALL_PREFIX=/usr -DDOWNLOAD_BOOST=1 -DWITH_BOOST=../boost -DMYSQL_DATADIR=/srv/mysql/data &&
+    make &&
+    make install &&
+    /usr/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure --user=mysql
+  mysql_ssl_rsa_setup &&
+    mv /etc/init.d/mysql /etc/init.d/mysql.OLD &&
+    cp support-files/mysql.server /etc/init.d/mysql &&
+    chmod +x /etc/init.d/mysql
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nMySQL Community Server 8.0 Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nMySQL Community Server 8.0 Compilation and Installation DONE!\n"
 else
-wget -O mysql-8.0.20-lfphp.tar.gz https://websiteurl/mysql-8.0.20-lfphp.tar.gz &&
-tar -C / -xvf mysql-8.0.20-lfphp.tar.gz &&
-/usr/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure --user=mysql &&
-mysql_ssl_rsa_setup &&
-mv /etc/init.d/mysql /etc/init.d/mysql.OLD &&
-cp /usr/support-files/mysql.server /etc/init.d/mysql &&
-chmod +x /etc/init.d/mysql &&
-cd
-if [[ $? -gt 0 ]]; then
-echo -e "\nMySQL Community Server 8.0 Installation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\nMySQL Community Server 8.0 Installation DONE!\n"
+  wget -O mysql-8.0.20-lfphp.tar.gz https://websiteurl/mysql-8.0.20-lfphp.tar.gz &&
+    tar -C / -xvf mysql-8.0.20-lfphp.tar.gz &&
+    /usr/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure --user=mysql &&
+    mysql_ssl_rsa_setup &&
+    mv /etc/init.d/mysql /etc/init.d/mysql.OLD &&
+    cp /usr/support-files/mysql.server /etc/init.d/mysql &&
+    chmod +x /etc/init.d/mysql &&
+    cd
+  if [[ $? -gt 0 ]]; then
+    echo -e "\nMySQL Community Server 8.0 Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\nMySQL Community Server 8.0 Installation DONE!\n"
 fi
 cp /usr/man/man1/mysql.1 /usr/share/man/man1/
 cp /usr/man/man8/mysqld.8 /usr/share/man/man8/

@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-git clone https://github.com/stedolan/jq.git &&
-cd jq &&
-autoreconf -i &&
-./configure --prefix=/usr --disable-maintainer-mode &&
-make &&
-make install
-if [[ $? -gt 0 ]]; then
-echo -e "\njq Compilation ERROR!  Aborting!\n"
-exit 1
-fi
-echo -e "\njq Compilation and Installation DONE!\n"
+  git clone https://github.com/stedolan/jq.git &&
+    cd jq &&
+    autoreconf -i &&
+    ./configure --prefix=/usr --disable-maintainer-mode &&
+    make &&
+    make install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\njq Compilation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  echo -e "\njq Compilation and Installation DONE!\n"
 else
-wget -O jq-1.6-137-x64-lfphp.tar.gz https://websiteurl/jq-1.6-137-x64-lfphp.tar.gz &&
-tar -xvf jq-1.6-137-x64-lfphp.tar.gz &&
-cd jq &&
-make install
-if [[ $? -gt 0 ]]; then
-echo -e "\njq Installation ERROR!  Aborting!\n"
-exit 1
-fi
-cd
-rm -rf jq
-echo -e "\njq Installation DONE!\n"
+  wget -O jq-1.6-137-x64-lfphp.tar.gz https://websiteurl/jq-1.6-137-x64-lfphp.tar.gz &&
+    tar -xvf jq-1.6-137-x64-lfphp.tar.gz &&
+    cd jq &&
+    make install
+  if [[ $? -gt 0 ]]; then
+    echo -e "\njq Installation ERROR!  Aborting!\n"
+    exit 1
+  fi
+  cd
+  rm -rf jq
+  echo -e "\njq Installation DONE!\n"
 fi
 cd
 jq --version
