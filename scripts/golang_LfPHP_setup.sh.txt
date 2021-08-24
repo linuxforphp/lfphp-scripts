@@ -1,15 +1,25 @@
 #!/usr/bin/env bash
 cd
+if [[ ! -z "$COMPILE" ]]; then
 wget -O go1.15.5.linux-amd64.tar.gz https://dl.google.com/go/go1.15.5.linux-amd64.tar.gz &&
 tar -C /usr/local -xvf go1.15.5.linux-amd64.tar.gz &&
-mkdir go &&
-echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/bashrc &&
-echo 'export GOPATH=/root/go' >> /etc/bashrc
+if [[ $? -gt 0 ]]; then
+echo -e "\nGolang Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nGoLang Compilation and Installation DONE!\n"
+else
+wget -O go1.15.5.linux-amd64-lfphp.tar.gz https://websiteurl/go1.15.5.linux-amd64-lfphp.tar.gz &&
+tar -C /usr/local -xvf go1.15.5.linux-amd64-lfphp.tar.gz
 if [[ $? -gt 0 ]]; then
 echo -e "\nGolang Installation ERROR!  Aborting!\n"
 exit 1
 fi
-cd
-source /etc/bashrc
 echo -e "\nGoLang Installation DONE!\n"
+fi
+cd
+mkdir go
+echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/bashrc
+echo 'export GOPATH=/root/go' >> /etc/bashrc
+source /etc/bashrc
 go version
