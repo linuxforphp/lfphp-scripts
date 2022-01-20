@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+wget -O nss-3.29.tar.gz https://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_3_29_RTM/src/nss-3.29.tar.gz &&
+tar -xvf nss-3.29.tar.gz &&
+cd nss-3.29 &&
+wget --no-check-certificate -O ../nss-3.29-standalone-1.patch https://www.linuxfromscratch.org/patches/downloads/nss/nss-3.29-standalone-1.patch &&
+patch -Np1 -i ../nss-3.29-standalone-1.patch &&
+mv ../nss-3.29-standalone-1.patch . &&
+cd nss &&
+make -j1 BUILD_OPT=1 \
+NSPR_INCLUDE_DIR=/usr/include/nspr \
+USE_SYSTEM_ZLIB=1 \
+ZLIB_LIBS=-lz \
+$([ $(uname -m) = x86_64 ] && echo USE_64=1) \
+$([ -f /usr/include/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1) &&
+cd ../dist &&
+install -v -m755 Linux*/lib/*.so /usr/lib &&
+install -v -m644 Linux*/lib/{*.chk,libcrmf.a} /usr/lib &&
+install -v -m755 -d /usr/include/nss &&
+cp -v -RL {public,private}/nss/* /usr/include/nss &&
+chmod -v 644 /usr/include/nss/* &&
+install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} /usr/bin &&
+install -v -m644 Linux*/lib/pkgconfig/nss.pc /usr/lib/pkgconfig &&
+readlink /usr/lib/libnssckbi.so || \
+mv -v /usr/lib/libnssckbi.so /usr/lib/libnssckbi.so.orig &&
+ln -sfv libp11-kit.so /usr/lib/libnssckbi.so
+if [[ $? -gt 0 ]]; then
+echo -e "\nlibnss3 Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nlibnss3 Compilation and Installation DONE!\n"
+else
+cd &&
+wget -O nss-3.29-lfphp.tar.gz https://files.linuxforphp.net/nss-3.29-lfphp.tar.gz &&
+tar -xvf nss-3.29-lfphp.tar.gz &&
+cd nss-3.29/dist &&
+install -v -m755 Linux*/lib/*.so /usr/lib &&
+install -v -m644 Linux*/lib/{*.chk,libcrmf.a} /usr/lib &&
+install -v -m755 -d /usr/include/nss &&
+cp -v -RL {public,private}/nss/* /usr/include/nss &&
+chmod -v 644 /usr/include/nss/* &&
+install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} /usr/bin &&
+install -v -m644 Linux*/lib/pkgconfig/nss.pc /usr/lib/pkgconfig &&
+readlink /usr/lib/libnssckbi.so || \
+mv -v /usr/lib/libnssckbi.so /usr/lib/libnssckbi.so.orig &&
+ln -sfv libp11-kit.so /usr/lib/libnssckbi.so
+cd &&
+rm -rf nss-3.29
+if [[ $? -gt 0 ]]; then
+echo -e "\nlibnss3 Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nlibnss3 Installation DONE!\n"
+fi
+cd
