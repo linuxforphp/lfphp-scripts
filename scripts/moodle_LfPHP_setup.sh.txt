@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+if [[ ! -d /srv/tempo ]]; then
+mkdir /srv/tempo
+fi
+cd /srv/tempo
+sed --follow-symlinks -i 's/mysqli.default_socket =/mysqli.default_socket = \/run\/mysqld\/mysqld.sock/' /etc/php.ini
+#cat >>/etc/php.ini << EOF
+#[OpCache]
+#zend_extension = $( php -i | grep extensions | awk '{print $3}' )/opcache.so
+#EOF
+sed --follow-symlinks -i 's/memory_limit = 128M/memory_limit = 512M/' /etc/php.ini
+sed --follow-symlinks -i 's/max_execution_time = 30/max_execution_time = 600/' /etc/php.ini
+sed --follow-symlinks -i 's/max_input_time = 60/max_input_time = 600/' /etc/php.ini
+if [[ -z "$1" ]]; then
+#echo -e "\n"
+#read -r -p "Which version of Moodle do you wish to install?" lms
+#lms="${lms//./}"
+lms="310"
+else
+#lms=$1
+lms="310"
+fi
+sleep 10
+/etc/init.d/mysql restart
+sleep 10
+mysql -uroot -e "CREATE DATABASE moodle;"
+mysql -uroot -e "CREATE USER 'lmsuser'@'localhost' IDENTIFIED BY 'testpass';"
+mysql -uroot -e "GRANT ALL PRIVILEGES ON moodle.* TO 'lmsuser'@'localhost';"
+mysql -uroot -e "FLUSH PRIVILEGES;"
+mv /srv/www /srv/www.OLD
+wget -O moodle.tgz https://download.moodle.org/stable310/moodle-latest-"$lms".tgz
+tar -xvf moodle.tgz
+rm moodle.tgz
+chown -R root:apache moodle
+chmod -R 755 moodle
+mkdir moodledata
+chmod -R 0777 moodledata
+cd ..
+ln -s tempo/moodle www
+echo -e "\n\n\n"
+echo -e "Running the installer... Please use the following database credentials :\n"
+echo -e "SERVER : localhost\n"
+echo -e "DATABASE : moodle\n"
+echo -e "USER : lmsuser\n"
+echo -e "PASSWORD : testpass\n"
+chown apache tempo/moodle
+cd tempo/moodle/admin/cli
+sed -i 's/apache:x:25:25:Apache Server:\/srv\/www:\/bin\/false/apache:x:25:25:Apache Server:\/srv\/www:\/bin\/bash/' /etc/passwd
+su apache -c "/usr/bin/php install.php"
+sed -i 's/apache:x:25:25:Apache Server:\/srv\/www:\/bin\/bash/apache:x:25:25:Apache Server:\/srv\/www:\/bin\/false/' /etc/passwd
+/etc/init.d/php-fpm restart
+chown root:apache /srv/www
+chown root:apache /srv/tempo
+/etc/init.d/httpd restart
