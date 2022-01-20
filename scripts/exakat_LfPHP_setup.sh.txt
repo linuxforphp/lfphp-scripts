@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 java -version
 if [[ $? -gt 0 ]]; then
-  echo -e "\n\n###############################################################"
-  echo -e "\nYou must have a login shell to install this package...\n\nPlease enter the command 'login root' before installing Exakat!\n"
-  echo -e "###############################################################\n"
-  exit 1
+echo -e "\n\n###############################################################"
+echo -e "\nYou must have a login shell to install this package...\n\nPlease enter the command 'login root' before installing Exakat!\n"
+echo -e "###############################################################\n"
+exit 1
 fi
 sed -i 's/memory_limit = 128M/memory_limit = 2048M/' /etc/php.ini
 cd /home && mkdir exakat && cd exakat

@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  git clone https://github.com/ImageMagick/ImageMagick &&
-    cd ImageMagick/ &&
-    ./configure --prefix=/usr --with-modules &&
-    make &&
-    make install &&
-    ldconfig /usr/lib
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nImageMagick Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nImageMagick Compilation and Installation DONE!\n"
+git clone https://github.com/ImageMagick/ImageMagick &&
+cd ImageMagick/ &&
+./configure --prefix=/usr --with-modules &&
+make &&
+make install &&
+ldconfig /usr/lib
+if [[ $? -gt 0 ]]; then
+echo -e "\nImageMagick Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nImageMagick Compilation and Installation DONE!\n"
 else
-  wget -O imagemagick-latest-lfphp.tar.gz https://websiteurl/imagemagick-latest-lfphp.tar.gz &&
-    tar -xzvf imagemagick-latest-lfphp.tar.gz &&
-    cd ImageMagick/ &&
-    make install &&
-    ldconfig /usr/lib &&
-    cd &&
-    rm -rf ImageMagick/
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nImageMagick Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nImageMagick Installation DONE!\n"
+wget -O imagemagick-latest-lfphp.tar.gz https://files.linuxforphp.net/imagemagick-latest-lfphp.tar.gz &&
+tar -xzvf imagemagick-latest-lfphp.tar.gz &&
+cd ImageMagick/ &&
+make install &&
+ldconfig /usr/lib &&
+cd &&
+rm -rf ImageMagick/
+if [[ $? -gt 0 ]]; then
+echo -e "\nImageMagick Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nImageMagick Installation DONE!\n"
 fi
 cd

@@ -1,34 +1,34 @@
 #!/usr/bin/env bash
 if [[ -z "$1" ]]; then
-  echo -e "\n"
-  echo -e "--------------------------------------------------------"
-  echo -e " 1 - Zend Framework Skeleton Application"
-  echo -e " 2 - Zend Expressive Skeleton Application"
-  echo -e " 3 - Symfony Application"
-  echo -e " 4 - Laravel Application"
-  echo -e " 5 - CakePHP Application"
-  echo -e " 6 - Slim PHP Skeleton Application"
-  echo -e " 7 - LightMVC Framework Skeleton Application"
-  echo -e " 8 - LightMVC Framework Skeleton Application WITH Swoole"
-  echo -e " 9 - Laminas (Zend Framework 3) Skeleton Application"
-  echo -e "10 - Mezzio (Zend Expressive) Skeleton Application"
-  echo -e "--------------------------------------------------------"
-  echo -e "\n"
-  echo -e "Which PHP framework application do you wish to install?\n"
-  read -r -p "(1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10) " fw
-  export fw
+    echo -e "\n"
+    echo -e "--------------------------------------------------------"
+    echo -e " 1 - Zend Framework Skeleton Application"
+    echo -e " 2 - Zend Expressive Skeleton Application"
+    echo -e " 3 - Symfony Application"
+    echo -e " 4 - Laravel Application"
+    echo -e " 5 - CakePHP Application"
+    echo -e " 6 - Slim PHP Skeleton Application"
+    echo -e " 7 - LightMVC Framework Skeleton Application"
+    echo -e " 8 - LightMVC Framework Skeleton Application WITH Swoole"
+    echo -e " 9 - Laminas (Zend Framework 3) Skeleton Application"
+    echo -e "10 - Mezzio (Zend Expressive) Skeleton Application"
+    echo -e "--------------------------------------------------------"
+    echo -e "\n"
+    echo -e "Which PHP framework application do you wish to install?\n"
+    read -r -p "(1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10) " fw
+    export fw
 else
-  export fw=$1
+    export fw=$1
 fi
 if [[ -z "$2" ]]; then
-  read -r -p "What is the name of your PHP project? " response
+    read -r -p "What is the name of your PHP project? " response
 else
-  export response=$2
-  export nointeractivemode=1
+    export response=$2
+    export nointeractivemode=1
 fi
 cd /srv
 if [[ ! -d /srv/tempo ]]; then
-  mkdir /srv/tempo
+mkdir /srv/tempo
 fi
 mv www www.OLD
 sed -i 's/mysqli.default_socket =/mysqli.default_socket = \/run\/mysqld\/mysqld.sock/' /etc/php.ini
@@ -46,137 +46,137 @@ mysql -uroot -e "GRANT ALL PRIVILEGES ON fw.* TO 'fwuser'@'localhost';"
 mysql -uroot -e "GRANT ALL PRIVILEGES ON my_app.* TO 'my_app'@'localhost';"
 mysql -uroot -e "FLUSH PRIVILEGES;"
 if [[ "$fw" != "1" && "$fw" != "2" && "$fw" != "3" && "$fw" != "4" && "$fw" != "5" && "$fw" != "6" && "$fw" != "7" && "$fw" != "8" && "$fw" != "9" && "$fw" != "10" && "$fw" != "zf" && "$fw" != "ze" && "$fw" != "symfony" && "$fw" != "laravel" && "$fw" != "cakephp" && "$fw" != "slim" && "$fw" != "lightmvc" && "$fw" != "lightmvc-swoole" && "$fw" != "laminas" && "$fw" != "mezzio" ]]; then
-  echo -e "ERROR! You did not choose one of the above. ABORTING..."
-  exit 1
+    echo -e "ERROR! You did not choose one of the above. ABORTING..."
+    exit 1
 elif [[ "$fw" == "1" || "$fw" == "zf" ]]; then
-  wget -O master.zip https://github.com/zendframework/ZendSkeletonApplication/archive/master.zip
-  unzip master.zip
-  rm master.zip
-  mv ZendSkeletonApplication-master tempo/$response
-  ln -s tempo/$response/public www
-  cd tempo/$response
-  if [[ ! -z "$nointeractivemode" ]]; then
-    composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install -n
-  else
-    composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
-  fi
-  chown -R apache:apache data/
-  cd ../..
+    wget -O master.zip https://github.com/zendframework/ZendSkeletonApplication/archive/master.zip
+    unzip master.zip
+    rm master.zip
+    mv ZendSkeletonApplication-master tempo/$response
+    ln -s tempo/$response/public www
+    cd tempo/$response
+    if [[ ! -z "$nointeractivemode" ]]; then
+        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install -n
+    else
+        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
+    fi
+    chown -R apache:apache data/
+    cd ../..
 elif [[ "$fw" == "2" || "$fw" == "ze" ]]; then
-  composer self-update
-  if [[ ! -z "$nointeractivemode" ]]; then
-    git clone https://github.com/zendframework/zend-expressive-skeleton tempo/$response
-    ln -s tempo/$response/public www
-    cd tempo/$response
-    sed -i "s/io->ask(implode(\$query), '2'/io->ask(implode(\$query), '3'/" src/ExpressiveInstaller/OptionalPackages.php
-    sed -i "s/'default'        => 'n'/'default'        => 3/g" src/ExpressiveInstaller/config.php
-    COMPOSER_PROCESS_TIMEOUT=5000 composer create-project -n
-  else
-    COMPOSER_PROCESS_TIMEOUT=5000 composer create-project zendframework/zend-expressive-skeleton tempo/$response
-    ln -s tempo/$response/public www
-    cd tempo/$response
-    chown -R apache:apache data/
-  fi
-  export webserver="1"
+    composer self-update
+    if [[ ! -z "$nointeractivemode" ]]; then
+        git clone https://github.com/zendframework/zend-expressive-skeleton tempo/$response
+        ln -s tempo/$response/public www
+        cd tempo/$response
+        sed -i "s/io->ask(implode(\$query), '2'/io->ask(implode(\$query), '3'/" src/ExpressiveInstaller/OptionalPackages.php
+        sed -i "s/'default'        => 'n'/'default'        => 3/g" src/ExpressiveInstaller/config.php
+        COMPOSER_PROCESS_TIMEOUT=5000 composer create-project -n
+    else
+        COMPOSER_PROCESS_TIMEOUT=5000 composer create-project zendframework/zend-expressive-skeleton tempo/$response
+        ln -s tempo/$response/public www
+        cd tempo/$response
+        chown -R apache:apache data/
+    fi
+    export webserver="1"
 elif [[ "$fw" == "3" || "$fw" == "symfony" ]]; then
-  composer self-update && composer create-project symfony/website-skeleton tempo/$response
-  wget https://get.symfony.com/cli/installer -O - | bash
-  cp /root/.symfony/bin/symfony /usr/bin
-  ln -s tempo/$response/public www
-  cd tempo/$response
-  symfony server:ca:install
-  export webserver="2"
+    composer self-update && composer create-project symfony/website-skeleton tempo/$response
+    wget https://get.symfony.com/cli/installer -O - | bash
+    cp /root/.symfony/bin/symfony /usr/bin
+    ln -s tempo/$response/public www
+    cd tempo/$response
+    symfony server:ca:install
+    export webserver="2"
 elif [[ "$fw" == "4" || "$fw" == "laravel" ]]; then
-  composer self-update && composer create-project --prefer-dist laravel/laravel tempo/$response
-  ln -s tempo/$response/public www
-  cd tempo/$response
-  export webserver="3"
+    composer self-update && composer create-project --prefer-dist laravel/laravel tempo/$response
+    ln -s tempo/$response/public www
+    cd tempo/$response
+    export webserver="3"
 elif [[ "$fw" == "5" || "$fw" == "cakephp" ]]; then
-  if [[ ! -z "$nointeractivemode" ]]; then
-    composer self-update && composer create-project --prefer-dist cakephp/app tempo/$response -n
-  else
-    composer self-update && composer create-project --prefer-dist cakephp/app tempo/$response
-  fi
-  ln -s tempo/$response/public www
-  cd tempo/$response
-  export webserver="4"
+    if [[ ! -z "$nointeractivemode" ]]; then
+        composer self-update && composer create-project --prefer-dist cakephp/app tempo/$response -n
+    else
+        composer self-update && composer create-project --prefer-dist cakephp/app tempo/$response
+    fi
+    ln -s tempo/$response/public www
+    cd tempo/$response
+    export webserver="4"
 elif [[ "$fw" == "6" || "$fw" == "slim" ]]; then
-  git clone https://github.com/lightmvc/Slim-Skeleton tempo/$response
-  ln -s tempo/$response/public www
-  cd tempo/$response
-  if [[ ! -z "$nointeractivemode" ]]; then
-    #composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer create-project lightmvc/slim-skeleton tempo/$response -n
-    composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install -n
-  else
-    #composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer create-project lightmvc/slim-skeleton tempo/$response
-    composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
-  fi
-  cd ../..
+    git clone https://github.com/lightmvc/Slim-Skeleton tempo/$response
+    ln -s tempo/$response/public www
+    cd tempo/$response
+    if [[ ! -z "$nointeractivemode" ]]; then
+        #composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer create-project lightmvc/slim-skeleton tempo/$response -n
+        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install -n
+    else
+        #composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer create-project lightmvc/slim-skeleton tempo/$response
+        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
+    fi
+    cd ../..
 elif [[ "$fw" == "7" || "$fw" == "lightmvc" ]]; then
-  git clone https://github.com/lightmvc/lightmvcskel tempo/$response
-  cd tempo/$response
-  composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
-  mysql -uroot fw <data/db_schema.sql
-  mysql -uroot fw <data/db_data.sql
-  chmod -R 777 cache/ logs/ templates_c/
-  mv config/config.local.php.dist config/config.local.php
-  sed -i 's/USERNAME/fwuser/' config/config.local.php
-  sed -i 's/PASSWORD/testpass/' config/config.local.php
-  sed -i 's/DATABASE/fw/' config/config.local.php
-  cd ../..
-  ln -s tempo/$response/public www
-elif [[ "$fw" == "8" || "$fw" == "lightmvc-swoole" ]]; then
-  if [[ ! -z "$nointeractivemode" ]]; then
-    yes | pecl install swoole
-  else
-    pecl install swoole
-  fi
-  echo "extension=swoole.so" >>/etc/php.ini
-  git clone https://github.com/lightmvc/lightmvcskel tempo/$response
-  cd tempo/$response
-  composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
-  mysql -uroot fw <data/db_schema.sql
-  mysql -uroot fw <data/db_data.sql
-  chmod -R 777 cache/ logs/ templates_c/
-  mv config/config.local.php.dist config/config.local.php
-  sed -i 's/USERNAME/fwuser/' config/config.local.php
-  sed -i 's/PASSWORD/testpass/' config/config.local.php
-  sed -i 's/DATABASE/fw/' config/config.local.php
-  cd ../..
-  ln -s tempo/$response/public www
-  export webserver="5"
-elif [[ "$fw" == "9" || "$fw" == "laminas" ]]; then
-  wget -O master.zip https://github.com/laminas/laminas-mvc-skeleton/archive/master.zip
-  unzip master.zip
-  rm master.zip
-  mv laminas-mvc-skeleton-master tempo/$response
-  ln -s tempo/$response/public www
-  cd tempo/$response
-  if [[ ! -z "$nointeractivemode" ]]; then
-    composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install -n
-  else
+    git clone https://github.com/lightmvc/lightmvcskel tempo/$response
+    cd tempo/$response
     composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
-  fi
-  chown -R apache:apache data/
-  cd ../..
-elif [[ "$fw" == "10" || "$fw" == "mezzio" ]]; then
-  composer self-update
-  if [[ ! -z "$nointeractivemode" ]]; then
-    git clone https://github.com/mezzio/mezzio-skeleton tempo/$response
+    mysql -uroot fw < data/db_schema.sql
+    mysql -uroot fw < data/db_data.sql
+    chmod -R 777 cache/ logs/ templates_c/
+    mv config/config.local.php.dist config/config.local.php
+    sed -i 's/USERNAME/fwuser/' config/config.local.php
+    sed -i 's/PASSWORD/testpass/' config/config.local.php
+    sed -i 's/DATABASE/fw/' config/config.local.php
+    cd ../..
+    ln -s tempo/$response/public www
+elif [[ "$fw" == "8" || "$fw" == "lightmvc-swoole" ]]; then
+    if [[ ! -z "$nointeractivemode" ]]; then
+        yes | pecl install swoole
+    else
+        pecl install swoole
+    fi
+    echo "extension=swoole.so" >> /etc/php.ini
+    git clone https://github.com/lightmvc/lightmvcskel tempo/$response
+    cd tempo/$response
+    composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
+    mysql -uroot fw < data/db_schema.sql
+    mysql -uroot fw < data/db_data.sql
+    chmod -R 777 cache/ logs/ templates_c/
+    mv config/config.local.php.dist config/config.local.php
+    sed -i 's/USERNAME/fwuser/' config/config.local.php
+    sed -i 's/PASSWORD/testpass/' config/config.local.php
+    sed -i 's/DATABASE/fw/' config/config.local.php
+    cd ../..
+    ln -s tempo/$response/public www
+    export webserver="5"
+elif [[ "$fw" == "9" || "$fw" == "laminas" ]]; then
+    wget -O master.zip https://github.com/laminas/laminas-mvc-skeleton/archive/master.zip
+    unzip master.zip
+    rm master.zip
+    mv laminas-mvc-skeleton-master tempo/$response
     ln -s tempo/$response/public www
     cd tempo/$response
-    #sed -i '279s/2/3/' src/MezzioInstaller/OptionalPackages.php
-    sed -i "s/io->ask(implode(\$query), '2'/io->ask(implode(\$query), '3'/" src/MezzioInstaller/OptionalPackages.php
-    #sed -i '246s/n/3/' src/MezzioInstaller/config.php
-    sed -i "s/'default'        => 'n'/'default'        => 3/" src/MezzioInstaller/config.php
-    COMPOSER_PROCESS_TIMEOUT=5000 composer create-project -n
-  else
-    COMPOSER_PROCESS_TIMEOUT=5000 composer create-project mezzio/mezzio-skeleton tempo/$response
-    ln -s tempo/$response/public www
-    cd tempo/$response
+    if [[ ! -z "$nointeractivemode" ]]; then
+        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install -n
+    else
+        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
+    fi
     chown -R apache:apache data/
-  fi
-  export webserver="1"
+    cd ../..
+elif [[ "$fw" == "10" || "$fw" == "mezzio" ]]; then
+    composer self-update
+    if [[ ! -z "$nointeractivemode" ]]; then
+        git clone https://github.com/mezzio/mezzio-skeleton tempo/$response
+        ln -s tempo/$response/public www
+        cd tempo/$response
+        #sed -i '279s/2/3/' src/MezzioInstaller/OptionalPackages.php
+        sed -i "s/io->ask(implode(\$query), '2'/io->ask(implode(\$query), '3'/" src/MezzioInstaller/OptionalPackages.php
+        #sed -i '246s/n/3/' src/MezzioInstaller/config.php
+        sed -i "s/'default'        => 'n'/'default'        => 3/" src/MezzioInstaller/config.php
+	    COMPOSER_PROCESS_TIMEOUT=5000 composer create-project -n
+    else
+        COMPOSER_PROCESS_TIMEOUT=5000 composer create-project mezzio/mezzio-skeleton tempo/$response
+        ln -s tempo/$response/public www
+        cd tempo/$response
+        chown -R apache:apache data/
+    fi
+    export webserver="1"
 fi
 /etc/init.d/php-fpm restart
 chown -R apache:apache /srv/www
@@ -187,19 +187,19 @@ echo -e "PASSWORD : testpass\n"
 echo -e "DATABASE : fw\n"
 echo -e "SERVER : localhost\n"
 if [[ "$webserver" == "1" ]]; then
-  #composer run --timeout=0 serve
-  php -S 0.0.0.0:80 -t public/
+    #composer run --timeout=0 serve
+    php -S 0.0.0.0:80 -t public/
 elif [[ "$webserver" == "2" ]]; then
-  #php bin/console server:run 0.0.0.0:80
-  #symfony server:start -d --port=80
-  php -S 0.0.0.0:80 -t public
+    #php bin/console server:run 0.0.0.0:80
+    #symfony server:start -d --port=80
+    php -S 0.0.0.0:80 -t public
 elif [[ "$webserver" == "3" ]]; then
-  php artisan serve --host 0.0.0.0 --port 80
+    php artisan serve --host 0.0.0.0 --port 80
 elif [[ "$webserver" == "4" ]]; then
-  bin/cake server -H 0.0.0.0 -p 80
+    bin/cake server -H 0.0.0.0 -p 80
 elif [[ "$webserver" == "5" ]]; then
-  mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.OLD
-  cat >/etc/nginx/nginx.conf <<EOF
+    mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.OLD
+    cat >/etc/nginx/nginx.conf << EOF
 
 user apache;
 worker_processes 2;
@@ -262,9 +262,9 @@ http {
     }
 }
 EOF
-  /etc/init.d/nginx restart
-  cd tempo/$response
-  COMPOSER_PROCESS_TIMEOUT=0 composer run-swoole 2 </dev/null >/dev/null &>1 &
+    /etc/init.d/nginx restart
+    cd tempo/$response
+    COMPOSER_PROCESS_TIMEOUT=0 composer run-swoole </dev/null >/dev/null 2&>1 &
 else
-  /etc/init.d/httpd restart
+    /etc/init.d/httpd restart
 fi

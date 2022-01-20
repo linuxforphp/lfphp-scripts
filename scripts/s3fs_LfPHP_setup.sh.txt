@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O v1.90.tar.gz https://github.com/s3fs-fuse/s3fs-fuse/archive/refs/tags/v1.90.tar.gz &&
-    tar -xvf v1.90.tar.gz &&
-    cd s3fs-fuse-1.90 &&
-    ./autogen.sh &&
-    ./configure --prefix=/usr &&
-    make &&
-    make install
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nS3FS Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nS3FS Compilation and Installation DONE!\n"
+wget -O v1.90.tar.gz https://github.com/s3fs-fuse/s3fs-fuse/archive/refs/tags/v1.90.tar.gz &&
+tar -xvf v1.90.tar.gz &&
+cd s3fs-fuse-1.90 &&
+./autogen.sh &&
+./configure --prefix=/usr &&
+make &&
+make install
+if [[ $? -gt 0 ]]; then
+echo -e "\nS3FS Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nS3FS Compilation and Installation DONE!\n"
 else
-  wget -O s3fs-v1.90-lfphp.tar.gz https://websiteurl/s3fs-v1.90-lfphp.tar.gz &&
-    tar -xvf s3fs-v1.90-lfphp.tar.gz &&
-    cd s3fs-fuse-1.90 &&
-    make install
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nS3FS Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  cd
-  rm -rf s3fs-fuse-1.90
-  echo -e "\nS3FS Installation DONE!\n"
+wget -O s3fs-v1.90-lfphp.tar.gz https://files.linuxforphp.net/s3fs-v1.90-lfphp.tar.gz &&
+tar -xvf s3fs-v1.90-lfphp.tar.gz &&
+cd s3fs-fuse-1.90 &&
+make install
+if [[ $? -gt 0 ]]; then
+echo -e "\nS3FS Installation ERROR!  Aborting!\n"
+exit 1
+fi
+cd
+rm -rf s3fs-fuse-1.90
+echo -e "\nS3FS Installation DONE!\n"
 fi
 cd

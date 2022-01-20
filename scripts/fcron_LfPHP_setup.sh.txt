@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 cd
-cat >>/etc/syslog.conf <<"EOF"
+cat >> /etc/syslog.conf << "EOF"
 # Begin fcron addition to /etc/syslog.conf
 
 cron.* -/var/log/cron.log
@@ -13,72 +13,72 @@ touch /etc/fcrontab
 chown root:fcron /etc/fcrontab
 chmod 644 /etc/fcrontab
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O fcron-3.2.0.src.tar.gz http://fcron.free.fr/archives/fcron-3.2.0.src.tar.gz
-  wget -O blfs-bootscripts-20180105.tar.xz http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20180105.tar.xz
-  tar -xvf fcron-3.2.0.src.tar.gz
-  tar -xvf blfs-bootscripts-20180105.tar.xz
-  cd fcron-3.2.0
-  ./configure --prefix=/usr \
-    --sysconfdir=/etc \
-    --localstatedir=/var \
-    --without-sendmail \
-    --with-boot-install=no \
-    --with-systemdsystemunitdir=no &&
-    make &&
-    make install &&
-    cd &&
-    cd blfs-bootscripts-20180105 &&
-    make install-fcron &&
-    cd &&
-    rm -rf blfs-bootscripts-20180105 blfs-bootscripts-20180105.tar.xz
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nFcron Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nFcron Library Compilation and Installation DONE!\n"
+wget -O fcron-3.2.0.src.tar.gz http://fcron.free.fr/archives/fcron-3.2.0.src.tar.gz
+wget -O blfs-bootscripts-20180105.tar.xz http://anduin.linuxfromscratch.org/BLFS/blfs-bootscripts/blfs-bootscripts-20180105.tar.xz
+tar -xvf fcron-3.2.0.src.tar.gz
+tar -xvf blfs-bootscripts-20180105.tar.xz
+cd fcron-3.2.0
+./configure --prefix=/usr \
+--sysconfdir=/etc \
+--localstatedir=/var \
+--without-sendmail \
+--with-boot-install=no \
+--with-systemdsystemunitdir=no &&
+make &&
+make install &&
+cd &&
+cd blfs-bootscripts-20180105 &&
+make install-fcron &&
+cd &&
+rm -rf blfs-bootscripts-20180105 blfs-bootscripts-20180105.tar.xz
+if [[ $? -gt 0 ]]; then
+echo -e "\nFcron Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nFcron Library Compilation and Installation DONE!\n"
 else
-  wget -O fcron-3.2.0.src-lfphp.tar.gz https://websiteurl/fcron-3.2.0.src-lfphp.tar.gz
-  wget -O blfs-bootscripts-20180105-lfphp.tar.xz https://websiteurl/blfs-bootscripts-20180105-lfphp.tar.xz
-  tar -xvf fcron-3.2.0.src-lfphp.tar.gz
-  tar -xvf blfs-bootscripts-20180105-lfphp.tar.xz
-  cd fcron-3.2.0
-  make install &&
-    cd &&
-    cd blfs-bootscripts-20180105 &&
-    make install-fcron &&
-    cd &&
-    rm -rf fcron-3.2.0 blfs-bootscripts-20180105 blfs-bootscripts-20180105-lfphp.tar.xz
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nFcron Library Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nFcron Library Installation DONE!\n"
+wget -O fcron-3.2.0.src-lfphp.tar.gz https://files.linuxforphp.net/fcron-3.2.0.src-lfphp.tar.gz
+wget -O blfs-bootscripts-20180105-lfphp.tar.xz https://files.linuxforphp.net/blfs-bootscripts-20180105-lfphp.tar.xz
+tar -xvf fcron-3.2.0.src-lfphp.tar.gz
+tar -xvf blfs-bootscripts-20180105-lfphp.tar.xz
+cd fcron-3.2.0
+make install &&
+cd &&
+cd blfs-bootscripts-20180105 &&
+make install-fcron &&
+cd &&
+rm -rf fcron-3.2.0 blfs-bootscripts-20180105 blfs-bootscripts-20180105-lfphp.tar.xz
+if [[ $? -gt 0 ]]; then
+echo -e "\nFcron Library Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nFcron Library Installation DONE!\n"
 fi
 parms=${SYSKLOGD_PARMS-'-m 0'}
 mkdir -p /etc/sv/syslogd/supervise
 chmod -R 700 /etc/sv/syslogd/supervise
 touch /etc/sv/syslogd/run
-echo -e "#!/usr/bin/env bash\n" >/etc/sv/syslogd/run
-echo -e "exec /sbin/syslogd ${parms}" >>/etc/sv/syslogd/run
+echo -e "#!/usr/bin/env bash\n" > /etc/sv/syslogd/run
+echo -e "exec /sbin/syslogd ${parms}" >> /etc/sv/syslogd/run
 chmod +x /etc/sv/syslogd/run
 ln -s /etc/sv/syslogd /services
 mkdir -p /etc/sv/klogd/supervise
 chmod -R 700 /etc/sv/klogd/supervise
 touch /etc/sv/klogd/run
-echo -e "#!/usr/bin/env bash\n" >/etc/sv/klogd/run
-echo "exec /sbin/klogd" >>/etc/sv/klogd/run
+echo -e "#!/usr/bin/env bash\n" > /etc/sv/klogd/run
+echo "exec /sbin/klogd" >> /etc/sv/klogd/run
 chmod +x /etc/sv/klogd/run
 ln -s /etc/sv/klogd /services
-echo "* * * * * sed -i '/Resource temporarily unavailable/d' /var/log/cron.log" >>/etc/fcrontab
-echo "* * * * * sed -i '/Aborted/d' /var/log/cron.log" >>/etc/fcrontab
-echo "* * * * * sed -i '/Resource temporarily unavailable/d' /var/log/sys.log" >>/etc/fcrontab
-echo "* * * * * sed -i '/Aborted/d' /var/log/sys.log" >>/etc/fcrontab
+echo "* * * * * sed -i '/Resource temporarily unavailable/d' /var/log/cron.log" >> /etc/fcrontab
+echo "* * * * * sed -i '/Aborted/d' /var/log/cron.log" >> /etc/fcrontab
+echo "* * * * * sed -i '/Resource temporarily unavailable/d' /var/log/sys.log" >> /etc/fcrontab
+echo "* * * * * sed -i '/Aborted/d' /var/log/sys.log" >> /etc/fcrontab
 fcrontab /etc/fcrontab >/dev/null 2>&1
 mkdir -p /etc/sv/fcron/supervise
 chmod -R 700 /etc/sv/fcron/supervise
 touch /etc/sv/fcron/run
-echo -e "#!/usr/bin/env bash\n" >/etc/sv/fcron/run
-echo "exec /usr/sbin/fcron" >>/etc/sv/fcron/run
+echo -e "#!/usr/bin/env bash\n" > /etc/sv/fcron/run
+echo "exec /usr/sbin/fcron" >> /etc/sv/fcron/run
 chmod +x /etc/sv/fcron/run
 ln -s /etc/sv/fcron /services
 cd

@@ -5,45 +5,45 @@ cd php-src
 git checkout tags/php-7.0.10
 ./buildconf --force
 ./configure --prefix=/usr \
-  --sysconfdir=/etc \
-  --localstatedir=/var \
-  --datadir=/usr/share/php \
-  --mandir=/usr/share/man \
-  --enable-fpm \
-  --with-fpm-user=apache \
-  --with-fpm-group=apache \
-  --with-config-file-path=/etc \
-  --with-zlib \
-  --enable-bcmath \
-  --with-bz2 \
-  --enable-calendar \
-  --enable-dba=shared \
-  --with-gdbm \
-  --with-gmp \
-  --enable-ftp \
-  --with-gettext=/usr \
-  --enable-mbstring \
-  --with-readline \
-  --with-pdo-mysql=/usr \
-  --with-mysql-sock=/run/mysqld/mysqld.sock \
-  --with-curl \
-  --with-openssl \
-  --with-openssl-dir=/usr \
-  --with-mhash \
-  --enable-intl \
-  --with-mcrypt=/usr \
-  --enable-zip \
-  --with-libxml-dir=/usr \
-  --with-libdir=/lib/x86_64-linux-gnu \
-  --enable-sockets \
-  --enable-libxml \
-  --enable-soap \
-  --with-gd \
-  --with-jpeg-dir=/usr \
-  --with-png-dir=/usr \
-  --with-zlib-dir=/usr \
-  --with-freetype-dir=/usr \
-  --with-mysqli
+--sysconfdir=/etc \
+--localstatedir=/var \
+--datadir=/usr/share/php \
+--mandir=/usr/share/man \
+--enable-fpm \
+--with-fpm-user=apache \
+--with-fpm-group=apache \
+--with-config-file-path=/etc \
+--with-zlib \
+--enable-bcmath \
+--with-bz2 \
+--enable-calendar \
+--enable-dba=shared \
+--with-gdbm \
+--with-gmp \
+--enable-ftp \
+--with-gettext=/usr \
+--enable-mbstring \
+--with-readline \
+--with-pdo-mysql=/usr \
+--with-mysql-sock=/run/mysqld/mysqld.sock \
+--with-curl \
+--with-openssl \
+--with-openssl-dir=/usr \
+--with-mhash \
+--enable-intl \
+--with-mcrypt=/usr \
+--enable-zip \
+--with-libxml-dir=/usr \
+--with-libdir=/lib/x86_64-linux-gnu \
+--enable-sockets \
+--enable-libxml \
+--enable-soap \
+--with-gd \
+--with-jpeg-dir=/usr \
+--with-png-dir=/usr \
+--with-zlib-dir=/usr \
+--with-freetype-dir=/usr \
+--with-mysqli
 make
 make test
 make install
@@ -52,7 +52,7 @@ mv -v /etc/php-fpm.conf{.default,}
 cp -v /etc/php-fpm.d/www.conf.default /etc/php-fpm.d/www.conf
 sed -i 's@php/includes"@&\ninclude_path = ".:/usr/lib/php"@' /etc/php.ini
 sed -i -e '/proxy_module/s/^#//' -e '/proxy_fcgi_module/s/^#//' /etc/httpd/httpd.conf
-echo 'ProxyPassMatch ^/(.*.php)$ fcgi://127.0.0.1:9000/srv/www/$1' >>/etc/httpd/httpd.conf
+echo 'ProxyPassMatch ^/(.*.php)$ fcgi://127.0.0.1:9000/srv/www/$1' >> /etc/httpd/httpd.conf
 sed -i 's/DirectoryIndex index.html/DirectoryIndex index.php index.html/' /etc/httpd/httpd.conf
 /etc/init.d/mysql start
 /usr/sbin/php-fpm &

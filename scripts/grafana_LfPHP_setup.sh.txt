@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O grafana-7.0.1.linux-amd64.tar.gz https://dl.grafana.com/oss/release/grafana-7.0.1.linux-amd64.tar.gz &&
-    tar -xvf grafana-7.0.1.linux-amd64.tar.gz &&
-    cp -rf grafana-7.0.1 /srv/grafana &&
-    rm -rf grafana-7.0.1 grafana-7.0.1.linux-amd64.tar.gz
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nGrafana Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nGrafana Compilation and Installation DONE!\n"
-else
-  wget -O grafana-7.0.1.linux-amd64-lfphp.tar.gz https://websiteurl/grafana-7.0.1.linux-amd64-lfphp.tar.gz &&
-    tar -xvf grafana-7.0.1.linux-amd64-lfphp.tar.gz &&
-    cp -rf grafana-7.0.1 /srv/grafana &&
-    rm -rf grafana-7.0.1 grafana-7.0.1.linux-amd64-lfphp.tar.gz
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nGrafana Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nGrafana Installation DONE!\n"
+wget -O grafana-7.0.1.linux-amd64.tar.gz https://dl.grafana.com/oss/release/grafana-7.0.1.linux-amd64.tar.gz &&
+tar -xvf grafana-7.0.1.linux-amd64.tar.gz &&
+cp -rf grafana-7.0.1 /srv/grafana &&
+rm -rf grafana-7.0.1 grafana-7.0.1.linux-amd64.tar.gz
+if [[ $? -gt 0 ]]; then
+echo -e "\nGrafana Compilation ERROR!  Aborting!\n"
+exit 1
 fi
-cat >/etc/init.d/grafana <<'EOF'
+echo -e "\nGrafana Compilation and Installation DONE!\n"
+else
+wget -O grafana-7.0.1.linux-amd64-lfphp.tar.gz https://files.linuxforphp.net/grafana-7.0.1.linux-amd64-lfphp.tar.gz &&
+tar -xvf grafana-7.0.1.linux-amd64-lfphp.tar.gz &&
+cp -rf grafana-7.0.1 /srv/grafana &&
+rm -rf grafana-7.0.1 grafana-7.0.1.linux-amd64-lfphp.tar.gz
+if [[ $? -gt 0 ]]; then
+echo -e "\nGrafana Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nGrafana Installation DONE!\n"
+fi
+cat >/etc/init.d/grafana << 'EOF'
 #!/bin/sh
 #######################################################################
 # Begin /etc/init.d/grafana
@@ -87,18 +87,18 @@ esac
 # End /etc/init.d/grafana
 EOF
 chmod +x /etc/init.d/grafana
-ln -sf ../init.d/grafana /etc/rc.d/rc0.d/K28grafana
-ln -sf ../init.d/grafana /etc/rc.d/rc1.d/K28grafana
-ln -sf ../init.d/grafana /etc/rc.d/rc2.d/K28grafana
-ln -sf ../init.d/grafana /etc/rc.d/rc3.d/S32grafana
-ln -sf ../init.d/grafana /etc/rc.d/rc4.d/S32grafana
-ln -sf ../init.d/grafana /etc/rc.d/rc5.d/S32grafana
-ln -sf ../init.d/grafana /etc/rc.d/rc6.d/K28grafana
+ln -sf  ../init.d/grafana /etc/rc.d/rc0.d/K28grafana
+ln -sf  ../init.d/grafana /etc/rc.d/rc1.d/K28grafana
+ln -sf  ../init.d/grafana /etc/rc.d/rc2.d/K28grafana
+ln -sf  ../init.d/grafana /etc/rc.d/rc3.d/S32grafana
+ln -sf  ../init.d/grafana /etc/rc.d/rc4.d/S32grafana
+ln -sf  ../init.d/grafana /etc/rc.d/rc5.d/S32grafana
+ln -sf  ../init.d/grafana /etc/rc.d/rc6.d/K28grafana
 mkdir -p /etc/sv/grafana/supervise &&
-  chmod -R 700 /etc/sv/grafana/supervise &&
-  touch /etc/sv/grafana/run &&
-  echo -e "#!/usr/bin/env bash\n" >/etc/sv/grafana/run &&
-  echo "exec /srv/grafana/bin/grafana-server --config /srv/grafana/conf/defaults.ini --homepath /srv/grafana" >>/etc/sv/grafana/run &&
-  chmod +x /etc/sv/grafana/run &&
-  ln -s /etc/sv/grafana /services
+chmod -R 700 /etc/sv/grafana/supervise &&
+touch /etc/sv/grafana/run &&
+echo -e "#!/usr/bin/env bash\n" > /etc/sv/grafana/run &&
+echo "exec /srv/grafana/bin/grafana-server --config /srv/grafana/conf/defaults.ini --homepath /srv/grafana" >> /etc/sv/grafana/run &&
+chmod +x /etc/sv/grafana/run &&
+ln -s /etc/sv/grafana /services
 cd

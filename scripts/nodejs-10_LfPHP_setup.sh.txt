@@ -1,39 +1,39 @@
 #!/usr/bin/env bash
 cd
 if [[ -d /usr/lib/node_modules ]]; then
-  rm -rf /usr/lib/node_modules/ /usr/bin/npm
+rm -rf /usr/lib/node_modules/ /usr/bin/npm
 fi
 if [[ ! -z "$COMPILE" ]]; then
-  cd
-  wget -O node-10.24.1.tar.gz https://github.com/nodejs/node/archive/v10.24.1.tar.gz
-  tar -xvf node-10.24.1.tar.gz
-  cd node-10.24.1
-  PKG_CONFIG_PATH=/usr/lib/openssl-1.0/pkgconfig \
-    ./configure --prefix=/usr &&
-    make -j4 &&
-    make install &&
-    ln -sf node /usr/share/doc/node-10.24.1
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nNodeJS Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  cd
-  rm -rf which-2.21
-  rm -rf node-10.24.1
-  echo -e "\nNodeJS Compilation and Installation DONE!\n"
-  node -e "console.log('Hello from Node.js ' + process.version)"
+cd
+wget -O node-10.24.1.tar.gz https://github.com/nodejs/node/archive/v10.24.1.tar.gz
+tar -xvf node-10.24.1.tar.gz
+cd node-10.24.1
+PKG_CONFIG_PATH=/usr/lib/openssl-1.0/pkgconfig \
+./configure --prefix=/usr &&
+make -j4 &&
+make install &&
+ln -sf node /usr/share/doc/node-10.24.1
+if [[ $? -gt 0 ]]; then
+echo -e "\nNodeJS Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+cd
+rm -rf which-2.21
+rm -rf node-10.24.1
+echo -e "\nNodeJS Compilation and Installation DONE!\n"
+node -e "console.log('Hello from Node.js ' + process.version)"
 else
-  wget -O node-v10.24.1-linux-x64.tar.xz https://nodejs.org/dist/v10.24.1/node-v10.24.1-linux-x64.tar.xz &&
-    tar -xvf node-v10.24.1-linux-x64.tar.xz &&
-    cd node-v10.24.1-linux-x64 &&
-    rm CHANGELOG.md LICENSE README.md &&
-    cp -rf * /usr
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nNodeJS Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  cd
-  rm -rf node-v10.24.1-linux-x64
-  echo -e "\nNodeJS Installation DONE!\n"
-  node -e "console.log('Hello from Node.js ' + process.version)"
+wget -O node-v10.24.1-linux-x64.tar.xz https://nodejs.org/dist/v10.24.1/node-v10.24.1-linux-x64.tar.xz &&
+tar -xvf node-v10.24.1-linux-x64.tar.xz &&
+cd node-v10.24.1-linux-x64 &&
+rm CHANGELOG.md LICENSE README.md &&
+cp -rf * /usr
+if [[ $? -gt 0 ]]; then
+echo -e "\nNodeJS Installation ERROR!  Aborting!\n"
+exit 1
+fi
+cd
+rm -rf node-v10.24.1-linux-x64
+echo -e "\nNodeJS Installation DONE!\n"
+node -e "console.log('Hello from Node.js ' + process.version)"
 fi

@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O which-2.21.tar.gz https://ftp.gnu.org/gnu/which/which-2.21.tar.gz
-  tar -xzvf which-2.21.tar.gz
-  cd which-2.21
-  ./configure --prefix=/usr &&
-    make &&
-    make install
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nWhich Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nWhich Compilation and Installation DONE!\n"
+wget -O which-2.21.tar.gz https://ftp.gnu.org/gnu/which/which-2.21.tar.gz
+tar -xzvf which-2.21.tar.gz
+cd which-2.21
+./configure --prefix=/usr &&
+make &&
+make install
+if [[ $? -gt 0 ]]; then
+echo -e "\nWhich Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nWhich Compilation and Installation DONE!\n"
 else
-  cd &&
-    wget -O which-2.21-lfphp.tar.gz https://websiteurl/which-2.21-lfphp.tar.gz &&
-    tar -xzvf which-2.21-lfphp.tar.gz &&
-    cd which-2.21 &&
-    make install &&
-    cd &&
-    rm -rf which-2.21
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nWhich Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nWhich Installation DONE!\n"
+cd &&
+wget -O which-2.21-lfphp.tar.gz https://files.linuxforphp.net/which-2.21-lfphp.tar.gz &&
+tar -xzvf which-2.21-lfphp.tar.gz &&
+cd which-2.21 &&
+make install &&
+cd &&
+rm -rf which-2.21
+if [[ $? -gt 0 ]]; then
+echo -e "\nWhich Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nWhich Installation DONE!\n"
 fi
 cd

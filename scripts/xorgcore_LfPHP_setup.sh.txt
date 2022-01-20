@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 cd
 mkdir xc &&
-  cd xc
+cd xc
 export XORG_PREFIX="/usr"
 export XORG_CONFIG="--prefix=$XORG_PREFIX --sysconfdir=/etc \
 --localstatedir=/var --disable-static"
-cat >/etc/profile.d/xorg.sh <<EOF
+cat > /etc/profile.d/xorg.sh << EOF
 XORG_PREFIX="$XORG_PREFIX"
 XORG_CONFIG="--prefix=\$XORG_PREFIX --sysconfdir=/etc --localstatedir=/var --disable-static"
 export XORG_PREFIX XORG_CONFIG
@@ -19,7 +19,7 @@ cd util-macros-1.19.1
 make install
 ### Xorg protocol headers
 cd ..
-cat >proto-7.md5 <<"EOF"
+cat > proto-7.md5 << "EOF"
 1a05fb01fa1d5198894c931cf925c025  bigreqsproto-1.1.2.tar.bz2
 98482f65ba1e74a08bf5b056a4031ef0  compositeproto-0.4.2.tar.bz2
 998e5904764b82642cc63d97b4ba9e95  damageproto-1.2.1.tar.bz2
@@ -48,19 +48,20 @@ e793ecefeaecfeabd1aed6a01095174e  xf86vidmodeproto-2.3.1.tar.bz2
 16791f7ca8c51a20608af11702e51083  xproto-7.0.31.tar.bz2
 EOF
 mkdir proto &&
-  cd proto &&
-  grep -v '^#' ../proto-7.md5 | awk '{print $2}' | wget -i- -c \
-    -B https://www.x.org/pub/individual/proto/ &&
-  md5sum -c ../proto-7.md5
+cd proto &&
+grep -v '^#' ../proto-7.md5 | awk '{print $2}' | wget -i- -c \
+-B https://www.x.org/pub/individual/proto/ &&
+md5sum -c ../proto-7.md5
 #bash -e
-for package in $(grep -v '^#' ../proto-7.md5 | awk '{print $2}'); do
-  packagedir=${package%.tar.bz2}
-  tar -xf $package
-  pushd $packagedir
-  ./configure $XORG_CONFIG
-  make install
-  popd
-  rm -rf $packagedir
+for package in $(grep -v '^#' ../proto-7.md5 | awk '{print $2}')
+do
+packagedir=${package%.tar.bz2}
+tar -xf $package
+pushd $packagedir
+./configure $XORG_CONFIG
+make install
+popd
+rm -rf $packagedir
 done
 #exit
 ### LibXau
@@ -69,7 +70,7 @@ wget -O libXau-1.0.8.tar.bz2 https://www.x.org/pub/individual/lib/libXau-1.0.8.t
 tar -xvf libXau-1.0.8.tar.bz2
 cd libXau-1.0.8
 ./configure $XORG_CONFIG &&
-  make
+make
 make install
 ### libXdmcp-1.1.2
 cd ..
@@ -77,7 +78,7 @@ wget -O libXdmcp-1.1.2.tar.bz2 https://www.x.org/pub/individual/lib/libXdmcp-1.1
 tar -xvf libXdmcp-1.1.2.tar.bz2
 cd libXdmcp-1.1.2
 ./configure $XORG_CONFIG &&
-  make
+make
 make install
 ### xcb-proto-1.12
 cd ..
@@ -85,22 +86,22 @@ wget -O xcb-proto-1.12.tar.bz2 https://xcb.freedesktop.org/dist/xcb-proto-1.12.t
 tar -xvf xcb-proto-1.12.tar.bz2
 cd xcb-proto-1.12
 ./configure $XORG_CONFIG &&
-  make install
+make install
 ### libxcb-1.12
 cd ..
 wget -O libxcb-1.12.tar.bz2 https://xcb.freedesktop.org/dist/libxcb-1.12.tar.bz2
 tar -xvf libxcb-1.12.tar.bz2
 cd libxcb-1.12
 sed -i "s/pthread-stubs//" configure &&
-  ./configure $XORG_CONFIG \
-    --enable-xinput \
-    --without-doxygen \
-    --docdir='${datadir}'/doc/libxcb-1.12 &&
-  make
+./configure $XORG_CONFIG \
+--enable-xinput \
+--without-doxygen \
+--docdir='${datadir}'/doc/libxcb-1.12 &&
+make
 make install
 ### Xorg libraries
 cd ..
-cat >lib-7.md5 <<"EOF"
+cat > lib-7.md5 << "EOF"
 c5ba432dd1514d858053ffe9f4737dd8  xtrans-1.3.5.tar.bz2
 0f618db70c4054ca67cee0cc156a4255  libX11-1.6.5.tar.bz2
 52df7c4c1f0badd9f82ab124fb32eb97  libXext-1.3.3.tar.bz2
@@ -135,39 +136,40 @@ d810ab17e24c1418dedf7207fb2841d4  libpciaccess-0.13.5.tar.bz2
 66662e76899112c0f99e22f2fc775a7e  libxshmfence-1.2.tar.bz2
 EOF
 mkdir lib &&
-  cd lib &&
-  grep -v '^#' ../lib-7.md5 | awk '{print $2}' | wget -i- -c \
-    -B https://www.x.org/pub/individual/lib/ &&
-  md5sum -c ../lib-7.md5
+cd lib &&
+grep -v '^#' ../lib-7.md5 | awk '{print $2}' | wget -i- -c \
+-B https://www.x.org/pub/individual/lib/ &&
+md5sum -c ../lib-7.md5
 #bash -e
-for package in $(grep -v '^#' ../lib-7.md5 | awk '{print $2}'); do
-  packagedir=${package%.tar.bz2}
-  tar -xf $package
-  pushd $packagedir
-  case $packagedir in
-  libICE*)
-    ./configure $XORG_CONFIG ICE_LIBS=-lpthread
-    ;;
+for package in $(grep -v '^#' ../lib-7.md5 | awk '{print $2}')
+do
+packagedir=${package%.tar.bz2}
+tar -xf $package
+pushd $packagedir
+case $packagedir in
+libICE* )
+  ./configure $XORG_CONFIG ICE_LIBS=-lpthread
+;;
 
-  libXfont2-[0-9]*)
-    ./configure $XORG_CONFIG --disable-devel-docs
-    ;;
+libXfont2-[0-9]* )
+  ./configure $XORG_CONFIG --disable-devel-docs
+;;
 
-  libXt-[0-9]*)
-    ./configure $XORG_CONFIG \
-      --with-appdefaultdir=/etc/X11/app-defaults
-    ;;
+libXt-[0-9]* )
+  ./configure $XORG_CONFIG \
+			  --with-appdefaultdir=/etc/X11/app-defaults
+;;
 
-  *)
-    ./configure $XORG_CONFIG
-    ;;
-  esac
-  make
-  #make check 2>&1 | tee ../$packagedir-make_check.log
-  make install
-  popd
-  rm -rf $packagedir
-  /sbin/ldconfig
+* )
+  ./configure $XORG_CONFIG
+;;
+esac
+make
+#make check 2>&1 | tee ../$packagedir-make_check.log
+make install
+popd
+rm -rf $packagedir
+/sbin/ldconfig
 done
 #exit
 echo -e "\nXorg Installation DONE!\n"

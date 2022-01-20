@@ -1,53 +1,53 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O krb5-1.17.tar.gz https://kerberos.org/dist/krb5/1.17/krb5-1.17.tar.gz
-  tar -xzvf krb5-1.17.tar.gz
-  cd krb5-1.17/src
-  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var/lib --with-system-et --with-system-ss --with-system-verto=no --enable-dns-for-realm &&
-    make &&
-    make install &&
-    for f in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv kdb5 kdb_ldap krad krb5 krb5support verto; do
-      find /usr/lib -type f -name "lib$f*.so*" -exec chmod -v 755 {} \;
-    done &&
-    mv -v /usr/lib/libkrb5.so.3* /lib &&
-    mv -v /usr/lib/libk5crypto.so.3* /lib &&
-    mv -v /usr/lib/libkrb5support.so.0* /lib &&
-    ln -v -sf ../../lib/libkrb5.so.3.3 /usr/lib/libkrb5.so &&
-    ln -v -sf ../../lib/libk5crypto.so.3.1 /usr/lib/libk5crypto.so &&
-    ln -v -sf ../../lib/libkrb5support.so.0.1 /usr/lib/libkrb5support.so &&
-    mv -v /usr/bin/ksu /bin && chmod -v 755 /bin/ksu &&
-    install -v -dm755 /usr/share/doc/krb5-1.17 &&
-    cp -vfr ../doc/* /usr/share/doc/krb5-1.17
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nKRB5 Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nKRB5 Compilation and Installation DONE!\n"
+wget -O krb5-1.17.tar.gz https://kerberos.org/dist/krb5/1.17/krb5-1.17.tar.gz
+tar -xzvf krb5-1.17.tar.gz
+cd krb5-1.17/src
+./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var/lib --with-system-et --with-system-ss --with-system-verto=no --enable-dns-for-realm &&
+make &&
+make install &&
+for f in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv kdb5 kdb_ldap krad krb5 krb5support verto ; do
+find /usr/lib -type f -name "lib$f*.so*" -exec chmod -v 755 {} \;;
+done &&
+mv -v /usr/lib/libkrb5.so.3* /lib &&
+mv -v /usr/lib/libk5crypto.so.3* /lib &&
+mv -v /usr/lib/libkrb5support.so.0* /lib &&
+ln -v -sf ../../lib/libkrb5.so.3.3 /usr/lib/libkrb5.so &&
+ln -v -sf ../../lib/libk5crypto.so.3.1 /usr/lib/libk5crypto.so &&
+ln -v -sf ../../lib/libkrb5support.so.0.1 /usr/lib/libkrb5support.so &&
+mv -v /usr/bin/ksu /bin && chmod -v 755 /bin/ksu &&
+install -v -dm755 /usr/share/doc/krb5-1.17 &&
+cp -vfr ../doc/* /usr/share/doc/krb5-1.17
+if [[ $? -gt 0 ]]; then
+echo -e "\nKRB5 Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nKRB5 Compilation and Installation DONE!\n"
 else
-  cd &&
-    wget -O krb5-1.17-lfphp.tar.gz https://websiteurl/krb5-1.17-lfphp.tar.gz &&
-    tar -xzvf krb5-1.17-lfphp.tar.gz &&
-    cd krb5-1.17/src &&
-    make install &&
-    for f in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv kdb5 kdb_ldap krad krb5 krb5support verto; do
-      find /usr/lib -type f -name "lib$f*.so*" -exec chmod -v 755 {} \;
-    done &&
-    mv -v /usr/lib/libkrb5.so.3* /lib &&
-    mv -v /usr/lib/libk5crypto.so.3* /lib &&
-    mv -v /usr/lib/libkrb5support.so.0* /lib &&
-    ln -v -sf ../../lib/libkrb5.so.3.3 /usr/lib/libkrb5.so &&
-    ln -v -sf ../../lib/libk5crypto.so.3.1 /usr/lib/libk5crypto.so &&
-    ln -v -sf ../../lib/libkrb5support.so.0.1 /usr/lib/libkrb5support.so &&
-    mv -v /usr/bin/ksu /bin && chmod -v 755 /bin/ksu &&
-    install -v -dm755 /usr/share/doc/krb5-1.17 &&
-    cp -vfr ../doc/* /usr/share/doc/krb5-1.17 &&
-    cd &&
-    rm -rf krb5-1.17
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nKRB5 Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nKRB5 Installation DONE!\n"
+cd &&
+wget -O krb5-1.17-lfphp.tar.gz https://files.linuxforphp.net/krb5-1.17-lfphp.tar.gz &&
+tar -xzvf krb5-1.17-lfphp.tar.gz &&
+cd krb5-1.17/src &&
+make install &&
+for f in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv kdb5 kdb_ldap krad krb5 krb5support verto ; do
+find /usr/lib -type f -name "lib$f*.so*" -exec chmod -v 755 {} \;;
+done &&
+mv -v /usr/lib/libkrb5.so.3* /lib &&
+mv -v /usr/lib/libk5crypto.so.3* /lib &&
+mv -v /usr/lib/libkrb5support.so.0* /lib &&
+ln -v -sf ../../lib/libkrb5.so.3.3 /usr/lib/libkrb5.so &&
+ln -v -sf ../../lib/libk5crypto.so.3.1 /usr/lib/libk5crypto.so &&
+ln -v -sf ../../lib/libkrb5support.so.0.1 /usr/lib/libkrb5support.so &&
+mv -v /usr/bin/ksu /bin && chmod -v 755 /bin/ksu &&
+install -v -dm755 /usr/share/doc/krb5-1.17 &&
+cp -vfr ../doc/* /usr/share/doc/krb5-1.17 &&
+cd &&
+rm -rf krb5-1.17
+if [[ $? -gt 0 ]]; then
+echo -e "\nKRB5 Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nKRB5 Installation DONE!\n"
 fi
 cd

@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O telegraf-1.14.3_linux_amd64.tar.gz https://dl.influxdata.com/telegraf/releases/telegraf-1.14.3_linux_amd64.tar.gz &&
-    tar -xvf telegraf-1.14.3_linux_amd64.tar.gz &&
-    cp -rf telegraf/* / &&
-    rm -rf telegraf telegraf-1.14.3_linux_amd64.tar.gz
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nTelegraf Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nTelegraf Compilation and Installation DONE!\n"
-else
-  wget -O telegraf-1.14.3_linux_amd64-lfphp.tar.gz https://websiteurl/telegraf-1.14.3_linux_amd64-lfphp.tar.gz &&
-    tar -xvf telegraf-1.14.3_linux_amd64-lfphp.tar.gz &&
-    cp -rf telegraf/* / &&
-    rm -rf telegraf telegraf-1.14.3_linux_amd64-lfphp.tar.gz
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nTelegraf Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nTelegraf Installation DONE!\n"
+wget -O telegraf-1.14.3_linux_amd64.tar.gz https://dl.influxdata.com/telegraf/releases/telegraf-1.14.3_linux_amd64.tar.gz &&
+tar -xvf telegraf-1.14.3_linux_amd64.tar.gz &&
+cp -rf telegraf/* / &&
+rm -rf telegraf telegraf-1.14.3_linux_amd64.tar.gz
+if [[ $? -gt 0 ]]; then
+echo -e "\nTelegraf Compilation ERROR!  Aborting!\n"
+exit 1
 fi
-cat >/etc/init.d/telegraf <<'EOF'
+echo -e "\nTelegraf Compilation and Installation DONE!\n"
+else
+wget -O telegraf-1.14.3_linux_amd64-lfphp.tar.gz https://files.linuxforphp.net/telegraf-1.14.3_linux_amd64-lfphp.tar.gz &&
+tar -xvf telegraf-1.14.3_linux_amd64-lfphp.tar.gz &&
+cp -rf telegraf/* / &&
+rm -rf telegraf telegraf-1.14.3_linux_amd64-lfphp.tar.gz
+if [[ $? -gt 0 ]]; then
+echo -e "\nTelegraf Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nTelegraf Installation DONE!\n"
+fi
+cat >/etc/init.d/telegraf << 'EOF'
 #!/bin/sh
 #######################################################################
 # Begin /etc/init.d/telegraf
@@ -86,18 +86,18 @@ esac
 # End /etc/init.d/telegraf
 EOF
 chmod +x /etc/init.d/telegraf
-ln -sf ../init.d/telegraf /etc/rc.d/rc0.d/K28telegraf
-ln -sf ../init.d/telegraf /etc/rc.d/rc1.d/K28telegraf
-ln -sf ../init.d/telegraf /etc/rc.d/rc2.d/K28telegraf
-ln -sf ../init.d/telegraf /etc/rc.d/rc3.d/S32telegraf
-ln -sf ../init.d/telegraf /etc/rc.d/rc4.d/S32telegraf
-ln -sf ../init.d/telegraf /etc/rc.d/rc5.d/S32telegraf
-ln -sf ../init.d/telegraf /etc/rc.d/rc6.d/K28telegraf
+ln -sf  ../init.d/telegraf /etc/rc.d/rc0.d/K28telegraf
+ln -sf  ../init.d/telegraf /etc/rc.d/rc1.d/K28telegraf
+ln -sf  ../init.d/telegraf /etc/rc.d/rc2.d/K28telegraf
+ln -sf  ../init.d/telegraf /etc/rc.d/rc3.d/S32telegraf
+ln -sf  ../init.d/telegraf /etc/rc.d/rc4.d/S32telegraf
+ln -sf  ../init.d/telegraf /etc/rc.d/rc5.d/S32telegraf
+ln -sf  ../init.d/telegraf /etc/rc.d/rc6.d/K28telegraf
 mkdir -p /etc/sv/telegraf/supervise &&
-  chmod -R 700 /etc/sv/telegraf/supervise &&
-  touch /etc/sv/telegraf/run &&
-  echo -e "#!/usr/bin/env bash\n" >/etc/sv/telegraf/run &&
-  echo "exec telegraf --config /etc/telegraf/telegraf.conf" >>/etc/sv/telegraf/run &&
-  chmod +x /etc/sv/telegraf/run &&
-  ln -s /etc/sv/telegraf /services
+chmod -R 700 /etc/sv/telegraf/supervise &&
+touch /etc/sv/telegraf/run &&
+echo -e "#!/usr/bin/env bash\n" > /etc/sv/telegraf/run &&
+echo "exec telegraf --config /etc/telegraf/telegraf.conf" >> /etc/sv/telegraf/run &&
+chmod +x /etc/sv/telegraf/run &&
+ln -s /etc/sv/telegraf /services
 cd

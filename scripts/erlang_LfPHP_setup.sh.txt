@@ -1,42 +1,42 @@
 #!/usr/bin/env bash
 java -version
 if [[ $? -gt 0 ]]; then
-  echo -e "\n\n###############################################################"
-  echo -e "\nYou must have a login shell to install this package...\n\nPlease enter the command 'login root' before installing Erlang!\n"
-  echo -e "###############################################################\n"
-  exit 1
+echo -e "\n\n###############################################################"
+echo -e "\nYou must have a login shell to install this package...\n\nPlease enter the command 'login root' before installing Erlang!\n"
+echo -e "###############################################################\n"
+exit 1
 fi
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O otp_src_22.3.tar.gz http://erlang.org/download/otp_src_22.3.tar.gz &&
-    tar -xvf otp_src_22.3.tar.gz &&
-    cd otp_src_22.3 &&
-    export ERL_TOP=$(pwd) &&
-    ./otp_build autoconf &&
-    ./configure --prefix=/usr &&
-    make &&
-    make install &&
-    cd .. &&
-    rm -rf otp_src_22.3 &&
-    rm otp_src_22.3.tar.gz
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nErlang Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nErlang Compilation and Installation DONE!\n"
+wget -O otp_src_22.3.tar.gz http://erlang.org/download/otp_src_22.3.tar.gz &&
+tar -xvf otp_src_22.3.tar.gz &&
+cd otp_src_22.3 &&
+export ERL_TOP=`pwd` &&
+./otp_build autoconf &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd .. &&
+rm -rf otp_src_22.3 &&
+rm otp_src_22.3.tar.gz
+if [[ $? -gt 0 ]]; then
+echo -e "\nErlang Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nErlang Compilation and Installation DONE!\n"
 else
-  wget -O otp-x86_64-22.3-lfphp.tar.gz https://websiteurl/otp-x86_64-22.3-lfphp.tar.gz &&
-    tar -xvf otp-x86_64-22.3-lfphp.tar.gz &&
-    cd otp_src_22.3 &&
-    export ERL_TOP=$(pwd) &&
-    make install &&
-    cd .. &&
-    rm -rf otp_src_22.3 &&
-    rm otp-x86_64-22.3-lfphp.tar.gz
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nErlang Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nErlang Installation DONE!\n"
+wget -O otp-x86_64-22.3-lfphp.tar.gz https://files.linuxforphp.net/otp-x86_64-22.3-lfphp.tar.gz &&
+tar -xvf otp-x86_64-22.3-lfphp.tar.gz &&
+cd otp_src_22.3 &&
+export ERL_TOP=`pwd` &&
+make install &&
+cd .. &&
+rm -rf otp_src_22.3 &&
+rm otp-x86_64-22.3-lfphp.tar.gz
+if [[ $? -gt 0 ]]; then
+echo -e "\nErlang Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nErlang Installation DONE!\n"
 fi
 cd

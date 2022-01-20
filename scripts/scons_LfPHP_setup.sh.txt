@@ -4,11 +4,11 @@ wget -O scons-3.0.5.tar.gz https://downloads.sourceforge.net/scons/scons-3.0.5.t
 tar -xvf scons-3.0.5.tar.gz
 cd scons-3.0.5
 sed -i 's/env python/&3/' script/scons* &&
-  python3 setup.py install --prefix=/usr \
-    --standard-lib \
-    --optimize=1 \
-    --install-data=/usr/share &&
-  rm -v /usr/bin/scons*.bat
+python3 setup.py install --prefix=/usr \
+--standard-lib \
+--optimize=1 \
+--install-data=/usr/share &&
+rm -v /usr/bin/scons*.bat
 cd
 rm -rf scons-3.0.5
 echo -e "\nScons Compilation and Installation DONE!\n"

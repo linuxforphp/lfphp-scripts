@@ -1,31 +1,31 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O enchant-1.6.0.tar.gz http://www.abisource.com/downloads/enchant/1.6.0/enchant-1.6.0.tar.gz
-  tar -xzvf enchant-1.6.0.tar.gz
-  cd enchant-1.6.0
-  ./configure --prefix=/usr --disable-static &&
-    make &&
-    make install &&
-    cd &&
-    rm -rf enchant-1.6.0
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nEnchant 1.6 Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nEnchant 1.6 Compilation and Installation DONE!\n"
+wget -O enchant-1.6.0.tar.gz http://www.abisource.com/downloads/enchant/1.6.0/enchant-1.6.0.tar.gz
+tar -xzvf enchant-1.6.0.tar.gz
+cd enchant-1.6.0
+./configure --prefix=/usr --disable-static &&
+make &&
+make install &&
+cd &&
+rm -rf enchant-1.6.0
+if [[ $? -gt 0 ]]; then
+echo -e "\nEnchant 1.6 Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nEnchant 1.6 Compilation and Installation DONE!\n"
 else
-  cd &&
-    wget -O enchant-1.6.0-lfphp.tar.gz https://websiteurl/enchant-1.6.0-lfphp.tar.gz &&
-    tar -xzvf enchant-1.6.0-lfphp.tar.gz &&
-    cd enchant-1.6.0 &&
-    make install &&
-    cd &&
-    rm -rf enchant-1.6.0
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nEnchant 1.6 Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nEnchant 1.6 Installation DONE!\n"
+cd &&
+wget -O enchant-1.6.0-lfphp.tar.gz https://files.linuxforphp.net/enchant-1.6.0-lfphp.tar.gz &&
+tar -xzvf enchant-1.6.0-lfphp.tar.gz &&
+cd enchant-1.6.0 &&
+make install &&
+cd &&
+rm -rf enchant-1.6.0
+if [[ $? -gt 0 ]]; then
+echo -e "\nEnchant 1.6 Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nEnchant 1.6 Installation DONE!\n"
 fi
 cd

@@ -1,33 +1,33 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  git clone https://github.com/memcached/memcached &&
-    cd memcached &&
-    ./autogen.sh &&
-    ./configure --prefix=/usr &&
-    make &&
-    make install &&
-    cd &&
-    rm -rf memcached
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nMemcached Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nMemcached Compilation and Installation DONE!\n"
-else
-  wget -O memcached-1.6.8_linux_amd64-lfphp.tar.gz https://websiteurl/memcached-1.6.8_linux_amd64-lfphp.tar.gz &&
-    tar -xvf memcached-1.6.8_linux_amd64-lfphp.tar.gz &&
-    cd memcached &&
-    make install &&
-    cd &&
-    rm -rf memcached
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nMemcached Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nMemcached Installation DONE!\n"
+git clone https://github.com/memcached/memcached &&
+cd memcached &&
+./autogen.sh &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd &&
+rm -rf memcached
+if [[ $? -gt 0 ]]; then
+echo -e "\nMemcached Compilation ERROR!  Aborting!\n"
+exit 1
 fi
-cat >/etc/memcached.conf <<'EOF'
+echo -e "\nMemcached Compilation and Installation DONE!\n"
+else
+wget -O memcached-1.6.8_linux_amd64-lfphp.tar.gz https://files.linuxforphp.net/memcached-1.6.8_linux_amd64-lfphp.tar.gz &&
+tar -xvf memcached-1.6.8_linux_amd64-lfphp.tar.gz &&
+cd memcached &&
+make install &&
+cd &&
+rm -rf memcached
+if [[ $? -gt 0 ]]; then
+echo -e "\nMemcached Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nMemcached Installation DONE!\n"
+fi
+cat >/etc/memcached.conf << 'EOF'
 # memcached default config file
 # 2003 - Jay Bonci <jaybonci@debian.org>
 # This configuration file is read by the start-memcached script provided as
@@ -75,7 +75,7 @@ logfile /var/log/memcached.log
 # Maximize core file limit
 # -r
 EOF
-cat >/etc/init.d/memcached <<'EOF'
+cat >/etc/init.d/memcached << 'EOF'
 #!/bin/sh
 #######################################################################
 # Begin /etc/init.d/memcached
@@ -199,18 +199,18 @@ esac
 # End /etc/init.d/memcached
 EOF
 chmod +x /etc/init.d/memcached
-ln -sf ../init.d/memcached /etc/rc.d/rc0.d/K28memcached
-ln -sf ../init.d/memcached /etc/rc.d/rc1.d/K28memcached
-ln -sf ../init.d/memcached /etc/rc.d/rc2.d/K28memcached
-ln -sf ../init.d/memcached /etc/rc.d/rc3.d/S32memcached
-ln -sf ../init.d/memcached /etc/rc.d/rc4.d/S32memcached
-ln -sf ../init.d/memcached /etc/rc.d/rc5.d/S32memcached
-ln -sf ../init.d/memcached /etc/rc.d/rc6.d/K28memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc0.d/K28memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc1.d/K28memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc2.d/K28memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc3.d/S32memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc4.d/S32memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc5.d/S32memcached
+ln -sf  ../init.d/memcached /etc/rc.d/rc6.d/K28memcached
 mkdir -p /etc/sv/memcached/supervise &&
-  chmod -R 700 /etc/sv/memcached/supervise &&
-  touch /etc/sv/memcached/run &&
-  echo -e "#!/usr/bin/env bash\n" >/etc/sv/memcached/run &&
-  echo "exec /etc/init.d/memcached start >/dev/null 2>&1" >>/etc/sv/memcached/run &&
-  chmod +x /etc/sv/memcached/run &&
-  ln -s /etc/sv/memcached /services
+chmod -R 700 /etc/sv/memcached/supervise &&
+touch /etc/sv/memcached/run &&
+echo -e "#!/usr/bin/env bash\n" > /etc/sv/memcached/run &&
+echo "exec /etc/init.d/memcached start >/dev/null 2>&1" >> /etc/sv/memcached/run &&
+chmod +x /etc/sv/memcached/run &&
+ln -s /etc/sv/memcached /services
 cd

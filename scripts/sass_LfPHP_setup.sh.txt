@@ -9,7 +9,7 @@ npm start </dev/null >/dev/null 2>&1 &
 gem install sass
 npm install grunt -g
 touch public/stylesheets/style.sass
-cat >gruntfile.js <<'EOF'
+cat >gruntfile.js << 'EOF'
 module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),

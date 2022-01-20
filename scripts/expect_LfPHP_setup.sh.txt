@@ -1,37 +1,37 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O expect5.45.4.tar.gz https://downloads.sourceforge.net/expect/expect5.45.4.tar.gz &&
-    tar -xvf expect5.45.4.tar.gz &&
-    cd expect5.45.4 &&
-    ./configure --prefix=/usr \
-      --with-tcl=/usr/lib \
-      --enable-shared \
-      --mandir=/usr/share/man \
-      --with-tclinclude=/usr/include &&
-    make &&
-    make install &&
-    ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib &&
-    cd &&
-    rm -rf expect5.45.4
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nExpect Library Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nExpect Library Compilation and Installation DONE!\n"
+wget -O expect5.45.4.tar.gz https://downloads.sourceforge.net/expect/expect5.45.4.tar.gz &&
+tar -xvf expect5.45.4.tar.gz &&
+cd expect5.45.4 &&
+./configure --prefix=/usr \
+--with-tcl=/usr/lib \
+--enable-shared \
+--mandir=/usr/share/man \
+--with-tclinclude=/usr/include &&
+make &&
+make install &&
+ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib &&
+cd &&
+rm -rf expect5.45.4
+if [[ $? -gt 0 ]]; then
+echo -e "\nExpect Library Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nExpect Library Compilation and Installation DONE!\n"
 else
-  cd &&
-    wget -O expect5.45.4-lfphp.tar.gz https://websiteurl/expect5.45.4-lfphp.tar.gz &&
-    tar -xzvf expect5.45.4-lfphp.tar.gz &&
-    cd expect5.45.4 &&
-    make install &&
-    ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib &&
-    cd &&
-    rm -rf expect5.45.4
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nExpect Library Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nExpect Library Installation DONE!\n"
+cd &&
+wget -O expect5.45.4-lfphp.tar.gz https://files.linuxforphp.net/expect5.45.4-lfphp.tar.gz &&
+tar -xzvf expect5.45.4-lfphp.tar.gz &&
+cd expect5.45.4 &&
+make install &&
+ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib &&
+cd &&
+rm -rf expect5.45.4
+if [[ $? -gt 0 ]]; then
+echo -e "\nExpect Library Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nExpect Library Installation DONE!\n"
 fi
 cd

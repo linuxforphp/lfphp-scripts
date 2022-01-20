@@ -1,46 +1,46 @@
 #!/usr/bin/env bash
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "linux-gnu" || "$OSTYPE" == "darwin19" ]]; then
-  if [[ -z "$1" ]]; then
-    read -r -p "Which PHP extension do you wish to install? " response
-  else
-    response=$1
-  fi
-  cd
-  if [[ "$OSTYPE" == "msys" ]]; then
-    echo "Installation of PHP extensions on Windows in not supported for now. Sorry."
-    exit 5
-    curl -s -o /dev/null -f http://pecl.php.net/get/$response/windows
-    if [[ $? -gt 0 ]]; then
-      echo "****************************************************"
-      echo "* We couldn't find this package. Please try again. *"
-      echo -e "****************************************************\n"
-      exit 8
+    if [[ -z "$1" ]]; then
+        read -r -p "Which PHP extension do you wish to install? " response
+    else
+        response=$1
     fi
-    PHP_EXTENSION_FOLDER=$(where php.exe | sed 's/\\/\//g' | sed 's/C:/\/c/g' | sed 's/php.exe/ext/g')
-    curl -o $PHP_EXTENSION_FOLDER/php_$response.dll https://pecl.php.net/get/$response/windows
-    echo -e "\nDone.\nPlease add this new extension to your php.ini file.\n"
-  else
-    curl -s -o /dev/null -f http://pecl.php.net/get/$response
-    if [[ $? -gt 0 ]]; then
-      echo "****************************************************"
-      echo "* We couldn't find this package. Please try again. *"
-      echo -e "****************************************************\n"
-      exit 8
-    fi
-    curl -o $response.tgz https://pecl.php.net/get/$response
-    mkdir tempo
-    tar -C tempo -xvf $response.tgz
-    cd tempo
-    DIRNAME=$(find . -mindepth 1 -maxdepth 1 -type d)
-    cd $DIRNAME
-    phpize
-    ./configure
-    make
-    make install
     cd
-    rm -rf tempo
-    echo -e "\nDone.\nPlease add this new extension to your php.ini file.\n"
-  fi
+    if [[ "$OSTYPE" == "msys" ]]; then
+        echo "Installation of PHP extensions on Windows in not supported for now. Sorry."
+        exit 5
+        curl -s -o /dev/null -f http://pecl.php.net/get/$response/windows
+        if [[ $? -gt 0 ]]; then
+            echo "****************************************************"
+            echo "* We couldn't find this package. Please try again. *"
+            echo -e "****************************************************\n"
+            exit 8
+        fi
+        PHP_EXTENSION_FOLDER=$( where php.exe | sed 's/\\/\//g' | sed 's/C:/\/c/g' | sed 's/php.exe/ext/g' )
+        curl -o $PHP_EXTENSION_FOLDER/php_$response.dll https://pecl.php.net/get/$response/windows
+        echo -e "\nDone.\nPlease add this new extension to your php.ini file.\n"
+    else
+        curl -s -o /dev/null -f http://pecl.php.net/get/$response
+        if [[ $? -gt 0 ]]; then
+            echo "****************************************************"
+            echo "* We couldn't find this package. Please try again. *"
+            echo -e "****************************************************\n"
+            exit 8
+        fi
+        curl -o $response.tgz https://pecl.php.net/get/$response
+        mkdir tempo
+        tar -C tempo -xvf $response.tgz
+        cd tempo
+        DIRNAME=$( find . -mindepth 1 -maxdepth 1 -type d )
+        cd $DIRNAME
+        phpize
+        ./configure
+        make
+        make install
+        cd
+        rm -rf tempo
+        echo -e "\nDone.\nPlease add this new extension to your php.ini file.\n"	
+    fi
 else
-  exit 1
+    exit 1
 fi

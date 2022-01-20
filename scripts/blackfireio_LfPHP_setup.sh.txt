@@ -5,7 +5,7 @@ wget -O blackfire-agent https://packages.blackfire.io/binaries/blackfire-agent/1
 mv blackfire-agent /usr/local/bin/
 chmod +x /usr/local/bin/blackfire-agent
 mkdir -p /etc/blackfire
-cat >/etc/blackfire/agent <<'EOF'
+cat >/etc/blackfire/agent << 'EOF'
 [blackfire]
 ;
 ; setting: ca-cert
@@ -67,21 +67,21 @@ wget -O blackfire https://packages.blackfire.io/binaries/blackfire-agent/1.22.1/
 mv blackfire /usr/local/bin/
 chmod +x /usr/local/bin/blackfire
 blackfire config
-phpversion=$(php --version)
+phpversion=$( php --version)
 if [[ "$phpversion" =~ 5.6 ]]; then
-  wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-56.so
+wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-56.so
 elif [[ "$phpversion" =~ 7.0 ]]; then
-  wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-70.so
+wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-70.so
 elif [[ "$phpversion" =~ 7.1 ]]; then
-  wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-71.so
+wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-71.so
 elif [[ "$phpversion" =~ 7.2 ]]; then
-  wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-72.so
+wget -O blackfire.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-72.so
 elif [[ "$phpversion" =~ 7.3 ]]; then
-  wget -O blackfire.so.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-73.so
+wget -O blackfire.so.so https://packages.blackfire.io/binaries/blackfire-php/1.24.3/blackfire-php-linux_amd64-php-73.so
 fi
 chmod +x blackfire.so
-mv blackfire.so $(php -i | grep extensions | awk '{print $3}' | head -n1)
-cat >>/etc/php.ini <<'EOF'
+mv blackfire.so $( php -i | grep extensions | awk '{print $3}' | head -n1 )
+cat >>/etc/php.ini << 'EOF'
 [blackfire]
 extension = blackfire.so
 ; On Windows use the following configuration:

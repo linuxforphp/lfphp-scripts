@@ -1,36 +1,36 @@
 #!/usr/bin/env bash
 cd
 if [[ ! -z "$COMPILE" ]]; then
-  wget -O bind-9.16.5.tar.xz ftp://ftp.isc.org/isc/bind9/9.16.5/bind-9.16.5.tar.xz
-  tar -xvf bind-9.16.5.tar.xz
-  cd bind-9.16.5
-  ./configure --prefix=/usr --without-python &&
-    make -C lib/dns &&
-    make -C lib/isc &&
-    make -C lib/bind9 &&
-    make -C lib/isccfg &&
-    make -C lib/irs &&
-    make -C bin/dig &&
-    make -C doc &&
-    make -C bin/dig install &&
-    cp -v doc/man/{dig.1,host.1,nslookup.1} /usr/share/man/man1
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nBIND Utils Compilation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nBIND Utils Compilation and Installation DONE!\n"
+wget -O bind-9.16.5.tar.xz ftp://ftp.isc.org/isc/bind9/9.16.5/bind-9.16.5.tar.xz
+tar -xvf bind-9.16.5.tar.xz
+cd bind-9.16.5
+./configure --prefix=/usr --without-python &&
+make -C lib/dns &&
+make -C lib/isc &&
+make -C lib/bind9 &&
+make -C lib/isccfg &&
+make -C lib/irs &&
+make -C bin/dig &&
+make -C doc &&
+make -C bin/dig install &&
+cp -v doc/man/{dig.1,host.1,nslookup.1} /usr/share/man/man1
+if [[ $? -gt 0 ]]; then
+echo -e "\nBIND Utils Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nBIND Utils Compilation and Installation DONE!\n"
 else
-  cd &&
-    wget -O bind-9.16.5-lfphp.tar.gz https://websiteurl/bind-9.16.5-lfphp.tar.gz &&
-    tar -xvf bind-9.16.5-lfphp.tar.gz &&
-    cd bind-9.16.5 && make -C bin/dig install &&
-    cp -v doc/man/{dig.1,host.1,nslookup.1} /usr/share/man/man1 &&
-    cd &&
-    rm -rf bind-9.16.5
-  if [[ $? -gt 0 ]]; then
-    echo -e "\nBIND Utils Installation ERROR!  Aborting!\n"
-    exit 1
-  fi
-  echo -e "\nBIND Utils Installation DONE!\n"
+cd &&
+wget -O bind-9.16.5-lfphp.tar.gz https://files.linuxforphp.net/bind-9.16.5-lfphp.tar.gz &&
+tar -xvf bind-9.16.5-lfphp.tar.gz &&
+cd bind-9.16.5 &&make -C bin/dig install &&
+cp -v doc/man/{dig.1,host.1,nslookup.1} /usr/share/man/man1 &&
+cd &&
+rm -rf bind-9.16.5
+if [[ $? -gt 0 ]]; then
+echo -e "\nBIND Utils Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nBIND Utils Installation DONE!\n"
 fi
 cd

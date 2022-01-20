@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 cd
 #wget https://pagure.io/libaio/archive/libaio-0.3.111/libaio-libaio-0.3.111.tar.gz
-wget https://websiteurl/libaio-libaio-0.3.111-lfphp.tar.gz &&
-  #tar -xvf libaio-libaio-0.3.111.tar.gz &&
-  tar -xvf libaio-libaio-0.3.111-lfphp.tar.gz &&
-  cd libaio-libaio-0.3.111 &&
-  make prefix=/usr install &&
-  cd &&
-  rm -rf libaio-libaio-0.3.111
+wget https://files.linuxforphp.net/libaio-libaio-0.3.111-lfphp.tar.gz &&
+#tar -xvf libaio-libaio-0.3.111.tar.gz &&
+tar -xvf libaio-libaio-0.3.111-lfphp.tar.gz &&
+cd libaio-libaio-0.3.111 &&
+make prefix=/usr install &&
+cd &&
+rm -rf libaio-libaio-0.3.111
 if [[ $? -gt 0 ]]; then
-  echo -e "\nAIO Library Installation ERROR!  Aborting!\n"
-  exit 1
+echo -e "\nAIO Library Installation ERROR!  Aborting!\n"
+exit 1
 fi
 echo -e "\nAIO Library Installation DONE!\n"
 cd
