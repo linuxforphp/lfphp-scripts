@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+git clone --recurse-submodules https://github.com/google/leveldb.git &&
+cd leveldb &&
+git checkout 1.23 &&
+mkdir -p build &&
+cd build &&
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release .. &&
+cmake --build . &&
+make install &&
+cd &&
+rm -rf leveldb
+if [[ $? -gt 0 ]]; then
+echo -e "\nLevelDB Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nLevelDB Compilation and Installation DONE!\n"
+else
+cd
+wget -O leveldb-1.23-lfphp.tar.gz https://files.linuxforphp.net/leveldb-1.23-lfphp.tar.gz &&
+tar -xvf leveldb-1.23-lfphp.tar.gz &&
+cd leveldb/build &&
+make install &&
+cd &&
+rm -rf leveldb
+if [[ $? -gt 0 ]]; then
+echo -e "\nLevelDB Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nLevelDB Installation DONE!\n"
+fi
+cd

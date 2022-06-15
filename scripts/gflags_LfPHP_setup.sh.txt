@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+git clone https://github.com/gflags/gflags.git &&
+cd gflags &&
+git checkout v2.0 &&
+./configure --prefix=/usr &&
+make &&
+make install &&
+cd &&
+rm -rf gflags
+if [[ $? -gt 0 ]]; then
+echo -e "\nGFlags Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nGFlags Compilation and Installation DONE!\n"
+else
+cd
+wget -O gflags-2.0-lfphp.tar.gz https://files.linuxforphp.net/gflags-2.0-lfphp.tar.gz &&
+tar -xvf gflags-2.0-lfphp.tar.gz &&
+cd gflags &&
+make install &&
+cd &&
+rm -rf gflags
+if [[ $? -gt 0 ]]; then
+echo -e "\nGFlags Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nGFlags Installation DONE!\n"
+fi
+cd

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+cd
+if [[ ! -z "$COMPILE" ]]; then
+git clone https://github.com/google/snappy.git &&
+cd snappy &&
+git checkout 1.1.9 &&
+git submodule update --init &&
+mkdir build &&
+cd build && cmake -DCMAKE_INSTALL_PREFIX=/usr .. &&
+make &&
+make install &&
+cd &&
+rm -rf snappy
+if [[ $? -gt 0 ]]; then
+echo -e "\nSnappy Library Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nSnappy Library Compilation and Installation DONE!\n"
+else
+cd
+wget -O snappy-1.1.9-lfphp.tar.gz https://files.linuxforphp.net/snappy-1.1.9-lfphp.tar.gz &&
+tar -xvf snappy-1.1.9-lfphp.tar.gz &&
+cd snappy/build &&
+make install &&
+cd &&
+rm -rf snappy
+if [[ $? -gt 0 ]]; then
+echo -e "\nSnappy Library Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nSnappy Library Installation DONE!\n"
+fi
+cd

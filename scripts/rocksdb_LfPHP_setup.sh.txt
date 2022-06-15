@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Requires which
+cd
+if [[ ! -z "$COMPILE" ]]; then
+git clone https://github.com/facebook/rocksdb.git &&
+cd rocksdb &&
+#git checkout v5.18.4 && // WORKS!
+#git checkout v6.12.6 && // FAILS
+git checkout v6.11.6 &&
+make static_lib &&
+#make shared_lib &&
+INSTALL_PATH=/usr make install &&
+cd &&
+rm -rf rocksdb
+if [[ $? -gt 0 ]]; then
+echo -e "\nRocksDB Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nRocksDB Compilation and Installation DONE!\n"
+else
+cd
+wget -O rocksdb-6.11.6-lfphp.tar.gz https://files.linuxforphp.net/rocksdb-6.11.6-lfphp.tar.gz &&
+tar -xvf rocksdb-6.11.6-lfphp.tar.gz &&
+cd rocksdb &&
+INSTALL_PATH=/usr make install &&
+cd &&
+rm -rf rocksdb
+if [[ $? -gt 0 ]]; then
+echo -e "\nRocksDB Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nRocksDB Installation DONE!\n"
+fi
+cd
