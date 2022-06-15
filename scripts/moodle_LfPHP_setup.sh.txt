@@ -14,12 +14,11 @@ sed --follow-symlinks -i 's/max_input_time = 60/max_input_time = 600/' /etc/php.
 if [[ -z "$1" ]]; then
 #echo -e "\n"
 #read -r -p "Which version of Moodle do you wish to install?" lms
-#lms="${lms//./}"
-lms="310"
+lms='3.11'
 else
-#lms=$1
-lms="310"
+lms="$1"
 fi
+lms="${lms//./}"
 sleep 10
 /etc/init.d/mysql restart
 sleep 10
@@ -28,7 +27,7 @@ mysql -uroot -e "CREATE USER 'lmsuser'@'localhost' IDENTIFIED BY 'testpass';"
 mysql -uroot -e "GRANT ALL PRIVILEGES ON moodle.* TO 'lmsuser'@'localhost';"
 mysql -uroot -e "FLUSH PRIVILEGES;"
 mv /srv/www /srv/www.OLD
-wget -O moodle.tgz https://download.moodle.org/stable310/moodle-latest-"$lms".tgz
+wget -O moodle.tgz https://download.moodle.org/stable"$lms"/moodle-latest-"$lms".tgz
 tar -xvf moodle.tgz
 rm moodle.tgz
 chown -R root:apache moodle
