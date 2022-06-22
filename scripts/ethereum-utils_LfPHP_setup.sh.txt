@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=/root/go
+cd
+if [[ ! -z "$COMPILE" ]]; then
+git clone https://github.com/ethereum/go-ethereum.git &&
+cd go-ethereum/ &&
+git checkout v1.9.21 &&
+make all &&
+cp -rf build/bin/* /usr/bin/
+if [[ $? -gt 0 ]]; then
+echo -e "\nEthereum Utils Compilation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nEthereum Util Compilation and Installation DONE!\n"
+else
+cd &&
+wget -O ethereum-utils-1.9.21-lfphp.tar.gz https://files.linuxforphp.net/ethereum-utils-1.9.21-lfphp.tar.gz &&
+tar -xzvf ethereum-utils-1.9.21-lfphp.tar.gz &&
+cp -rf build/bin/* /usr/bin/
+rm -rf build
+if [[ $? -gt 0 ]]; then
+echo -e "\nEthereum Util Installation ERROR!  Aborting!\n"
+exit 1
+fi
+echo -e "\nEthereum Util Installation DONE!\n"
+fi
+cd
