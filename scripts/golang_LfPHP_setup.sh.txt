@@ -20,6 +20,8 @@ fi
 cd
 mkdir go
 echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/bashrc
-echo 'export GOPATH=/root/go' >> /etc/bashrc
+echo 'export GOPATH=/home/go' >> /etc/bashrc
+echo 'export PATH=$PATH:/usr/local/go/bin' >> /root/.bashrc
+echo 'export GOPATH=/root/go' >> /root/.bashrc
 source /etc/bashrc
 go version
