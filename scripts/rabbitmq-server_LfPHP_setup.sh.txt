@@ -1297,7 +1297,7 @@ cat >>/etc/rabbitmq/advanced.config.dist << 'EOF'
 EOF
 rabbitmq-plugins enable rabbitmq_management &&
 /etc/init.d/rabbitmq-server start &&
-sleep 10 &&
+sleep 15 &&
 wget -O /usr/sbin/rabbitmqadmin http://localhost:15672/cli/rabbitmqadmin &&
 chmod +x /usr/sbin/rabbitmqadmin &&
 /etc/init.d/rabbitmq-server stop &&
