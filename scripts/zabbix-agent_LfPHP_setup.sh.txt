@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+cd
+wget https://go.dev/dl/go1.18.7.linux-amd64.tar.gz
+mv /usr/local/go /usr/local/go-1.16.8
+tar -C /usr/local -xvf go1.18.7.linux-amd64.tar.gz
+source /etc/bashrc
+groupadd --system zabbix
+useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
+mkdir -m u=rwx,g=rwx,o= -p /usr/lib/zabbix
+chown zabbix:zabbix /usr/lib/zabbix
+if [[ ! -z "$COMPILE" ]]; then
+    wget -O zabbix-6.2.3.tar.gz https://cdn.zabbix.com/zabbix/sources/stable/6.2/zabbix-6.2.3.tar.gz &&
+    tar -xvf zabbix-6.2.3.tar.gz &&
+    cd zabbix-6.2.3 &&
+    ./configure --enable-agent2 &&
+    make install &&
+    cd &&
+    rm -rf zabbix-6.2.3
+    
+    if [[ $? -gt 0 ]]; then
+        echo -e "\nZabbix Agent Compilation ERROR!  Aborting!\n"
+        exit 1
+    fi
+    
+    echo -e "\nZabbix Agent Compilation and Installation DONE!\n"
+else
+    cd &&
+    wget -O zabbix-agent-6.2.3-lfphp.tar.gz https://files.linuxforphp.net/zabbix-agent-6.2.3-lfphp.tar.gz &&
+    tar -xzvf zabbix-agent-6.2.3-lfphp.tar.gz &&
+    cd zabbix-6.2.3 &&
+    make install &&
+    cd &&
+    rm -rf zabbix-6.2.3 &&
+    rm zabbix-agent-6.2.3-lfphp.tar.gz
+    
+    if [[ $? -gt 0 ]]; then
+        echo -e "\nZabbix Agent Installation ERROR!  Aborting!\n"
+        exit 1
+    fi
+    
+    echo -e "\nZabbix Agent Installation DONE!\n"
+fi
+cd
+cat >/etc/init.d/zabbix_agentd << 'EOF'
+#! /bin/sh
+#######################################################################
+# Begin /etc/init.d/zabbix_agentd
+#
+# Description : Start the Zabbix Agent
+#
+# Author      : A Caya - andrewscaya@yahoo.ca
+#
+# Version     : LfPHP 8.2.0
+#
+########################################################################
+
+### BEGIN INIT INFO
+# Provides:          zabbix_agentd
+# Required-Start:    $syslog $local_fs $network
+# Should-Start:      $remote_fs
+# Required-Stop:     $network
+# Should-Stop:       $remote_fs
+# Default-Start:     3 4 5
+# Default-Stop:      0 1 2 6
+# Short-Description: starts zabbix_agentd
+# Description:       starts the zabbix_agentd daemon
+# X-LFS-Provided-By: LfPHP 8.2.0
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+#$LastChangedBy: andrew $
+#$Date: 2022-10-18 13:28:00 -0500 (Tue, 18 Oct 2022) $
+
+prefix=/usr
+exec_prefix=${prefix}/local
+
+zabbix_BIN=${exec_prefix}/sbin/zabbix_agentd
+zabbix_CONF=/usr/local/etc/zabbix_agentd.conf
+zabbix_PID=/tmp/zabbix_agentd.pid
+
+
+wait_for_pid () {
+	try=0
+
+	while test $try -lt 35 ; do
+
+		case "$1" in
+			'created')
+			if [ -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+
+			'removed')
+			if [ ! -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+		esac
+
+		echo -n .
+		try=`expr $try + 1`
+		sleep 1
+
+	done
+
+}
+
+case "$1" in
+	start)
+		log_info_msg "Starting Zabbix Agent..."
+
+		$zabbix_BIN -c $zabbix_CONF
+
+		if [ "$?" != 0 ] ; then
+			log_failure_msg2
+			exit
+		fi
+
+		wait_for_pid created $zabbix_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	stop)
+		log_info_msg "Stopping Zabbix Agent..."
+
+		if [ ! -r $zabbix_PID ] ; then
+			log_warning_msg "zabbix_agentd not running?"
+			exit
+		fi
+
+		kill -TERM $( cat $zabbix_PID ) && rm -f $zabbix_PID
+
+		wait_for_pid removed $zabbix_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	status)
+		statusproc $zabbix_BIN
+	;;
+
+	restart)
+		$0 stop
+        sleep 3
+		$0 start
+	;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart|status}"
+		exit 1
+	;;
+
+esac
+EOF
+chmod +x /etc/init.d/zabbix_agentd
+mkdir -p /etc/sv/zabbix_agentd/supervise
+touch /etc/sv/zabbix_agentd/run
+chmod +x /etc/sv/zabbix_agentd/run
+cat >/etc/sv/zabbix_agentd/run << 'EOF'
+#!/usr/bin/env bash
+exec /usr/local/sbin/zabbix_agentd -c /usr/local/etc/zabbix_agentd.conf
+EOF
+/etc/init.d/zabbix_agentd start

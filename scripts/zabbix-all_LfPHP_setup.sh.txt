@@ -1,0 +1,355 @@
+#!/usr/bin/env bash
+cd
+wget https://go.dev/dl/go1.18.7.linux-amd64.tar.gz
+mv /usr/local/go /usr/local/go-1.16.8
+tar -C /usr/local -xvf go1.18.7.linux-amd64.tar.gz
+source /etc/bashrc
+groupadd --system zabbix
+useradd --system -g zabbix -d /usr/lib/zabbix -s /sbin/nologin -c "Zabbix Monitoring System" zabbix
+mkdir -m u=rwx,g=rwx,o= -p /usr/lib/zabbix
+chown zabbix:zabbix /usr/lib/zabbix
+sed -i 's/post_max_size = 8M/post_max_size = 128M/' /etc/php.ini
+sed -i 's/max_execution_time = 30/max_execution_time = 300/' /etc/php.ini
+sed -i 's/max_input_time = 60/max_input_time = 300/' /etc/php.ini
+/etc/init.d/mysql start
+sleep 3
+mysql -uroot -e "create database zabbix character set utf8mb4 collate utf8mb4_bin;"
+mysql -uroot -e "create user 'zabbix'@'%' identified by 'password';"
+mysql -uroot -e "grant all privileges on zabbix.* to 'zabbix'@'%';"
+mysql -uroot -e "SET GLOBAL log_bin_trust_function_creators = 1;"
+mysql -uroot -e "flush privileges;"
+if [[ ! -z "$COMPILE" ]]; then
+    wget -O zabbix-6.2.3.tar.gz https://cdn.zabbix.com/zabbix/sources/stable/6.2/zabbix-6.2.3.tar.gz &&
+    tar -xvf zabbix-6.2.3.tar.gz &&
+    cd zabbix-6.2.3 &&
+    ./configure --enable-server --enable-agent2 --with-mysql --enable-ipv6 --with-net-snmp --with-libcurl --with-libxml2 &&
+    make install &&
+    mkdir -p /srv/tempo/zabbix &&
+    cd database/mysql &&
+    mysql -uroot zabbix < schema.sql &&
+    mysql -uroot zabbix < images.sql &&
+    mysql -uroot zabbix < data.sql &&
+    mysql -uroot -e "SET GLOBAL log_bin_trust_function_creators = 0;" &&
+    cd ../../ui &&
+    cp -rf ./* /srv/tempo/zabbix &&
+    chown -R apache:apache /srv/tempo/zabbix &&
+    cd /srv &&
+    mv www www.OLD &&
+    ln -s /srv/tempo/zabbix www &&
+    cd &&
+    rm -rf zabbix-6.2.3
+    
+    if [[ $? -gt 0 ]]; then
+        echo -e "\nZabbix All Compilation ERROR!  Aborting!\n"
+        exit 1
+    fi
+    
+    echo -e "\nZabbix All Compilation and Installation DONE!\n"
+else
+    cd &&
+    wget -O zabbix-all-6.2.3-lfphp.tar.gz https://files.linuxforphp.net/zabbix-all-6.2.3-lfphp.tar.gz &&
+    tar -xzvf zabbix-all-6.2.3-lfphp.tar.gz &&
+    cd zabbix-6.2.3 &&
+    make install &&
+    mkdir -p /srv/tempo/zabbix &&
+    cd database/mysql &&
+    mysql -uroot zabbix < schema.sql &&
+    mysql -uroot zabbix < images.sql &&
+    mysql -uroot zabbix < data.sql &&
+    mysql -uroot -e "SET GLOBAL log_bin_trust_function_creators = 0;" &&
+    cd ../../ui &&
+    cp -rf ./* /srv/tempo/zabbix &&
+    chown -R apache:apache /srv/tempo/zabbix &&
+    cd /srv &&
+    mv www www.OLD &&
+    ln -s /srv/tempo/zabbix www &&
+    cd &&
+    rm -rf zabbix-6.2.3 &&
+    rm zabbix-all-6.2.3-lfphp.tar.gz
+    
+    if [[ $? -gt 0 ]]; then
+        echo -e "\nZabbix All Installation ERROR!  Aborting!\n"
+        exit 1
+    fi
+    
+    echo -e "\nZabbix All Installation DONE!\n"
+fi
+cd
+sed -i 's/# DBPassword=/DBPassword=password/' /usr/local/etc/zabbix_server.conf
+sed -i 's/# DBSocket=/DBSocket=\/run\/mysqld\/mysqld.sock/' /usr/local/etc/zabbix_server.conf
+cat >/etc/init.d/zabbix_server << 'EOF'
+#! /bin/sh
+#######################################################################
+# Begin /etc/init.d/zabbix_server
+#
+# Description : Start the Zabbix Server
+#
+# Author      : A Caya - andrewscaya@yahoo.ca
+#
+# Version     : LfPHP 8.2.0
+#
+########################################################################
+
+### BEGIN INIT INFO
+# Provides:          zabbix_server
+# Required-Start:    $syslog $local_fs $network
+# Should-Start:      $remote_fs
+# Required-Stop:     $network
+# Should-Stop:       $remote_fs
+# Default-Start:     3 4 5
+# Default-Stop:      0 1 2 6
+# Short-Description: starts zabbix_server
+# Description:       starts the zabbix_server daemon
+# X-LFS-Provided-By: LfPHP 8.2.0
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+#$LastChangedBy: andrew $
+#$Date: 2022-10-18 13:28:00 -0500 (Tue, 18 Oct 2022) $
+
+prefix=/usr
+exec_prefix=${prefix}/local
+
+zabbix_BIN=${exec_prefix}/sbin/zabbix_server
+zabbix_CONF=/usr/local/etc/zabbix_server.conf
+zabbix_PID=/tmp/zabbix_server.pid
+
+
+wait_for_pid () {
+	try=0
+
+	while test $try -lt 35 ; do
+
+		case "$1" in
+			'created')
+			if [ -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+
+			'removed')
+			if [ ! -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+		esac
+
+		echo -n .
+		try=`expr $try + 1`
+		sleep 1
+
+	done
+
+}
+
+case "$1" in
+	start)
+		log_info_msg "Starting Zabbix server..."
+
+		$zabbix_BIN -c $zabbix_CONF
+
+		if [ "$?" != 0 ] ; then
+			log_failure_msg2
+			exit
+		fi
+
+		wait_for_pid created $zabbix_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	stop)
+		log_info_msg "Stopping Zabbix Server..."
+
+		if [ ! -r $zabbix_PID ] ; then
+			log_warning_msg "zabbix_server not running?"
+			exit
+		fi
+
+		kill -TERM $( cat $zabbix_PID ) && rm -f $zabbix_PID
+
+		wait_for_pid removed $zabbix_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	status)
+		statusproc $zabbix_BIN
+	;;
+
+	restart)
+		$0 stop
+        sleep 3
+		$0 start
+	;;
+
+	reload)
+
+		log_info_msg "Reload service Zabbix Server..."
+		#$0 stop
+        $zabbix_BIN -c /usr/local/etc/zabbix_server.conf -R config_cache_reload
+		log_success_msg2
+	;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart|reload|status}"
+		exit 1
+	;;
+
+esac
+EOF
+chmod +x /etc/init.d/zabbix_server
+mkdir -p /etc/sv/zabbix_server/supervise
+touch /etc/sv/zabbix_server/run
+chmod +x /etc/sv/zabbix_server/run
+cat >/etc/sv/zabbix_server/run << 'EOF'
+#!/usr/bin/env bash
+exec /usr/local/sbin/zabbix_server -c /usr/local/etc/zabbix_server.conf
+EOF
+cat >/etc/init.d/zabbix_agentd << 'EOF'
+#! /bin/sh
+#######################################################################
+# Begin /etc/init.d/zabbix_agentd
+#
+# Description : Start the Zabbix Agent
+#
+# Author      : A Caya - andrewscaya@yahoo.ca
+#
+# Version     : LfPHP 8.2.0
+#
+########################################################################
+
+### BEGIN INIT INFO
+# Provides:          zabbix_agentd
+# Required-Start:    $syslog $local_fs $network
+# Should-Start:      $remote_fs
+# Required-Stop:     $network
+# Should-Stop:       $remote_fs
+# Default-Start:     3 4 5
+# Default-Stop:      0 1 2 6
+# Short-Description: starts zabbix_agentd
+# Description:       starts the zabbix_agentd daemon
+# X-LFS-Provided-By: LfPHP 8.2.0
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+#$LastChangedBy: andrew $
+#$Date: 2022-10-18 13:28:00 -0500 (Tue, 18 Oct 2022) $
+
+prefix=/usr
+exec_prefix=${prefix}/local
+
+zabbix_BIN=${exec_prefix}/sbin/zabbix_agentd
+zabbix_CONF=/usr/local/etc/zabbix_agentd.conf
+zabbix_PID=/tmp/zabbix_agentd.pid
+
+
+wait_for_pid () {
+	try=0
+
+	while test $try -lt 35 ; do
+
+		case "$1" in
+			'created')
+			if [ -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+
+			'removed')
+			if [ ! -f "$2" ] ; then
+				try=''
+				break
+			fi
+			;;
+		esac
+
+		echo -n .
+		try=`expr $try + 1`
+		sleep 1
+
+	done
+
+}
+
+case "$1" in
+	start)
+		log_info_msg "Starting Zabbix Agent..."
+
+		$zabbix_BIN -c $zabbix_CONF
+
+		if [ "$?" != 0 ] ; then
+			log_failure_msg2
+			exit
+		fi
+
+		wait_for_pid created $zabbix_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	stop)
+		log_info_msg "Stopping Zabbix Agent..."
+
+		if [ ! -r $zabbix_PID ] ; then
+			log_warning_msg "zabbix_agentd not running?"
+			exit
+		fi
+
+		kill -TERM $( cat $zabbix_PID ) && rm -f $zabbix_PID
+
+		wait_for_pid removed $zabbix_PID
+
+		if [ -n "$try" ] ; then
+			log_failure_msg2
+		else
+			log_success_msg2
+		fi
+	;;
+
+	status)
+		statusproc $zabbix_BIN
+	;;
+
+	restart)
+		$0 stop
+        sleep 3
+		$0 start
+	;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart|status}"
+		exit 1
+	;;
+
+esac
+EOF
+chmod +x /etc/init.d/zabbix_agentd
+mkdir -p /etc/sv/zabbix_agentd/supervise
+touch /etc/sv/zabbix_agentd/run
+chmod +x /etc/sv/zabbix_agentd/run
+cat >/etc/sv/zabbix_agentd/run << 'EOF'
+#!/usr/bin/env bash
+exec /usr/local/sbin/zabbix_agentd -c /usr/local/etc/zabbix_agentd.conf
+EOF
+/etc/init.d/php-fpm start
+/etc/init.d/zabbix_server start
+/etc/init.d/zabbix_agentd start
+/etc/init.d/httpd start
