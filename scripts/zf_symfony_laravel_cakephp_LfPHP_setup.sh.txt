@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+export phpvers="$( php -r 'echo PHP_VERSION;' )"
 if [[ -z "$1" ]]; then
     echo -e "\n"
     echo -e "--------------------------------------------------------"
@@ -115,6 +116,11 @@ elif [[ "$fw" == "6" || "$fw" == "slim" ]]; then
 elif [[ "$fw" == "7" || "$fw" == "lightmvc" ]]; then
     git clone https://github.com/lightmvc/lightmvcskel tempo/$response
     cd tempo/$response
+    if [[ "$phpvers" == "8."* ]]; then
+        git checkout 5.0.0
+    else
+        git checkout 4.0.0
+    fi
     composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
     mysql -uroot fw < data/db_schema.sql
     mysql -uroot fw < data/db_data.sql
@@ -134,6 +140,11 @@ elif [[ "$fw" == "8" || "$fw" == "lightmvc-swoole" ]]; then
     echo "extension=swoole.so" >> /etc/php.ini
     git clone https://github.com/lightmvc/lightmvcskel tempo/$response
     cd tempo/$response
+    if [[ "$phpvers" == "8."* ]]; then
+        git checkout 5.0.0
+    else
+        git checkout 4.0.0
+    fi
     composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
     mysql -uroot fw < data/db_schema.sql
     mysql -uroot fw < data/db_data.sql
