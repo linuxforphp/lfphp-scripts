@@ -117,7 +117,7 @@ elif [[ "$fw" == "7" || "$fw" == "lightmvc" ]]; then
     git clone https://github.com/lightmvc/lightmvcskel tempo/$response
     cd tempo/$response
     if [[ "$phpvers" == "8."* ]]; then
-        git checkout 5.0.0
+        git checkout 5.0.1
     else
         git checkout 4.0.0
     fi
@@ -141,7 +141,7 @@ elif [[ "$fw" == "8" || "$fw" == "lightmvc-swoole" ]]; then
     git clone https://github.com/lightmvc/lightmvcskel tempo/$response
     cd tempo/$response
     if [[ "$phpvers" == "8."* ]]; then
-        git checkout 5.0.0
+        git checkout 5.0.1
     else
         git checkout 4.0.0
     fi
