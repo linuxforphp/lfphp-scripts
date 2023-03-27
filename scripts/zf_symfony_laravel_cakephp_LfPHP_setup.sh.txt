@@ -2,21 +2,21 @@
 export phpvers="$( php -r 'echo PHP_VERSION;' )"
 if [[ -z "$1" ]]; then
     echo -e "\n"
-    echo -e "--------------------------------------------------------"
-    echo -e " 1 - Zend Framework Skeleton Application"
-    echo -e " 2 - Zend Expressive Skeleton Application"
+    echo -e "--------------------------------------------------------------------"
+    echo -e " 1 - Zend Framework Skeleton Application - ABANDONED"
+    echo -e " 2 - Zend Expressive Skeleton Application - ABANDONED"
     echo -e " 3 - Symfony Application"
     echo -e " 4 - Laravel Application"
     echo -e " 5 - CakePHP Application"
     echo -e " 6 - Slim PHP Skeleton Application"
     echo -e " 7 - LightMVC Framework Skeleton Application"
-    echo -e " 8 - LightMVC Framework Skeleton Application WITH Swoole"
+    echo -e " 8 - LightMVC Framework Skeleton Application WITH Swoole - ABANDONED"
     echo -e " 9 - Laminas (Zend Framework 3) Skeleton Application"
     echo -e "10 - Mezzio (Zend Expressive) Skeleton Application"
-    echo -e "--------------------------------------------------------"
+    echo -e "--------------------------------------------------------------------"
     echo -e "\n"
     echo -e "Which PHP framework application do you wish to install?\n"
-    read -r -p "(1 / 2 / 3 / 4 / 5 / 6 / 7 / 8 / 9 / 10) " fw
+    read -r -p "(3 / 4 / 5 / 6 / 7 / 8 / 9 / 10) " fw
     export fw
 else
     export fw=$1
@@ -46,39 +46,39 @@ mysql -uroot -e "CREATE USER 'my_app'@'localhost' IDENTIFIED BY 'secret';"
 mysql -uroot -e "GRANT ALL PRIVILEGES ON fw.* TO 'fwuser'@'localhost';"
 mysql -uroot -e "GRANT ALL PRIVILEGES ON my_app.* TO 'my_app'@'localhost';"
 mysql -uroot -e "FLUSH PRIVILEGES;"
-if [[ "$fw" != "1" && "$fw" != "2" && "$fw" != "3" && "$fw" != "4" && "$fw" != "5" && "$fw" != "6" && "$fw" != "7" && "$fw" != "8" && "$fw" != "9" && "$fw" != "10" && "$fw" != "zf" && "$fw" != "ze" && "$fw" != "symfony" && "$fw" != "laravel" && "$fw" != "cakephp" && "$fw" != "slim" && "$fw" != "lightmvc" && "$fw" != "lightmvc-swoole" && "$fw" != "laminas" && "$fw" != "mezzio" ]]; then
+if [[ "$fw" != "3" && "$fw" != "4" && "$fw" != "5" && "$fw" != "6" && "$fw" != "7" && "$fw" != "9" && "$fw" != "10" && "$fw" != "symfony" && "$fw" != "laravel" && "$fw" != "cakephp" && "$fw" != "slim" && "$fw" != "lightmvc" && "$fw" != "laminas" && "$fw" != "mezzio" ]]; then
     echo -e "ERROR! You did not choose one of the above. ABORTING..."
     exit 1
-elif [[ "$fw" == "1" || "$fw" == "zf" ]]; then
-    wget -O master.zip https://github.com/zendframework/ZendSkeletonApplication/archive/master.zip
-    unzip master.zip
-    rm master.zip
-    mv ZendSkeletonApplication-master tempo/$response
-    ln -s tempo/$response/public www
-    cd tempo/$response
-    if [[ ! -z "$nointeractivemode" ]]; then
-        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install -n
-    else
-        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
-    fi
-    chown -R apache:apache data/
-    cd ../..
-elif [[ "$fw" == "2" || "$fw" == "ze" ]]; then
-    composer self-update
-    if [[ ! -z "$nointeractivemode" ]]; then
-        git clone https://github.com/zendframework/zend-expressive-skeleton tempo/$response
-        ln -s tempo/$response/public www
-        cd tempo/$response
-        sed -i "s/io->ask(implode(\$query), '2'/io->ask(implode(\$query), '3'/" src/ExpressiveInstaller/OptionalPackages.php
-        sed -i "s/'default'        => 'n'/'default'        => 3/g" src/ExpressiveInstaller/config.php
-        COMPOSER_PROCESS_TIMEOUT=5000 composer create-project -n
-    else
-        COMPOSER_PROCESS_TIMEOUT=5000 composer create-project zendframework/zend-expressive-skeleton tempo/$response
-        ln -s tempo/$response/public www
-        cd tempo/$response
-        chown -R apache:apache data/
-    fi
-    export webserver="1"
+#elif [[ "$fw" == "1" || "$fw" == "zf" ]]; then
+#    wget -O master.zip https://github.com/zendframework/ZendSkeletonApplication/archive/master.zip
+#    unzip master.zip
+#    rm master.zip
+#    mv ZendSkeletonApplication-master tempo/$response
+#    ln -s tempo/$response/public www
+#    cd tempo/$response
+#    if [[ ! -z "$nointeractivemode" ]]; then
+#        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install -n
+#    else
+#        composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
+#    fi
+#    chown -R apache:apache data/
+#    cd ../..
+#elif [[ "$fw" == "2" || "$fw" == "ze" ]]; then
+#    composer self-update
+#    if [[ ! -z "$nointeractivemode" ]]; then
+#        git clone https://github.com/zendframework/zend-expressive-skeleton tempo/$response
+#        ln -s tempo/$response/public www
+#        cd tempo/$response
+#        sed -i "s/io->ask(implode(\$query), '2'/io->ask(implode(\$query), '3'/" src/ExpressiveInstaller/OptionalPackages.php
+#        sed -i "s/'default'        => 'n'/'default'        => 3/g" src/ExpressiveInstaller/config.php
+#        COMPOSER_PROCESS_TIMEOUT=5000 composer create-project -n
+#    else
+#        COMPOSER_PROCESS_TIMEOUT=5000 composer create-project zendframework/zend-expressive-skeleton tempo/$response
+#        ln -s tempo/$response/public www
+#        cd tempo/$response
+#        chown -R apache:apache data/
+#    fi
+#    export webserver="1"
 elif [[ "$fw" == "3" || "$fw" == "symfony" ]]; then
     composer self-update && composer create-project symfony/website-skeleton tempo/$response
     wget https://get.symfony.com/cli/installer -O - | bash
@@ -131,36 +131,36 @@ elif [[ "$fw" == "7" || "$fw" == "lightmvc" ]]; then
     sed -i 's/DATABASE/fw/' config/config.local.php
     cd ../..
     ln -s tempo/$response/public www
-elif [[ "$fw" == "8" || "$fw" == "lightmvc-swoole" ]]; then
-    if [[ ! -z "$nointeractivemode" ]]; then
-        yes | pecl install swoole
-    else
-        pecl install swoole
-    fi
-    echo "extension=swoole.so" >> /etc/php.ini
-    git clone https://github.com/lightmvc/lightmvcskel tempo/$response
-    cd tempo/$response
-    if [[ "$phpvers" == "8."* ]]; then
-        git checkout 5.0.1
-    else
-        git checkout 4.0.0
-    fi
-    composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
-    mysql -uroot fw < data/db_schema.sql
-    mysql -uroot fw < data/db_data.sql
-    chmod -R 777 cache/ logs/ templates_c/
-    mv config/config.local.php.dist config/config.local.php
-    sed -i 's/USERNAME/fwuser/' config/config.local.php
-    sed -i 's/PASSWORD/testpass/' config/config.local.php
-    sed -i 's/DATABASE/fw/' config/config.local.php
-    cd ../..
-    ln -s tempo/$response/public www
-    export webserver="5"
+#elif [[ "$fw" == "8" || "$fw" == "lightmvc-swoole" ]]; then
+#    if [[ ! -z "$nointeractivemode" ]]; then
+#        yes | pecl install swoole
+#    else
+#        pecl install swoole
+#    fi
+#    echo "extension=swoole.so" >> /etc/php.ini
+#    git clone https://github.com/lightmvc/lightmvcskel tempo/$response
+#    cd tempo/$response
+#    if [[ "$phpvers" == "8."* ]]; then
+#        git checkout 5.0.1
+#    else
+#        git checkout 4.0.0
+#    fi
+#    composer self-update && COMPOSER_PROCESS_TIMEOUT=5000 composer install
+#    mysql -uroot fw < data/db_schema.sql
+#    mysql -uroot fw < data/db_data.sql
+#    chmod -R 777 cache/ logs/ templates_c/
+#    mv config/config.local.php.dist config/config.local.php
+#    sed -i 's/USERNAME/fwuser/' config/config.local.php
+#    sed -i 's/PASSWORD/testpass/' config/config.local.php
+#    sed -i 's/DATABASE/fw/' config/config.local.php
+#    cd ../..
+#    ln -s tempo/$response/public www
+#    export webserver="5"
 elif [[ "$fw" == "9" || "$fw" == "laminas" ]]; then
     wget -O master.zip https://github.com/laminas/laminas-mvc-skeleton/archive/master.zip
     unzip master.zip
     rm master.zip
-    mv laminas-mvc-skeleton-master tempo/$response
+    mv laminas-mvc-skeleton-* tempo/$response
     ln -s tempo/$response/public www
     cd tempo/$response
     if [[ ! -z "$nointeractivemode" ]]; then
@@ -187,7 +187,7 @@ elif [[ "$fw" == "10" || "$fw" == "mezzio" ]]; then
         cd tempo/$response
         chown -R apache:apache data/
     fi
-    export webserver="1"
+    composer update
 fi
 /etc/init.d/php-fpm restart
 chown -R apache:apache /srv/www
