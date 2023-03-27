@@ -11,23 +11,31 @@ sed --follow-symlinks -i 's/mysqli.default_socket =/mysqli.default_socket = \/ru
 sed --follow-symlinks -i 's/memory_limit = 128M/memory_limit = 512M/' /etc/php.ini
 sed --follow-symlinks -i 's/max_execution_time = 30/max_execution_time = 600/' /etc/php.ini
 sed --follow-symlinks -i 's/max_input_time = 60/max_input_time = 600/' /etc/php.ini
-if [[ -z "$1" ]]; then
-#echo -e "\n"
-#read -r -p "Which version of Moodle do you wish to install?" lms
-lms='3.11'
-else
-lms="$1"
-fi
-lms="${lms//./}"
-sleep 10
+sed --follow-symlinks -i 's/;max_input_vars = 1000/max_input_vars = 5000/' /etc/php.ini
+sleep 5
 /etc/init.d/mysql restart
 sleep 10
 mysql -uroot -e "CREATE DATABASE moodle;"
 mysql -uroot -e "CREATE USER 'lmsuser'@'localhost' IDENTIFIED BY 'testpass';"
 mysql -uroot -e "GRANT ALL PRIVILEGES ON moodle.* TO 'lmsuser'@'localhost';"
 mysql -uroot -e "FLUSH PRIVILEGES;"
+if [[ -z "$1" ]]; then
+    echo -e "\n"
+    echo -e "Which version of Moodle do you wish to install?\n"
+    read -r -p "(3.11 / 4.0 / 4.1)" lms
+    export lms
+else
+    lms="$1"
+fi
+#lms="${lms//./}"
+if [[ "$lms" == "4.1" || "$lms" == "41" || "$lms" == "410" ]]; then
+    wget -O moodle.tgz https://download.moodle.org/stable401/moodle-4.1.2.tgz
+elif [[ "$lms" == "4.0" || "$lms" == "40" || "$lms" == "400" ]]; then
+    wget -O moodle.tgz https://download.moodle.org/stable400/moodle-latest-400.tgz
+else
+    wget -O moodle.tgz https://download.moodle.org/stable311/moodle-latest-311.tgz
+fi
 mv /srv/www /srv/www.OLD
-wget -O moodle.tgz https://download.moodle.org/stable"$lms"/moodle-latest-"$lms".tgz
 tar -xvf moodle.tgz
 rm moodle.tgz
 chown -R root:apache moodle
