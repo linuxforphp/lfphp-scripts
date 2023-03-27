@@ -1,9 +1,17 @@
 #!/usr/bin/env bash
-cd &&
-wget -O phpMyAdmin-5.1.0-all-languages.tar.gz https://files.phpmyadmin.net/phpMyAdmin/5.1.0/phpMyAdmin-5.1.0-all-languages.tar.gz &&
-tar -xvf phpMyAdmin-5.1.0-all-languages.tar.gz &&
-cp -rf phpMyAdmin-5.1.0-all-languages /srv/phpmyadmin &&
-rm -rf phpMyAdmin-5.1.0-all-languages &&
+export phpvers="$( php -r 'echo PHP_VERSION;' )"
+cd
+if [[ "$phpvers" == "8."* ]]; then
+    wget --no-check-certificate -O phpMyAdmin-5.2.0-all-languages.tar.gz https://files.phpmyadmin.net/phpMyAdmin/5.2.0/phpMyAdmin-5.2.0-all-languages.tar.gz &&
+    tar -xvf phpMyAdmin-5.2.0-all-languages.tar.gz &&
+    cp -rf phpMyAdmin-5.2.0-all-languages /srv/phpmyadmin &&
+    rm -rf phpMyAdmin-5.2.0-all-languages
+else
+    wget --no-check-certificate -O phpMyAdmin-5.1.0-all-languages.tar.gz https://files.phpmyadmin.net/phpMyAdmin/5.1.0/phpMyAdmin-5.1.0-all-languages.tar.gz &&
+    tar -xvf phpMyAdmin-5.1.0-all-languages.tar.gz &&
+    cp -rf phpMyAdmin-5.1.0-all-languages /srv/phpmyadmin &&
+    rm -rf phpMyAdmin-5.1.0-all-languages
+fi
 cat >/etc/httpd/extra/httpd-phpmyadmin.conf << 'EOF' &&
 Alias /phpmyadmin /srv/phpmyadmin
 
