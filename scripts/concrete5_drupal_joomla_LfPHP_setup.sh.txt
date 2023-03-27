@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+export phpvers="$( php -r 'echo PHP_VERSION;' )"
 if [[ ! -d /srv/tempo ]]; then
 mkdir /srv/tempo
 fi
@@ -13,12 +14,12 @@ sed --follow-symlinks -i 's/max_execution_time = 30/max_execution_time = 600/' /
 sed --follow-symlinks -i 's/max_input_time = 60/max_input_time = 600/' /etc/php.ini
 if [[ -z "$1" ]]; then
 echo -e "\n"
-echo -e "1 - Concrete5 8.5.2\n"
-echo -e "2 - Drupal 8.9.1\n"
-echo -e "3 - Joomla 3.9.18\n"
+echo -e "1 - Concrete5\n"
+echo -e "2 - Drupal\n"
+echo -e "3 - Joomla\n"
 echo -e "4 - WordPress (latest version)\n"
-echo -e "5 - Magento CE 2.3.2 E-Commerce Solution\n"
-echo -e "6 - Prestashop 1.7.6.3 E-Commerce Solution\n"
+echo -e "5 - Magento CE E-Commerce Solution\n"
+echo -e "6 - Prestashop E-Commerce Solution\n"
 echo -e "\n"
 read -r -p "Which CMS do you wish to install? (1 / 2 / 3 / 4 / 5 / 6)" cms
 else
@@ -35,25 +36,44 @@ if [[ "$cms" != "1" && "$cms" != "2" && "$cms" != "3" && "$cms" != "4" && "$cms"
     echo -e "ERROR! You did not choose one of the above. ABORTING..."
     exit 1
 elif [[ "$cms" == "1" || "$cms" == "concrete5" ]]; then
-    wget -O concrete5.zip https://www.concrete5.org/download_file/-/view/111592/
-    unzip concrete5.zip
-    rm concrete5.zip
-    mv concrete5-8.5.2 concrete5
+    if [[ "$phpvers" == "8."* ]]; then
+        wget -O concrete5.zip https://www.concretecms.com/application/files/8816/6724/9697/concrete-cms-9.1.3.zip
+        unzip concrete5.zip
+        rm concrete5.zip
+        mv concrete-cms-9.1.3 concrete5
+    else
+        wget -O concrete5.zip https://www.concrete5.org/download_file/-/view/111592/
+        unzip concrete5.zip
+        rm concrete5.zip
+        mv concrete5-8.5.2 concrete5
+    fi
     cd ..
-    chmod -R 777 tempo/concrete5-8.5.2/application/config tempo/concrete5-8.5.2/application/files tempo/concrete5-8.5.2/packages
+    chmod -R 777 tempo/concrete5/application/config tempo/concrete5/application/files tempo/concrete5/packages
     ln -s tempo/concrete5 www
 elif [[ "$cms" == "2" || "$cms" == "drupal" ]]; then
-    wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-8.9.1.tar.gz
-    tar -xvf drupal.tar.gz
-    rm drupal.tar.gz
-    mv drupal-8.9.1 drupal
+    if [[ "$phpvers" == "8."* ]]; then
+        wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-10.0.7.tar.gz
+        tar -xvf drupal.tar.gz
+        rm drupal.tar.gz
+        mv drupal-10.0.7 drupal
+        wget -O /srv/tempo/drupal/.htaccess https://raw.githubusercontent.com/drupal/drupal/10.0.x/.htaccess
+    else
+        wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-8.9.1.tar.gz
+        tar -xvf drupal.tar.gz
+        rm drupal.tar.gz
+        mv drupal-8.9.1 drupal
+        wget -O /srv/tempo/drupal/.htaccess https://raw.githubusercontent.com/drupal/drupal/8.9.x/.htaccess
+    fi
     cd ..
     ln -s tempo/drupal www
     cp /srv/www/sites/default/default.settings.php /srv/www/sites/default/settings.php
     chmod -R 777 /srv/www/sites
-    wget -O /srv/www/.htaccess https://raw.githubusercontent.com/drupal/drupal/8.9.x/.htaccess
 elif [[ "$cms" == "3" || "$cms" == "joomla" ]]; then
-    wget -O joomla.tar.gz "https://downloads.joomla.org/cms/joomla3/3-9-18/Joomla_3-9-18-Stable-Full_Package.tar.gz?format=gz"
+    if [[ "$phpvers" == "8."* ]]; then
+        wget -O joomla.tar.gz "https://downloads.joomla.org/cms/joomla4/4-2-9/Joomla_4-2-9-Stable-Full_Package.tar.gz?format=gz"
+    else
+        wget -O joomla.tar.gz "https://downloads.joomla.org/cms/joomla3/3-9-18/Joomla_3-9-18-Stable-Full_Package.tar.gz?format=gz"  
+    fi
     mkdir joomla
     tar -xvf joomla.tar.gz -C joomla
     rm joomla.tar.gz
@@ -371,7 +391,11 @@ sub vcl_hit {
 }
 EOF
 elif [[ "$cms" == "6" || "$cms" == "prestashop" ]]; then
-    wget -O prestashop_orig.zip https://github.com/PrestaShop/PrestaShop/releases/download/1.7.6.3/prestashop_1.7.6.3.zip
+    if [[ "$phpvers" == "8."* ]]; then
+        wget -O prestashop_orig.zip https://github.com/PrestaShop/PrestaShop/releases/download/8.0.2/prestashop_8.0.2.zip
+    else
+        wget -O prestashop_orig.zip https://github.com/PrestaShop/PrestaShop/releases/download/1.7.6.3/prestashop_1.7.6.3.zip
+    fi
     unzip prestashop_orig.zip
     mkdir prestashop && cd prestashop
     unzip ../prestashop.zip
