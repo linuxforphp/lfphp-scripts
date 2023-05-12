@@ -51,17 +51,23 @@ elif [[ "$cms" == "1" || "$cms" == "concrete5" ]]; then
     chmod -R 777 tempo/concrete5/application/config tempo/concrete5/application/files tempo/concrete5/packages
     ln -s tempo/concrete5 www
 elif [[ "$cms" == "2" || "$cms" == "drupal" ]]; then
-    if [[ "$phpvers" == "8."* ]]; then
-        wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-10.0.7.tar.gz
+    if [[ "$phpvers" == "8.0."* ]]; then
+        wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-9.5.8.tar.gz
         tar -xvf drupal.tar.gz
         rm drupal.tar.gz
-        mv drupal-10.0.7 drupal
+        mv drupal-9.5.8 drupal
+        wget -O /srv/tempo/drupal/.htaccess https://raw.githubusercontent.com/drupal/drupal/9.5.x/.htaccess
+    elif [[ "$phpvers" == "8."* ]]; then
+        wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-10.0.9.tar.gz
+        tar -xvf drupal.tar.gz
+        rm drupal.tar.gz
+        mv drupal-10.0.9 drupal
         wget -O /srv/tempo/drupal/.htaccess https://raw.githubusercontent.com/drupal/drupal/10.0.x/.htaccess
     else
-        wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-8.9.1.tar.gz
+        wget -O drupal.tar.gz https://ftp.drupal.org/files/projects/drupal-8.9.20.tar.gz
         tar -xvf drupal.tar.gz
         rm drupal.tar.gz
-        mv drupal-8.9.1 drupal
+        mv drupal-8.9.20 drupal
         wget -O /srv/tempo/drupal/.htaccess https://raw.githubusercontent.com/drupal/drupal/8.9.x/.htaccess
     fi
     cd ..
