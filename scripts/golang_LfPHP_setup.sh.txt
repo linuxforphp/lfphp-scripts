@@ -2,7 +2,7 @@
 cd
 if [[ ! -z "$COMPILE" ]]; then
 wget -O go1.16.8.linux-amd64.tar.gz https://dl.google.com/go/go1.16.8.linux-amd64.tar.gz &&
-tar -C /usr/local -xvf go1.16.8.linux-amd64.tar.gz &&
+tar -C /usr/local -xvf go1.16.8.linux-amd64.tar.gz
 if [[ $? -gt 0 ]]; then
 echo -e "\nGolang Compilation ERROR!  Aborting!\n"
 exit 1
