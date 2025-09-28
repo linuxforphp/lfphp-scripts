@@ -42,7 +42,7 @@ elif [[ "$cms" == "1" || "$cms" == "concrete5" ]]; then
         rm concrete5.zip
         mv concrete-cms-9.1.3 concrete5
     else
-        wget -O concrete5.zip https://www.concrete5.org/download_file/-/view/111592/
+        wget -O concrete5.zip https://www.concretecms.org/application/files/5516/9836/0427/concrete5-8.5.2.zip
         unzip concrete5.zip
         rm concrete5.zip
         mv concrete5-8.5.2 concrete5
